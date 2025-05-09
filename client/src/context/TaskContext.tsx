@@ -109,13 +109,18 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         }
       });
       
+      // アクティブなカテゴリごとのタスク数をログ出力（デバッグ用）
       console.log('カテゴリカウント:', categoryCounts);
       
       setCategories(prevCategories => 
-        prevCategories.map(cat => ({
-          ...cat,
-          count: categoryCounts[cat.id] || 0
-        }))
+        prevCategories.map(cat => {
+          // 文字列と数値の型不一致を解決: cat.idを常に文字列として扱う
+          const catId = typeof cat.id === 'number' ? cat.id.toString() : cat.id;
+          return {
+            ...cat,
+            count: categoryCounts[catId] || 0
+          };
+        })
       );
       
       // 優先度ごとのカウント計算
