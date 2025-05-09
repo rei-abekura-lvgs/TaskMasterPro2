@@ -3,44 +3,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
-import { gql } from '@apollo/client';
-import { executeMutation } from '@/lib/utils';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 import { createTaskSchema, updateTaskSchema } from '@/types';
-
-// GraphQL Mutations
-const CREATE_TASK = gql`
-  mutation CreateTask($input: CreateTaskInput!) {
-    createTask(input: $input) {
-      id
-      title
-      description
-      dueDate
-      category
-      priority
-      completed
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const UPDATE_TASK = gql`
-  mutation UpdateTask($input: UpdateTaskInput!) {
-    updateTask(input: $input) {
-      id
-      title
-      description
-      dueDate
-      category
-      priority
-      completed
-      createdAt
-      updatedAt
-    }
-  }
-`;
 
 export default function CreateTaskModal() {
   const { isModalOpen, setIsModalOpen, editingTask, setEditingTask } = useTaskContext();
@@ -98,7 +63,7 @@ export default function CreateTaskModal() {
         category: data.category,
         priority: data.priority,
         completed: data.completed || false,
-        userId: 1 // 仮のユーザーID
+        userId: 3 // 仮のユーザーID
       };
       
       const response = await fetch('/api/tasks', {
@@ -211,7 +176,7 @@ export default function CreateTaskModal() {
           {/* Modal header */}
           <div className="bg-primary-light dark:bg-primary-dark text-white px-6 py-4 flex items-center justify-between">
             <h3 className="text-lg font-medium">
-              {isEditing ? 'Edit Task' : 'Create New Task'}
+              {isEditing ? 'タスクを編集' : '新規タスク作成'}
             </h3>
             <button className="focus:outline-none" onClick={closeModal}>
               <span className="material-icons">close</span>
@@ -223,14 +188,14 @@ export default function CreateTaskModal() {
             <form id="taskForm" onSubmit={form.handleSubmit(onSubmit)}>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Title *
+                  タイトル *
                 </label>
                 <input 
                   type="text" 
                   id="title" 
                   {...form.register('title')}
                   className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white" 
-                  placeholder="Enter task title"
+                  placeholder="タスクのタイトルを入力"
                 />
                 {form.formState.errors.title && (
                   <p className="mt-1 text-xs text-red-600 dark:text-red-400">
@@ -241,21 +206,21 @@ export default function CreateTaskModal() {
               
               <div className="mb-4">
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Description
+                  説明
                 </label>
                 <textarea 
                   id="description" 
                   {...form.register('description')}
                   rows={3} 
                   className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white" 
-                  placeholder="Enter task description"
+                  placeholder="タスクの説明を入力"
                 ></textarea>
               </div>
               
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Due Date
+                    期限日
                   </label>
                   <input 
                     type="date" 
@@ -267,26 +232,26 @@ export default function CreateTaskModal() {
                 
                 <div>
                   <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Category
+                    カテゴリ
                   </label>
                   <select 
                     id="category" 
                     {...form.register('category')}
                     className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white"
                   >
-                    <option value="">Select category</option>
-                    <option value="work">Work</option>
-                    <option value="personal">Personal</option>
-                    <option value="shopping">Shopping</option>
-                    <option value="health">Health</option>
-                    <option value="finance">Finance</option>
+                    <option value="">カテゴリを選択</option>
+                    <option value="work">仕事</option>
+                    <option value="personal">個人</option>
+                    <option value="shopping">買い物</option>
+                    <option value="health">健康</option>
+                    <option value="finance">財務</option>
                   </select>
                 </div>
               </div>
               
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Priority
+                  優先度
                 </label>
                 <div className="flex items-center space-x-4">
                   <label className="inline-flex items-center">
@@ -296,7 +261,7 @@ export default function CreateTaskModal() {
                       {...form.register('priority')}
                       className="text-primary focus:ring-primary" 
                     />
-                    <span className="ml-2 text-sm">Low</span>
+                    <span className="ml-2 text-sm">低</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input 
@@ -305,7 +270,7 @@ export default function CreateTaskModal() {
                       {...form.register('priority')}
                       className="text-primary focus:ring-primary" 
                     />
-                    <span className="ml-2 text-sm">Medium</span>
+                    <span className="ml-2 text-sm">中</span>
                   </label>
                   <label className="inline-flex items-center">
                     <input 
@@ -314,7 +279,7 @@ export default function CreateTaskModal() {
                       {...form.register('priority')}
                       className="text-primary focus:ring-primary" 
                     />
-                    <span className="ml-2 text-sm">High</span>
+                    <span className="ml-2 text-sm">高</span>
                   </label>
                 </div>
               </div>
@@ -327,7 +292,7 @@ export default function CreateTaskModal() {
                       {...form.register('completed')}
                       className="text-primary focus:ring-primary" 
                     />
-                    <span className="ml-2 text-sm">Completed</span>
+                    <span className="ml-2 text-sm">完了</span>
                   </label>
                 </div>
               )}
