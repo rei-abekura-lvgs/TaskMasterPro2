@@ -1,4 +1,4 @@
-import { pgTable, text, serial, varchar, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, varchar, boolean, timestamp, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -27,7 +27,7 @@ export const tasks = pgTable("tasks", {
   title: text("title").notNull(),
   description: text("description"),
   dueDate: varchar("due_date"),
-  categoryId: serial("category_id").references(() => categories.id, { onDelete: 'set null' }),
+  categoryId: integer("category_id").references(() => categories.id, { onDelete: 'set null' }),
   priority: varchar("priority", { length: 10 }).default("medium"),
   completed: boolean("completed").default(false),
   userId: serial("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),

@@ -239,11 +239,11 @@ export default function CreateTaskModal() {
                     className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white"
                   >
                     <option value="">カテゴリを選択</option>
-                    <option value="work">仕事</option>
-                    <option value="personal">個人</option>
-                    <option value="shopping">買い物</option>
-                    <option value="health">健康</option>
-                    <option value="finance">財務</option>
+                    <option value="6">仕事</option>
+                    <option value="7">個人</option>
+                    <option value="8">買い物</option>
+                    <option value="9">健康</option>
+                    <option value="10">財務</option>
                   </select>
                 </div>
               </div>
