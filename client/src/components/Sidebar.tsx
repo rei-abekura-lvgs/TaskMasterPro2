@@ -27,7 +27,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
 
   const sidebarClasses = `
     ${isOpen ? 'fixed inset-y-0 left-0 z-30' : 'hidden'} 
-    md:block w-64 bg-white dark:bg-neutral-800 shadow-md transition-all duration-300 flex-shrink-0
+    md:block w-64 bg-white shadow-md transition-all duration-300 flex-shrink-0
   `;
 
   return (
@@ -39,14 +39,14 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
             className="w-full flex items-center justify-center space-x-2 bg-primary hover:bg-primary-dark text-white rounded-lg py-2 px-4 transition-colors shadow-md"
           >
             <span className="material-icons text-sm">add</span>
-            <span>新しいタスク</span>
+            <span>新規タスク</span>
           </button>
         </div>
         
         <nav className="flex-1 overflow-y-auto">
           {/* Categories */}
           <div className="px-2">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 py-2">カテゴリー</h2>
+            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 px-3 py-2">カテゴリー</h2>
             <ul>
               <li>
                 <a 
@@ -57,13 +57,13 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
                   }}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
                     activeCategory === 'all' 
-                      ? 'bg-gray-100 dark:bg-neutral-700 text-primary-dark dark:text-primary-light' 
-                      : 'hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300'
+                      ? 'bg-gray-100 text-primary-dark' 
+                      : 'hover:bg-gray-100 text-gray-700'
                   } transition-colors`}
                 >
                   <span className="material-icons text-sm">list</span>
                   <span>すべてのタスク</span>
-                  <span className="ml-auto bg-gray-200 dark:bg-neutral-600 text-gray-800 dark:text-gray-200 text-xs rounded-full px-2 py-0.5">
+                  <span className="ml-auto bg-gray-200 text-gray-800 text-xs rounded-full px-2 py-0.5">
                     {categories.find(c => c.id === 'all')?.count || 0}
                   </span>
                 </a>
@@ -85,8 +85,8 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
                       }}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
                         activeCategory === (typeof category.id === 'number' ? category.id.toString() : category.id)
-                          ? 'bg-gray-100 dark:bg-neutral-700 text-primary-dark dark:text-primary-light' 
-                          : 'hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300'
+                          ? 'bg-gray-100 text-primary-dark' 
+                          : 'hover:bg-gray-100 text-gray-700'
                       } transition-colors`}
                     >
                       <span className="material-icons text-sm">{
@@ -95,7 +95,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
                           : categoryIcons[category.id] || 'label'
                       }</span>
                       <span>{category.name}</span>
-                      <span className="ml-auto bg-gray-200 dark:bg-neutral-600 text-gray-800 dark:text-gray-200 text-xs rounded-full px-2 py-0.5">
+                      <span className="ml-auto bg-gray-200 text-gray-800 text-xs rounded-full px-2 py-0.5">
                         {category.count}
                       </span>
                     </a>
@@ -104,11 +104,11 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
             </ul>
           </div>
           
-          <div className="border-t border-gray-200 dark:border-neutral-700 my-2"></div>
+          <div className="border-t border-gray-200 my-2"></div>
           
           {/* Filters */}
           <div className="px-2">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 py-2">フィルター</h2>
+            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 px-3 py-2">フィルター</h2>
             <ul>
               {filters.map(filter => (
                 <li key={filter.id}>
@@ -120,13 +120,13 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
                     }}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
                       activeFilter === filter.id 
-                        ? 'bg-gray-100 dark:bg-neutral-700 text-primary-dark dark:text-primary-light' 
-                        : 'hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300'
+                        ? 'bg-gray-100 text-primary-dark' 
+                        : 'hover:bg-gray-100 text-gray-700'
                     } transition-colors`}
                   >
                     <span className="material-icons text-sm">{filter.icon}</span>
                     <span>{filter.name}</span>
-                    <span className="ml-auto bg-gray-200 dark:bg-neutral-600 text-gray-800 dark:text-gray-200 text-xs rounded-full px-2 py-0.5">
+                    <span className="ml-auto bg-gray-200 text-gray-800 text-xs rounded-full px-2 py-0.5">
                       {filter.count}
                     </span>
                   </a>
@@ -136,14 +136,14 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
           </div>
         </nav>
         
-        <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
+        <div className="p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-xs text-gray-500">
               ストレージ: 4/10 MB
             </div>
-            <a href="#" className="text-xs text-primary-dark dark:text-primary-light hover:underline">アップグレード</a>
+            <a href="#" className="text-xs text-primary-dark hover:underline">アップグレード</a>
           </div>
-          <div className="mt-2 h-2 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
+          <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full bg-primary rounded-full" style={{ width: '40%' }}></div>
           </div>
         </div>

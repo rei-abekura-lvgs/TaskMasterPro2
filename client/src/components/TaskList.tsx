@@ -3,26 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import TaskItem from './TaskItem';
 import { useTaskContext } from '@/context/TaskContext';
 import { Task } from '@/types';
-import { gql } from '@apollo/client';
-import { executeQuery } from '@/lib/utils';
-
-const LIST_TASKS = gql`
-  query ListTasks($filter: ModelTaskFilterInput) {
-    listTasks(filter: $filter) {
-      items {
-        id
-        title
-        description
-        dueDate
-        category
-        priority
-        completed
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
 
 type SortOption = 'dateNewest' | 'dateOldest' | 'priority' | 'alphabetical';
 type FilterType = 'all' | 'active' | 'completed';
@@ -194,12 +174,12 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   };
 
   return (
-    <main className="flex-1 overflow-hidden flex flex-col bg-gray-50 dark:bg-neutral-900">
+    <main className="flex-1 overflow-hidden flex flex-col bg-gray-50">
       {/* Task Toolbar */}
-      <div className="bg-white dark:bg-neutral-800 shadow-sm p-4 flex items-center justify-between">
+      <div className="bg-white shadow-sm p-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <h2 className="text-lg font-medium">{getViewTitle()}</h2>
-          <div className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+          <div className="text-sm text-gray-500 hidden sm:block">
             {sortedTasks.length} 件のタスク
           </div>
         </div>
@@ -209,13 +189,13 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           <div className="relative">
             <button 
               onClick={() => setFilterMenuOpen(!filterMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <span className="material-icons">filter_list</span>
             </button>
             {filterMenuOpen && (
               <div 
-                className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-md shadow-lg py-1 z-10"
+                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
                 onBlur={() => setFilterMenuOpen(false)}
               >
                 <button 
@@ -223,7 +203,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setFilterType('all');
                     setFilterMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   すべてのタスク
                 </button>
@@ -232,7 +212,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setFilterType('active');
                     setFilterMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   未完了のタスク
                 </button>
@@ -241,7 +221,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setFilterType('completed');
                     setFilterMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   完了済みのタスク
                 </button>
@@ -253,13 +233,13 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           <div className="relative">
             <button 
               onClick={() => setSortMenuOpen(!sortMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               <span className="material-icons">sort</span>
             </button>
             {sortMenuOpen && (
               <div 
-                className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-md shadow-lg py-1 z-10"
+                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
                 onBlur={() => setSortMenuOpen(false)}
               >
                 <button 
@@ -267,7 +247,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setSortOption('dateNewest');
                     setSortMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   日付（新しい順）
                 </button>
@@ -276,7 +256,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setSortOption('dateOldest');
                     setSortMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   日付（古い順）
                 </button>
@@ -285,7 +265,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setSortOption('priority');
                     setSortMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   優先度
                 </button>
@@ -294,7 +274,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     setSortOption('alphabetical');
                     setSortMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   アルファベット順
                 </button>
@@ -303,7 +283,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           </div>
           
           {/* Mobile search button */}
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-700 transition-colors md:hidden">
+          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors md:hidden">
             <span className="material-icons">search</span>
           </button>
           
@@ -324,25 +304,25 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="w-12 h-12 border-4 border-primary-light border-t-primary rounded-full animate-spin"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading tasks...</p>
+            <p className="mt-4 text-gray-600">ローディング中...</p>
           </div>
         )}
         
         {/* Error state */}
         {error && (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500 dark:text-red-400">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-500">
               <span className="material-icons text-3xl">error_outline</span>
             </div>
-            <h3 className="mt-4 text-xl font-medium text-gray-700 dark:text-gray-300">Error loading tasks</h3>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">Please try again later</p>
+            <h3 className="mt-4 text-xl font-medium text-gray-700">エラーが発生しました</h3>
+            <p className="mt-2 text-gray-600">しばらく経ってからもう一度お試しください</p>
             <button 
               className="mt-4 flex items-center space-x-2 bg-primary hover:bg-primary-dark text-white rounded-lg py-2 px-4 transition-colors shadow-md"
               // Refetch the data
               onClick={() => window.location.reload()}
             >
               <span className="material-icons text-sm">refresh</span>
-              <span>Retry</span>
+              <span>再読み込み</span>
             </button>
           </div>
         )}
@@ -350,17 +330,17 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         {/* Empty state */}
         {!isLoading && !error && sortedTasks.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 bg-gray-200 dark:bg-neutral-700 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-400">
               <span className="material-icons text-3xl">task_alt</span>
             </div>
-            <h3 className="mt-4 text-xl font-medium text-gray-700 dark:text-gray-300">No tasks yet</h3>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">Create a new task to get started</p>
+            <h3 className="mt-4 text-xl font-medium text-gray-700">タスクがありません</h3>
+            <p className="mt-2 text-gray-600">新規タスクを作成してみましょう</p>
             <button 
               className="mt-4 flex items-center space-x-2 bg-primary hover:bg-primary-dark text-white rounded-lg py-2 px-4 transition-colors shadow-md"
               onClick={onOpenNewTaskModal}
             >
               <span className="material-icons text-sm">add</span>
-              <span>New Task</span>
+              <span>新規タスク</span>
             </button>
           </div>
         )}
