@@ -1,8 +1,25 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import cors from 'cors';
 
 const app = express();
+
+// CORS設定
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'https://taskmasterpro2.do510v6fsmjrf.repl.co',
+    'https://main.do510v6fsmjrf.amplifyapp.com',
+    /\.amplifyapp\.com$/ // Amplifyドメインをワイルドカードで許可
+  ],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
