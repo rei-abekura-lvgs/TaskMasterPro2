@@ -6,32 +6,30 @@ let client: ReturnType<typeof generateClient>;
 
 // 環境変数からAmplify設定を読み込む
 export function configureAmplify() {
-  // 本番環境の場合のみ設定を適用
-  if (import.meta.env.PROD) {
-    Amplify.configure({
-      // AppSync GraphQL API の設定
-      API: {
-        GraphQL: {
-          endpoint: import.meta.env.VITE_APPSYNC_ENDPOINT || '',
-          region: import.meta.env.VITE_AWS_REGION || 'us-east-1',
-          defaultAuthMode: 'apiKey',
-          apiKey: import.meta.env.VITE_APPSYNC_API_KEY || ''
-        }
-      },
-      // Auth設定
-      Auth: {
-        // 匿名アクセスを許可
-        // 本番環境では適切な認証設定をする必要があります
-        Cognito: {
-          identityPoolId: import.meta.env.VITE_IDENTITY_POOL_ID || '',
-          region: import.meta.env.VITE_AWS_REGION || 'us-east-1'
-        }
+  // 開発環境と本番環境の両方で設定を適用
+  Amplify.configure({
+    // AppSync GraphQL API の設定
+    API: {
+      GraphQL: {
+        endpoint: import.meta.env.VITE_APPSYNC_ENDPOINT || 'https://fnu22ygzgbc2zfa6ae5hfi6pvm.appsync-api.ap-northeast-1.amazonaws.com/graphql',
+        region: import.meta.env.VITE_AWS_REGION || 'ap-northeast-1',
+        defaultAuthMode: 'apiKey',
+        apiKey: import.meta.env.VITE_APPSYNC_API_KEY || 'da2-jw56i75nh5e4rdzkzl47oejvje'
       }
-    });
-    
-    // GraphQLクライアントを初期化
-    client = generateClient();
-  }
+    },
+    // Auth設定
+    Auth: {
+      // 匿名アクセスを許可
+      // 本番環境では適切な認証設定をする必要があります
+      Cognito: {
+        identityPoolId: import.meta.env.VITE_IDENTITY_POOL_ID || '',
+        region: import.meta.env.VITE_AWS_REGION || 'ap-northeast-1'
+      }
+    }
+  });
+  
+  // GraphQLクライアントを初期化
+  client = generateClient();
 }
 
 // GraphQLクエリを実行する関数
