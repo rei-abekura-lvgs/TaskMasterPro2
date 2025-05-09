@@ -35,13 +35,20 @@ export default function TaskItem({ task }: TaskItemProps) {
   // Toggle task completion status
   const toggleMutation = useMutation({
     mutationFn: async () => {
-      const response = await executeMutation(UPDATE_TASK, {
-        input: {
-          id: task.id,
-          completed: !task.completed
-        }
+      const response = await fetch(`/api/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ completed: !task.completed })
       });
-      return response;
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update task');
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -62,10 +69,16 @@ export default function TaskItem({ task }: TaskItemProps) {
   // Delete task
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const response = await executeMutation(DELETE_TASK, {
-        input: { id: task.id }
+      const response = await fetch(`/api/tasks/${task.id}`, {
+        method: 'DELETE'
       });
-      return response;
+      
+      if (!response.ok && response.status !== 204) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to delete task');
+      }
+      
+      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

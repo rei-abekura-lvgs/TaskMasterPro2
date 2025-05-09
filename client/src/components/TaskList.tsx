@@ -82,9 +82,60 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   const { data, isLoading, error } = useQuery({
     queryKey: ['tasks', activeCategory, activeFilter, filterType],
     queryFn: async () => {
-      const filter = buildFilter();
-      const result = await executeQuery<{ listTasks: { items: Task[] } }>(LIST_TASKS, { filter });
-      return result.listTasks.items;
+      try {
+        // データベースからデータ取得 (仮のユーザーID=1を使用)
+        const userId = 1;
+        const response = await fetch(`/api/tasks?userId=${userId}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch tasks');
+        }
+        
+        const tasks = await response.json();
+        
+        // フィルター処理（一時的にクライアント側でフィルタリング）
+        const filter = buildFilter();
+        let filteredTasks = [...tasks];
+        
+        // カテゴリーフィルター
+        if (filter.category && filter.category.eq) {
+          filteredTasks = filteredTasks.filter(task => task.category === filter.category.eq);
+        }
+        
+        // 完了状態フィルター
+        if (filter.completed !== undefined && filter.completed.eq !== undefined) {
+          filteredTasks = filteredTasks.filter(task => task.completed === filter.completed.eq);
+        }
+        
+        // 優先度フィルター
+        if (filter.priority && filter.priority.eq) {
+          filteredTasks = filteredTasks.filter(task => task.priority === filter.priority.eq);
+        }
+        
+        // 日付フィルター
+        if (filter.dueDate) {
+          if (filter.dueDate.ge) {
+            const geDate = new Date(filter.dueDate.ge);
+            filteredTasks = filteredTasks.filter(task => {
+              if (!task.dueDate) return false;
+              return new Date(task.dueDate) >= geDate;
+            });
+          }
+          
+          if (filter.dueDate.lt) {
+            const ltDate = new Date(filter.dueDate.lt);
+            filteredTasks = filteredTasks.filter(task => {
+              if (!task.dueDate) return false;
+              return new Date(task.dueDate) < ltDate;
+            });
+          }
+        }
+        
+        return filteredTasks;
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+        throw error;
+      }
     }
   });
   

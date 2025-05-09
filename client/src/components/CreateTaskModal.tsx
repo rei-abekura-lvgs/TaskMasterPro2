@@ -90,29 +90,43 @@ export default function CreateTaskModal() {
   // Create task mutation
   const createTaskMutation = useMutation({
     mutationFn: async (data: any) => {
-      const input = {
+      const newTask = {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
+        categoryId: data.category ? parseInt(data.category, 10) : undefined,
         category: data.category,
         priority: data.priority,
-        completed: data.completed || false
+        completed: data.completed || false,
+        userId: 1 // 仮のユーザーID
       };
       
-      const result = await executeMutation(CREATE_TASK, { input });
-      return result;
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newTask)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create task');
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: "Task created",
-        description: "Your task has been created successfully."
+        title: "タスクを作成しました",
+        description: "タスクが正常に作成されました。"
       });
       closeModal();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
-        title: "Failed to create task",
+        title: "タスクの作成に失敗しました",
         description: error.message,
         variant: "destructive"
       });
@@ -124,30 +138,42 @@ export default function CreateTaskModal() {
     mutationFn: async (data: any) => {
       if (!editingTask) return null;
       
-      const input = {
-        id: editingTask.id,
+      const updatedTask = {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
+        categoryId: data.category ? parseInt(data.category, 10) : undefined,
         category: data.category,
         priority: data.priority,
         completed: data.completed
       };
       
-      const result = await executeMutation(UPDATE_TASK, { input });
-      return result;
+      const response = await fetch(`/api/tasks/${editingTask.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedTask)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update task');
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: "Task updated",
-        description: "Your task has been updated successfully."
+        title: "タスクを更新しました",
+        description: "タスクが正常に更新されました。"
       });
       closeModal();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
-        title: "Failed to update task",
+        title: "タスクの更新に失敗しました",
         description: error.message,
         variant: "destructive"
       });
