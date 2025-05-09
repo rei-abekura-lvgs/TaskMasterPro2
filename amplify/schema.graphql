@@ -1,0 +1,58 @@
+type Task @model
+@auth(rules: [
+  { allow: owner },
+  { allow: public, operations: [read] }
+]) {
+  id: ID!
+  title: String!
+  description: String
+  dueDate: String
+  category: String
+  priority: Priority!
+  completed: Boolean!
+  createdAt: String
+  updatedAt: String
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+type Category @model
+@auth(rules: [
+  { allow: owner },
+  { allow: public, operations: [read] }
+]) {
+  id: ID!
+  name: String!
+  description: String
+  tasks: [Task] @hasMany
+}
+
+type Query {
+  tasksByCategory(category: String!): [Task] @function(name: "tasksByCategoryFunction-${env}")
+  tasksByPriority(priority: Priority!): [Task] @function(name: "tasksByPriorityFunction-${env}")
+  tasksCompletedToday: [Task] @function(name: "tasksCompletedTodayFunction-${env}")
+  taskStatistics: TaskStatistics @function(name: "taskStatisticsFunction-${env}")
+}
+
+type TaskStatistics {
+  totalTasks: Int!
+  completedTasks: Int!
+  pendingTasks: Int!
+  overdueTasks: Int!
+  categoryCounts: [CategoryCount]!
+  priorityCounts: [PriorityCount]!
+}
+
+type CategoryCount {
+  category: String!
+  count: Int!
+}
+
+type PriorityCount {
+  priority: Priority!
+  count: Int!
+}
