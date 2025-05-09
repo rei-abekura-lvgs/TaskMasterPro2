@@ -1,7 +1,7 @@
 // GraphQL Queries
 export const listTasks = /* GraphQL */ `
   query ListTasks {
-    listTaskItems {
+    listTasks {
       items {
         id
         title
@@ -41,7 +41,7 @@ export const getTask = /* GraphQL */ `
 
 export const listCategories = /* GraphQL */ `
   query ListCategories {
-    listCategoryItems {
+    listCategories {
       items {
         id
         name

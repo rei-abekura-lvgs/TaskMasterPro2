@@ -53,6 +53,46 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     return filter;
   };
   
+  // GraphQLから返されたタスクを標準形式にフォーマット
+  const formatTaskFromGraphQL = (item: any): Task => ({
+    id: item.id,
+    title: item.title,
+    description: item.description || '',
+    dueDate: item.dueDate || '',
+    categoryId: item.category ? item.category.id : undefined,
+    category: item.category ? item.category.name : '',
+    // AppSyncからの応答は大文字の列挙型、フロントエンドでは小文字
+    priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
+    completed: item.completed,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    userId: item.userId || 0,
+  });
+  
+  // クライアント側でのフィルタリング（RESTフォールバック用）
+  const filterTasksClient = (tasks: any[], filter: any) => {
+    let filteredTasks = [...tasks];
+    
+    // カテゴリーフィルター
+    if (filter.category && filter.category.eq) {
+      filteredTasks = filteredTasks.filter(task => task.category === filter.category.eq);
+    }
+    
+    // 完了状態フィルター
+    if (filter.completed !== undefined && filter.completed.eq !== undefined) {
+      filteredTasks = filteredTasks.filter(task => task.completed === filter.completed.eq);
+    }
+    
+    // 優先度フィルター
+    if (filter.priority && filter.priority.eq) {
+      // AppSyncでは大文字、REST APIでは小文字
+      const priorityValue = filter.priority.eq.toLowerCase();
+      filteredTasks = filteredTasks.filter(task => task.priority === priorityValue);
+    }
+    
+    return filteredTasks;
+  };
+  
   // GraphQLクエリを実行
   const { data, isLoading, error } = useQuery({
     queryKey: ['tasks', activeCategory, activeFilter, filterType],
@@ -60,118 +100,25 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       try {
         const filter = buildFilter();
         
-        // AppSyncのクエリフィルタに変換
-        // スキーマに合わせた適切なフィルター形式を作成
-        let modelFilter: any = null;
-        const filterConditions = [];
-        
-        // カテゴリーフィルター
-        if (filter.category && filter.category.eq) {
-          // AppSyncスキーマではカテゴリーは関連オブジェクト
-          // 通常このような複雑な条件はカスタムのResolver/Lambdaが必要
-          // 簡易的に実装 - REST APIフォールバックに依存することになる可能性あり
-          filterConditions.push({
-            categoryId: { eq: filter.category.eq }
-          });
-        }
-        
-        // 完了状態フィルター
-        if (filter.completed !== undefined && filter.completed.eq !== undefined) {
-          filterConditions.push({
-            completed: { eq: filter.completed.eq }
-          });
-        }
-        
-        // 優先度フィルター
-        if (filter.priority && filter.priority.eq) {
-          filterConditions.push({
-            priority: { eq: filter.priority.eq }
-          });
-        }
-        
-        // フィルター条件が存在する場合のみフィルターを適用
-        if (filterConditions.length > 0) {
-          modelFilter = {
-            and: filterConditions
-          };
-        }
-        
+        // GraphQLクエリを試行
         try {
-          // AppSyncのGraphQLを使用してデータ取得
-          // Amplifyスキーマに合わせたクエリに変更
-          let result;
+          // 標準のタスク一覧取得
+          const result = await executeGraphQL(listTasks, {});
           
-          // フィルター条件に基づいて適切なクエリを選択
-          if (filter.category && filter.category.eq) {
-            // カテゴリーでフィルタリング
-            result = await executeGraphQL(getTasksByCategory, {
-              categoryId: filter.category.eq
-            });
-            
-            if (result && result.getTasksByCategory) {
-              // 配列でラップして統一した形式に
-              return [result.getTasksByCategory].map((item: any) => ({
-                id: item.id,
-                title: item.title,
-                description: item.description || '',
-                dueDate: item.dueDate || '',
-                categoryId: item.category ? item.category.id : undefined,
-                category: item.category ? item.category.name : '',
-                priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
-                completed: item.completed,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
-                userId: 0 // ダミー値
-              }));
-            }
-          } else if (filter.priority && filter.priority.eq) {
-            // 優先度でフィルタリング
-            result = await executeGraphQL(getTasksByPriority, {
-              priority: filter.priority.eq
-            });
-            
-            if (result && result.getTasksByPriority) {
-              return result.getTasksByPriority.map((item: any) => ({
-                id: item.id,
-                title: item.title,
-                description: item.description || '',
-                dueDate: item.dueDate || '',
-                categoryId: item.category ? item.category.id : undefined,
-                category: item.category ? item.category.name : '',
-                priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
-                completed: item.completed,
-                createdAt: item.createdAt,
-                updatedAt: item.updatedAt,
-                userId: 0 // ダミー値
-              }));
-            }
-          } else {
-            // 標準のタスク一覧取得
-            result = await executeGraphQL(listTasks, {});
-            
-            if (result && result.listTaskItems && result.listTaskItems.items) {
-              return result.listTaskItems.items.map((item: any) => ({
-              id: item.id,
-              title: item.title,
-              description: item.description || '',
-              dueDate: item.dueDate || '',
-              categoryId: item.category ? item.category.id : undefined,
-              category: item.category ? item.category.name : '',
-              // AppSyncからの応答は大文字の列挙型、フロントエンドでは小文字で扱う
-              priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
-              completed: item.completed,
-              createdAt: item.createdAt,
-              updatedAt: item.updatedAt,
-              userId: item.userId || 0, // GraphQLにはownerIdがあるが、フロントエンドの型との互換性のため
-            }));
+          if (result && result.listTasks && result.listTasks.items) {
+            return result.listTasks.items.map(formatTaskFromGraphQL);
           }
           
+          // 正常なレスポンスが得られなかった場合
           throw new Error('Invalid response from AppSync');
         } catch (graphqlError) {
+          // GraphQLエラーをコンソールに表示
           console.error('GraphQL Error:', graphqlError);
           
           // フォールバック：REST APIを使用
           console.log('Falling back to REST API');
+          
+          // REST APIからタスクを取得
           const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
           const response = await fetch(`/api/tasks?userId=${userId}`);
           
@@ -181,27 +128,8 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           
           const tasks = await response.json();
           
-          // フィルター処理（クライアント側でフィルタリング）
-          let filteredTasks = [...tasks];
-          
-          // カテゴリーフィルター
-          if (filter.category && filter.category.eq) {
-            filteredTasks = filteredTasks.filter(task => task.category === filter.category.eq);
-          }
-          
-          // 完了状態フィルター
-          if (filter.completed !== undefined && filter.completed.eq !== undefined) {
-            filteredTasks = filteredTasks.filter(task => task.completed === filter.completed.eq);
-          }
-          
-          // 優先度フィルター
-          if (filter.priority && filter.priority.eq) {
-            // AppSyncでは大文字、REST APIでは小文字
-            const priorityValue = filter.priority.eq.toLowerCase();
-            filteredTasks = filteredTasks.filter(task => task.priority === priorityValue);
-          }
-          
-          return filteredTasks;
+          // クライアント側でのフィルタリング
+          return filterTasksClient(tasks, filter);
         }
       } catch (error) {
         console.error('Error fetching tasks:', error);
@@ -210,6 +138,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     }
   });
   
+  // タスクのソート処理
   const sortTasks = useCallback((tasks: Task[]) => {
     if (!tasks) return [];
     
