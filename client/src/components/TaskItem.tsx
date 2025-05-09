@@ -76,34 +76,41 @@ export default function TaskItem({ task }: TaskItemProps) {
     }
   });
 
-  // Update task completion status (最適化版)
+  // シンプルで確実なタスク完了状態の切り替え
   const toggleCompletionMutation = useMutation({
     mutationFn: async () => {
-      console.log('Toggling task completion using REST API:', task.id);
+      // まず完了状態を逆にした値を保存しておく
+      const newCompletedState = !task.completed;
+      console.log(`タスク ${task.id} の完了状態を ${task.completed} から ${newCompletedState} に変更します`);
       
       try {
-        // 環境に応じたAPIリクエスト
         const response = await apiRequest(
           'PATCH', 
           `/api/tasks/${task.id}`, 
-          { completed: !task.completed }
+          { completed: newCompletedState }
         );
         
+        if (!response.ok) {
+          throw new Error(`サーバーからエラーレスポンスを受け取りました: ${response.status}`);
+        }
+        
         const data = await response.json();
-        console.log('Task completion updated successfully:', data);
-        return data;
+        console.log('タスク完了状態の更新に成功:', data);
+        return { ...data, successMessage: newCompletedState ? "タスクが完了に設定されました" : "タスクが未完了に設定されました" };
       } catch (error) {
-        console.error('Error updating task completion:', error);
+        console.error('タスク完了状態の更新に失敗:', error);
         throw error;
       }
     },
-    onSuccess: () => {
-      // クエリの無効化
+    onSuccess: (result) => {
+      // タスクリストを再読み込み
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      // カテゴリも更新（カウント変更のため）
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       
-      // トースト通知
+      // 成功通知
       toast({
-        title: task.completed ? "タスクが未完了に設定されました" : "タスクが完了に設定されました",
+        title: result.successMessage,
         description: "タスクのステータスが更新されました。"
       });
     },

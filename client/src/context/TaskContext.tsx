@@ -44,19 +44,6 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     { id: 'all', name: 'すべてのタスク', count: 0 }
   ]);
   
-  // APIからカテゴリーを取得
-  const { data: categoryData } = useQuery({
-    queryKey: ['/api/categories'],
-    queryFn: async () => {
-      const response = await fetch('/api/categories?userId=3');
-      if (!response.ok) {
-        throw new Error('カテゴリーの取得に失敗しました');
-      }
-      return response.json();
-    },
-    staleTime: 10000 // 10 seconds
-  });
-  
   // 優先度フィルター
   const [filters, setFilters] = useState<FilterType[]>([
     { id: 'all_priority', name: 'すべての優先度', icon: 'filter_list', count: 0 },
@@ -69,68 +56,89 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const { data } = useQuery<Task[]>({
     queryKey: ['/api/tasks'],
     queryFn: async () => {
-      const response = await fetch('/api/tasks?userId=3');
-      if (!response.ok) {
-        throw new Error('タスクの取得に失敗しました');
+      console.log('タスクを取得中...');
+      try {
+        const response = await apiRequest('GET', '/api/tasks?userId=3');
+        if (!response.ok) {
+          throw new Error('タスクの取得に失敗しました');
+        }
+        const data = await response.json();
+        console.log('タスク取得成功:', data.length, '件');
+        return data;
+      } catch (error) {
+        console.error('タスク取得エラー:', error);
+        return [];
       }
-      return response.json();
-    },
-    staleTime: 10000 // 10 seconds
+    }
+  });
+  
+  // APIからカテゴリーを取得 - タスクの後で
+  const { data: categoryData } = useQuery({
+    queryKey: ['/api/categories'],
+    queryFn: async () => {
+      console.log('カテゴリを取得中...');
+      try {
+        const response = await apiRequest('GET', '/api/categories?userId=3');
+        if (!response.ok) {
+          throw new Error('カテゴリーの取得に失敗しました');
+        }
+        const data = await response.json();
+        console.log('カテゴリ取得成功:', data.length, '件');
+        return data;
+      } catch (error) {
+        console.error('カテゴリ取得エラー:', error);
+        return [];
+      }
+    }
   });
 
   // カテゴリAPIデータが更新されたらカテゴリリストを更新
   useEffect(() => {
     if (categoryData) {
-      const apiCategories = categoryData.map((cat: any) => ({
-        id: cat.id.toString(),
-        name: cat.name,
-        count: 0
-      }));
+      console.log('カテゴリデータが更新されました:', categoryData);
       
+      // カテゴリカウントを計算（タスクデータがある場合）
+      const categoryCounts: Record<string, number> = { all: 0 };
+      
+      if (data) {
+        // 'all'カテゴリは全タスク数
+        categoryCounts.all = data.length;
+        
+        // タスクごとにカテゴリIDベースでカウント
+        data.forEach((task: Task) => {
+          if (task.categoryId) {
+            const categoryId = task.categoryId.toString();
+            categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
+          }
+        });
+      }
+      
+      // カテゴリデータとカウントを統合
+      const apiCategories = categoryData.map((cat: any) => {
+        const catId = cat.id.toString();
+        return {
+          id: catId,
+          name: cat.name,
+          count: categoryCounts[catId] || 0
+        };
+      });
+      
+      // 完全な新しいカテゴリ配列をセット
       setCategories([
-        { id: 'all', name: 'すべてのタスク', count: 0 },
+        { id: 'all', name: 'すべてのタスク', count: categoryCounts.all || 0 },
+        ...apiCategories
+      ]);
+      
+      console.log('更新されたカテゴリ一覧:', [
+        { id: 'all', name: 'すべてのタスク', count: categoryCounts.all || 0 },
         ...apiCategories
       ]);
     }
-  }, [categoryData]);
+  }, [categoryData, data]);
 
-  // カテゴリとフィルターのカウントを更新
+  // フィルターのカウントのみを更新（カテゴリカウントは別の場所で更新）
   useEffect(() => {
     if (data) {
-      // カテゴリごとのカウント - 'all'は全タスク
-      const categoryCounts: Record<string, number> = { all: data.length };
-      
-      // カテゴリIDごとにカウント - 問題特定のため詳細ログを追加
-      data.forEach((task: Task) => {
-        if (task.categoryId) {
-          const categoryId = task.categoryId.toString();
-          categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
-          console.log(`タスク ${task.id} (${task.title}) はカテゴリID ${categoryId} に属しています`);
-        } else {
-          console.log(`タスク ${task.id} (${task.title}) はカテゴリに属していません`);
-        }
-      });
-      
-      // アクティブなカテゴリごとのタスク数をログ出力
-      console.log('カテゴリカウント:', categoryCounts);
-      
-      // 全カテゴリを更新
-      setCategories(prevCategories => {
-        // 更新用の配列を作成
-        const updatedCategories = prevCategories.map(cat => {
-          // cat.idがnumberの場合は文字列に変換
-          const catId = typeof cat.id === 'number' ? cat.id.toString() : cat.id;
-          console.log(`カテゴリ ${cat.name} (ID: ${catId}) のカウント: ${categoryCounts[catId] || 0}`);
-          
-          return {
-            ...cat,
-            count: categoryCounts[catId] || 0
-          };
-        });
-        
-        console.log('更新後のカテゴリ:', updatedCategories);
-        return updatedCategories;
-      });
       
       // 優先度ごとのカウント計算
       const highPriorityCount = data.filter((task: Task) => task.priority === 'high').length;
