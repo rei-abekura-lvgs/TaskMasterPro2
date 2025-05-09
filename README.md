@@ -20,13 +20,14 @@
 
 ## デプロイ方法
 
-このアプリケーションはAWS Amplifyを使用してデプロイできます。
+このアプリケーションはAWS Amplify + AppSync + DynamoDBを使用してデプロイできます。
 
 1. GitHubリポジトリをAWS Amplifyに接続
 2. 環境変数の設定:
-   - `DATABASE_URL`: PostgreSQLデータベースの接続文字列
-   - `VITE_API_ENDPOINT`: APIエンドポイントのURL
-   - `VITE_AWS_REGION`: AWSリージョン
+   - `VITE_APPSYNC_ENDPOINT`: AppSync APIのエンドポイント
+   - `VITE_APPSYNC_API_KEY`: AppSync APIキー
+   - `VITE_AWS_REGION`: AWSリージョン（例：us-east-1, ap-northeast-1）
+   - `VITE_IDENTITY_POOL_ID`: Cognito Identity Poolのプール ID（匿名アクセス有効）
 
 ## ローカル開発
 

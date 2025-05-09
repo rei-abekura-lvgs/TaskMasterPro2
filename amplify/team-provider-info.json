@@ -1,0 +1,19 @@
+{
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-taskmasterpro2-main-123456-authRole",
+      "UnauthRoleName": "amplify-taskmasterpro2-main-123456-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123456789012:role/amplify-taskmasterpro2-main-123456-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123456789012:role/amplify-taskmasterpro2-main-123456-unauthRole",
+      "Region": "us-east-1"
+    },
+    "categories": {
+      "auth": {
+        "TaskMasterPro2": {}
+      },
+      "api": {
+        "TaskMasterPro2": {}
+      }
+    }
+  }
+}
