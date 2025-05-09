@@ -114,9 +114,16 @@ export default function TaskItem({ task }: TaskItemProps) {
     }
   };
 
+  // 優先度の高いタスクにはパルスアニメーションを追加
+  const getPriorityAnimation = () => {
+    if (task.completed) return '';
+    
+    return task.priority === 'high' ? 'animate-pulse-soft' : '';
+  };
+
   return (
     <div 
-      className={`${getPriorityGradient()} rounded-lg shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col border-l-4 ${getPriorityBorderColor()} hover:translate-y-[-2px]`}
+      className={`${getPriorityGradient()} rounded-lg shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col border-l-4 ${getPriorityBorderColor()} hover:translate-y-[-2px] ${getPriorityAnimation()}`}
     >
       <div className="p-5 flex-1">
         <div className="flex items-start h-full">

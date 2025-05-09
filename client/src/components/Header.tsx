@@ -6,7 +6,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
           <div className="flex items-center space-x-3">
             <button 
               onClick={toggleSidebar}
-              className="md:hidden p-2 rounded-full hover:bg-white/20 text-white transition-all duration-200 focus:ring-2 focus:ring-white/50 focus:outline-none"
+              className="md:hidden p-2 rounded-full hover:bg-white/20 text-white transition-all duration-200 focus:ring-2 focus:ring-white/50 focus:outline-none btn-primary"
               aria-label="メニューを開く"
             >
               <span className="material-icons">menu</span>

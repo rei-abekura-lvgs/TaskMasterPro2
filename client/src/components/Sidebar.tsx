@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
           <div className="p-5 border-b border-gray-100">
             <button 
               onClick={onOpenNewTaskModal}
-              className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 px-4 transition-colors shadow-md font-medium"
+              className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 px-4 transition-colors shadow-md font-medium btn-primary"
             >
               <span className="material-icons">add</span>
               <span>新規タスク</span>

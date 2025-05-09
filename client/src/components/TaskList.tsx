@@ -388,9 +388,15 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         
         {/* Task grid */}
         {!isLoading && !error && sortedTasks.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedTasks.map(task => (
-              <TaskItem key={task.id} task={task} />
+          <div className="task-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedTasks.map((task, index) => (
+              <div 
+                key={task.id} 
+                style={{ '--animation-order': index } as React.CSSProperties}
+                className="animate-fade-in-up"
+              >
+                <TaskItem task={task} />
+              </div>
             ))}
           </div>
         )}
@@ -400,7 +406,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       <div className="md:hidden fixed bottom-6 right-6">
         <button
           onClick={onOpenNewTaskModal}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transform transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transform transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary animate-float"
         >
           <span className="material-icons">add</span>
         </button>
