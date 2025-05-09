@@ -36,15 +36,23 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeFilter, setActiveFilter] = useState('');
   
-  // 日本語カテゴリ
+  // デフォルトカテゴリ + API取得カテゴリ
   const [categories, setCategories] = useState<CategoryType[]>([
-    { id: 'all', name: 'すべてのタスク', count: 0 },
-    { id: 'work', name: '仕事', count: 0 },
-    { id: 'personal', name: '個人', count: 0 },
-    { id: 'shopping', name: 'ショッピング', count: 0 },
-    { id: 'health', name: '健康', count: 0 },
-    { id: 'finance', name: '金融', count: 0 }
+    { id: 'all', name: 'すべてのタスク', count: 0 }
   ]);
+  
+  // APIからカテゴリーを取得
+  const { data: categoryData } = useQuery({
+    queryKey: ['/api/categories'],
+    queryFn: async () => {
+      const response = await fetch('/api/categories?userId=3');
+      if (!response.ok) {
+        throw new Error('カテゴリーの取得に失敗しました');
+      }
+      return response.json();
+    },
+    staleTime: 10000 // 10 seconds
+  });
   
   // 優先度フィルター
   const [filters, setFilters] = useState<FilterType[]>([
@@ -66,6 +74,22 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     },
     staleTime: 10000 // 10 seconds
   });
+
+  // カテゴリAPIデータが更新されたらカテゴリリストを更新
+  useEffect(() => {
+    if (categoryData) {
+      const apiCategories = categoryData.map((cat: any) => ({
+        id: cat.id.toString(),
+        name: cat.name,
+        count: 0
+      }));
+      
+      setCategories([
+        { id: 'all', name: 'すべてのタスク', count: 0 },
+        ...apiCategories
+      ]);
+    }
+  }, [categoryData]);
 
   // カテゴリとフィルターのカウントを更新
   useEffect(() => {

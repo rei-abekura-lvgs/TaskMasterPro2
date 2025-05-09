@@ -57,7 +57,9 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
       });
       setNewCategoryName('');
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
     },
     onError: (error) => {
       toast({
@@ -87,7 +89,9 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
         title: 'カテゴリーを削除しました',
       });
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
     },
     onError: (error) => {
       toast({
