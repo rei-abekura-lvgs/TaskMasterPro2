@@ -60,7 +60,8 @@ export default function TaskItem({ task }: TaskItemProps) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // 最適化: 正確なクエリキーを使用
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       toast({
         title: "タスクが削除されました",
         description: "タスクが正常に削除されました。"
@@ -75,7 +76,7 @@ export default function TaskItem({ task }: TaskItemProps) {
     }
   });
 
-  // Update task completion status
+  // Update task completion status (最適化版)
   const toggleCompletionMutation = useMutation({
     mutationFn: async () => {
       console.log('Toggling task completion using REST API:', task.id);
@@ -96,8 +97,16 @@ export default function TaskItem({ task }: TaskItemProps) {
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    onSuccess: (updatedTask) => {
+      // 楽観的更新: クエリキャッシュを直接更新して不要なフェッチを避ける
+      queryClient.setQueryData(['/api/tasks'], (oldData: Task[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(item => 
+          item.id === updatedTask.id ? { ...item, completed: updatedTask.completed } : item
+        );
+      });
+      
+      // トースト通知は即時表示 (UXの向上)
       toast({
         title: task.completed ? "タスクが未完了に設定されました" : "タスクが完了に設定されました",
         description: "タスクのステータスが更新されました。"
@@ -123,9 +132,19 @@ export default function TaskItem({ task }: TaskItemProps) {
     setShowDeleteModal(true);
   };
 
-  // タスク完了状態の切り替え
+  // タスク完了状態の切り替え - 楽観的なUI更新
   const handleToggleCompletion = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // 即時にローカルUIを更新する - 楽観的UI更新パターン
+    queryClient.setQueryData(['/api/tasks'], (oldData: Task[] | undefined) => {
+      if (!oldData) return oldData;
+      return oldData.map(item => 
+        item.id === task.id ? { ...item, completed: !item.completed } : item
+      );
+    });
+    
+    // 実際のAPI呼び出し
     toggleCompletionMutation.mutate();
   };
 
