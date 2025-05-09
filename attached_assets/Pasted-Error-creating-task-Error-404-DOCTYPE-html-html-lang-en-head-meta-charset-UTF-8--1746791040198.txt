@@ -1,0 +1,74 @@
+Error creating task: Error: 404: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TaskMaster - Amplify Todo App</title>
+    <meta name="description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="TaskMaster - Amplify Todo App">
+    <meta property="og:description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <meta property="og:type" content="website">
+    <script type="module" crossorigin src="/assets/index-DexShqSl.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DSZ1NgMN.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
+
+    at EN (index-DexShqSl.js:48:43234)
+    at async tu (index-DexShqSl.js:48:43524)
+    at async Object.mutationFn (index-DexShqSl.js:131:101386)
+mutationFn @ index-DexShqSl.js:131
+await in mutationFn
+fn @ index-DexShqSl.js:48
+v @ index-DexShqSl.js:48
+start @ index-DexShqSl.js:48
+execute @ index-DexShqSl.js:48
+await in execute
+mutate @ index-DexShqSl.js:48
+d @ index-DexShqSl.js:131
+(anonymous) @ index-DexShqSl.js:131
+await in (anonymous)
+xk @ index-DexShqSl.js:37
+Sk @ index-DexShqSl.js:37
+bk @ index-DexShqSl.js:37
+jy @ index-DexShqSl.js:37
+Hw @ index-DexShqSl.js:37
+(anonymous) @ index-DexShqSl.js:37
+em @ index-DexShqSl.js:40
+yw @ index-DexShqSl.js:37
+$d @ index-DexShqSl.js:37
+Np @ index-DexShqSl.js:37
+Uk @ index-DexShqSl.js:37Understand this error
+index-DexShqSl.js:131 Error in form submission: Error: 404: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TaskMaster - Amplify Todo App</title>
+    <meta name="description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="TaskMaster - Amplify Todo App">
+    <meta property="og:description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <meta property="og:type" content="website">
+    <script type="module" crossorigin src="/assets/index-DexShqSl.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DSZ1NgMN.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
+
+    at EN (index-DexShqSl.js:48:43234)
+    at async tu (index-DexShqSl.js:48:43524)
+    at async Object.mutationFn (index-DexShqSl.js:131:101386)

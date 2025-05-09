@@ -18,10 +18,13 @@ export function getApiBaseUrl(): string {
       return import.meta.env.VITE_APPSYNC_ENDPOINT;
     }
     
-    // それ以外の場合は、現在のドメインをベースURLとして使用
-    // これにより、同じドメイン上のAPIが呼び出される
-    console.log('Using current domain as API base:', `https://${window.location.hostname}`);
-    return `https://${window.location.hostname}`;
+    // APIがローカルかAmplifyホスティングと同じOriginにない場合は
+    // 明示的にAPI URLを指定する必要があります
+    
+    // 開発中は一時的に開発サーバーURLを使う（プロダクションでは修正が必要）
+    console.log('WARNING: No API endpoint configured. Using development API temporarily.');
+    // Replitの開発サーバーURL - 本番環境ではこれを適切なAPIエンドポイントに変更する必要があります
+    return 'https://taskmasterpro2.do510v6fsmjrf.repl.co';
   }
   
   // カスタムAPIのベースURLが設定されている場合はそれを使用
