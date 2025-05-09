@@ -337,7 +337,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       </div>
       
       {/* Task List */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-24 md:pb-6">
         {/* Loading state */}
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-16">
@@ -403,7 +403,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       </div>
       
       {/* New Task Floating Button (Mobile) */}
-      <div className="md:hidden fixed bottom-6 right-6">
+      <div className="md:hidden fixed bottom-6 right-6 z-50">
         <button
           onClick={onOpenNewTaskModal}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transform transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 btn-primary animate-float"
