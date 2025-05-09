@@ -268,7 +268,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    アルファベット順
+                    名前順
                   </button>
                 </div>
               )}

@@ -92,9 +92,9 @@ export default function TaskItem({ task }: TaskItemProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm overflow-hidden task-item hover:shadow-md transition-shadow">
-      <div className="p-4">
-        <div className="flex items-start">
+    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-sm overflow-hidden task-item hover:shadow-md transition-shadow h-full flex flex-col">
+      <div className="p-4 flex-1">
+        <div className="flex items-start h-full">
           <button 
             className="p-1 rounded-full mr-3 mt-0.5 flex-shrink-0"
             onClick={() => toggleMutation.mutate()}
@@ -107,26 +107,26 @@ export default function TaskItem({ task }: TaskItemProps) {
               }
             </span>
           </button>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 flex flex-col h-full">
             <h3 className={`text-base font-medium text-gray-800 dark:text-gray-200 ${task.completed ? 'completed-task' : ''}`}>
               {task.title}
             </h3>
-            <p className={`mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2 ${task.completed ? 'completed-task' : ''}`}>
+            <p className={`mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-auto ${task.completed ? 'completed-task' : ''}`}>
               {task.description}
             </p>
             <div className="mt-3 flex items-center text-xs text-gray-500 dark:text-gray-400">
               {task.dueDate && (
-                <>
+                <span className="flex items-center mr-3">
                   <span className="material-icons text-xs mr-1">calendar_today</span>
                   <span>{formatDate(task.dueDate)}</span>
-                  <span className="mx-2">•</span>
-                </>
+                </span>
               )}
               
-              <span className="flex items-center">
-                <span className="material-icons text-xs mr-1">label</span>
-                <span>{task.category}</span>
-              </span>
+              {task.category && (
+                <span className="flex items-center mr-3">
+                  <span>{task.category}</span>
+                </span>
+              )}
               
               <span className="ml-auto flex items-center">
                 <span className={`w-2 h-2 rounded-full ${priorityColors[task.priority]}`}></span>
