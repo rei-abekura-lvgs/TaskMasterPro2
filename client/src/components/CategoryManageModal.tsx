@@ -25,7 +25,8 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   const {
     data: categories,
     isLoading,
-    error
+    error,
+    refetch
   } = useQuery({
     queryKey: ['/api/categories', userId],
     queryFn: async () => {
@@ -74,7 +75,9 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      // キャッシュ更新と再フェッチ
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      refetch(); // 明示的に再フェッチ
       setNewCategoryName('');
       toast({
         title: 'カテゴリーが作成されました',
@@ -121,8 +124,13 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // キャッシュの無効化 - 明示的に完全なクエリキーを指定
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      
+      // 最も重要: refetchは最も直接的な方法
+      refetch();
+      
       toast({
         title: 'カテゴリーが削除されました',
         description: 'カテゴリーが正常に削除されました。'
@@ -212,7 +220,16 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
             
             {/* Categories list */}
             <div className="space-y-4">
-              <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300">カテゴリー一覧</h4>
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300">カテゴリー一覧</h4>
+                <button 
+                  onClick={() => refetch()} 
+                  className="text-sm px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded"
+                  title="カテゴリー一覧を更新"
+                >
+                  <span className="material-icons text-sm">refresh</span>
+                </button>
+              </div>
               
               {isLoading ? (
                 <div className="flex justify-center py-4">
