@@ -46,12 +46,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     { id: 'finance', name: '金融', count: 0 }
   ]);
   
-  // 日本語フィルター
+  // 優先度フィルター
   const [filters, setFilters] = useState<FilterType[]>([
-    { id: 'today', name: '今日', icon: 'today', count: 0 },
-    { id: 'upcoming', name: '今後', icon: 'calendar_today', count: 0 },
-    { id: 'important', name: '重要', icon: 'priority_high', count: 0 },
-    { id: 'completed', name: '完了済み', icon: 'check_circle', count: 0 }
+    { id: 'high', name: '優先度: 高', icon: 'arrow_upward', count: 0 },
+    { id: 'medium', name: '優先度: 中', icon: 'remove', count: 0 },
+    { id: 'low', name: '優先度: 低', icon: 'arrow_downward', count: 0 }
   ]);
   
   // REST APIでタスクを取得 (ユーザーID固定)
@@ -85,39 +84,19 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         }))
       );
       
-      // フィルターのカウント計算
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const completedCount = data.filter((task: Task) => task.completed).length;
-      const todayCount = data.filter((task: Task) => {
-        if (!task.dueDate) return false;
-        const taskDate = new Date(task.dueDate);
-        return (
-          taskDate.getFullYear() === today.getFullYear() &&
-          taskDate.getMonth() === today.getMonth() &&
-          taskDate.getDate() === today.getDate()
-        );
-      }).length;
-      
-      const upcomingCount = data.filter((task: Task) => {
-        if (!task.dueDate) return false;
-        const taskDate = new Date(task.dueDate);
-        return taskDate >= today;
-      }).length;
-      
-      const importantCount = data.filter((task: Task) => task.priority === 'high').length;
+      // 優先度ごとのカウント計算
+      const highPriorityCount = data.filter((task: Task) => task.priority === 'high').length;
+      const mediumPriorityCount = data.filter((task: Task) => task.priority === 'medium').length;
+      const lowPriorityCount = data.filter((task: Task) => task.priority === 'low').length;
       
       setFilters(prevFilters => 
         prevFilters.map(filter => {
-          if (filter.id === 'completed') {
-            return { ...filter, count: completedCount };
-          } else if (filter.id === 'today') {
-            return { ...filter, count: todayCount };
-          } else if (filter.id === 'upcoming') {
-            return { ...filter, count: upcomingCount };
-          } else if (filter.id === 'important') {
-            return { ...filter, count: importantCount };
+          if (filter.id === 'high') {
+            return { ...filter, count: highPriorityCount };
+          } else if (filter.id === 'medium') {
+            return { ...filter, count: mediumPriorityCount };
+          } else if (filter.id === 'low') {
+            return { ...filter, count: lowPriorityCount };
           }
           return filter;
         })

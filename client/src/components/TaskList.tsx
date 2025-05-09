@@ -24,29 +24,17 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       filter.category = { eq: activeCategory };
     }
     
-    // Special filters
+    // 優先度フィルター
     if (activeFilter) {
       switch (activeFilter) {
-        case 'today':
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          filter.dueDate = { 
-            ge: today.toISOString(), 
-            lt: tomorrow.toISOString() 
-          };
-          break;
-        case 'upcoming':
-          const currentDate = new Date();
-          currentDate.setHours(0, 0, 0, 0);
-          filter.dueDate = { ge: currentDate.toISOString() };
-          break;
-        case 'important':
+        case 'high':
           filter.priority = { eq: 'high' };
           break;
-        case 'completed':
-          filter.completed = { eq: true };
+        case 'medium':
+          filter.priority = { eq: 'medium' };
+          break;
+        case 'low':
+          filter.priority = { eq: 'low' };
           break;
       }
     }
