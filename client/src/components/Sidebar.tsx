@@ -38,7 +38,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
 
   const sidebarClasses = `
     ${isOpen ? 'fixed inset-y-0 left-0 z-30 translate-x-0' : 'fixed inset-y-0 -translate-x-full md:translate-x-0 z-30'} 
-    md:sticky md:top-0 md:left-0 md:h-[calc(100vh-64px)] w-72 bg-white shadow-xl transition-all duration-300 ease-in-out flex-shrink-0 transform
+    md:static md:h-[calc(100vh-64px)] w-72 bg-white shadow-sm transition-all duration-300 ease-in-out flex-shrink-0 transform
   `;
 
   return (
