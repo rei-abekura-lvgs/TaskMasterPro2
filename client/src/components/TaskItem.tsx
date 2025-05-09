@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { queryClient } from '@/lib/queryClient';
+import { queryClient, apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 import DeleteConfirmModal from './DeleteConfirmModal';
@@ -34,17 +34,30 @@ export default function TaskItem({ task }: TaskItemProps) {
     mutationFn: async () => {
       console.log('Deleting task using REST API:', task.id);
       
-      // REST APIを使用してタスクを削除
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete task');
+      try {
+        // 環境に応じたAPIリクエスト
+        const response = await apiRequest('DELETE', `/api/tasks/${task.id}`);
+        
+        // レスポンスの処理
+        const responseText = await response.text();
+        // 空のレスポンスの場合は成功として扱う
+        if (!responseText.trim()) {
+          return true;
+        }
+        
+        // JSONレスポンスがある場合は解析
+        try {
+          const responseData = JSON.parse(responseText);
+          console.log('Task deleted successfully:', responseData);
+          return true;
+        } catch (e) {
+          console.log('Deletion successful with non-JSON response');
+          return true;
+        }
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        throw error;
       }
-      
-      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -67,21 +80,21 @@ export default function TaskItem({ task }: TaskItemProps) {
     mutationFn: async () => {
       console.log('Toggling task completion using REST API:', task.id);
       
-      // REST APIを使用してタスクの完了状態を更新
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ completed: !task.completed }),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update task');
+      try {
+        // 環境に応じたAPIリクエスト
+        const response = await apiRequest(
+          'PATCH', 
+          `/api/tasks/${task.id}`, 
+          { completed: !task.completed }
+        );
+        
+        const data = await response.json();
+        console.log('Task completion updated successfully:', data);
+        return data;
+      } catch (error) {
+        console.error('Error updating task completion:', error);
+        throw error;
       }
-      
-      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

@@ -21,7 +21,7 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   const [editedName, setEditedName] = useState('');
   const { toast } = useToast();
 
-  // カテゴリー一覧取得クエリ - REST APIを直接使用
+  // カテゴリー一覧取得クエリ - REST APIを使用
   const {
     data: categories,
     isLoading,
@@ -29,23 +29,11 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   } = useQuery({
     queryKey: ['/api/categories', userId],
     queryFn: async () => {
-      console.log('Using REST API directly for categories listing');
+      console.log('Using REST API for categories listing');
       
       try {
-        const baseUrl = getApiBaseUrl();
-        const fullUrl = baseUrl ? `${baseUrl}/api/categories?userId=${userId}` : `/api/categories?userId=${userId}`;
-        console.log(`Making category API request to: ${fullUrl}`);
-        
-        const response = await fetch(fullUrl, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('REST API Error:', errorText);
-          throw new Error(`Failed to fetch categories: ${response.status} ${errorText}`);
-        }
+        // 環境に応じたAPIリクエスト
+        const response = await apiRequest('GET', `/api/categories?userId=${userId}`);
         
         const data = await response.json();
         console.log('Categories from REST API:', data);
