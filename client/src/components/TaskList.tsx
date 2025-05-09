@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import TaskItem from './TaskItem';
 import { useTaskContext } from '@/context/TaskContext';
@@ -12,7 +12,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   
   const { activeCategory, activeFilter } = useTaskContext();
   
@@ -111,7 +111,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     }
   });
   
-  const sortTasks = (tasks: Task[]) => {
+  const sortTasks = useCallback((tasks: Task[]) => {
     if (!tasks) return [];
     
     const sortedTasks = [...tasks];
@@ -136,7 +136,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       default:
         return sortedTasks;
     }
-  };
+  }, [sortOption]);
   
   // 検索とソート処理
   const filteredAndSortedTasks = useMemo(() => {
@@ -154,7 +154,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     
     // 2. ソート処理
     return sortTasks(filtered);
-  }, [data, searchQuery, sortOption]);
+  }, [data, searchQuery, sortOption, sortTasks]);
   
   const sortedTasks = filteredAndSortedTasks;
   
