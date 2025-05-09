@@ -5,6 +5,7 @@ import { useTaskContext } from '@/context/TaskContext';
 import { Task } from '@/types';
 import { listTasks } from '@/graphql/queries';
 import { executeGraphQL } from '@/lib/amplify';
+import { getApiBaseUrl } from '@/lib/queryClient';
 
 type SortOption = 'dateNewest' | 'dateOldest' | 'priority' | 'alphabetical';
 type FilterType = 'all' | 'active' | 'completed';
@@ -106,18 +107,33 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         // REST APIからタスクを取得
         const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
         console.log('Fetching with userId:', userId);
-        const response = await fetch(`/api/tasks?userId=${userId}`);
         
-        if (!response.ok) {
-          console.error('REST API Error:', await response.text());
-          throw new Error('Failed to fetch tasks from REST API');
+        // 環境に応じて適切なURL構築を行うためにgetApiBaseUrl関数とAPIリクエストを直接使用
+        try {
+          const baseUrl = getApiBaseUrl();
+          const fullUrl = baseUrl ? `${baseUrl}/api/tasks?userId=${userId}` : `/api/tasks?userId=${userId}`;
+          console.log(`Making API request to: ${fullUrl}`);
+          
+          const response = await fetch(fullUrl, {
+            method: 'GET',
+            credentials: 'include',
+          });
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('REST API Error:', errorText);
+            throw new Error(`Failed to fetch tasks from REST API: ${response.status} ${errorText}`);
+          }
+          
+          const tasks = await response.json();
+          console.log('Tasks from REST API:', tasks);
+          
+          // クライアント側でのフィルタリング
+          return filterTasksClient(tasks, filter);
+        } catch (error) {
+          console.error('Error in task fetch:', error);
+          throw error;
         }
-        
-        const tasks = await response.json();
-        console.log('Tasks from REST API:', tasks);
-        
-        // クライアント側でのフィルタリング
-        return filterTasksClient(tasks, filter);
       } catch (error) {
         console.error('Error fetching tasks:', error);
         throw error;

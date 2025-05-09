@@ -2,28 +2,36 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 // APIのベースURLを環境に応じて調整
 export function getApiBaseUrl(): string {
+  console.log('Getting API base URL. Hostname:', window.location.hostname);
+  
   // 開発環境またはローカル環境の場合は相対パスを使用
   if (window.location.hostname === 'localhost' || window.location.hostname.includes('replit.dev')) {
+    console.log('Development environment detected - using relative paths');
     return '';
   }
   
-  // AWS Amplifyにデプロイされたときは、AppSyncのGraphQLエンドポイントを使用
-  // 実際のアプリでは環境変数から取得する
-  if (import.meta.env.VITE_APPSYNC_ENDPOINT) {
-    return import.meta.env.VITE_APPSYNC_ENDPOINT;
+  // AWS Amplifyにデプロイされた場合
+  if (window.location.hostname.includes('amplifyapp.com')) {
+    // AppSyncのGraphQLエンドポイントが設定されている場合はそれを使用
+    if (import.meta.env.VITE_APPSYNC_ENDPOINT) {
+      console.log('Using AppSync endpoint:', import.meta.env.VITE_APPSYNC_ENDPOINT);
+      return import.meta.env.VITE_APPSYNC_ENDPOINT;
+    }
+    
+    // それ以外の場合は、現在のドメインをベースURLとして使用
+    // これにより、同じドメイン上のAPIが呼び出される
+    console.log('Using current domain as API base:', `https://${window.location.hostname}`);
+    return `https://${window.location.hostname}`;
   }
   
-  // フォールバックとしてAPI Gatewayのベースパスを使用（もし設定されていれば）
+  // カスタムAPIのベースURLが設定されている場合はそれを使用
   if (import.meta.env.VITE_API_BASE_URL) {
+    console.log('Using custom API base URL:', import.meta.env.VITE_API_BASE_URL);
     return import.meta.env.VITE_API_BASE_URL;
   }
   
-  // Amplifyの場合、Lambdaへのリレーが必要
-  if (window.location.hostname.includes('amplifyapp.com')) {
-    return 'https://api-relay.amplifyapp.com';
-  }
-  
-  // デフォルトは空文字（相対パス）
+  // デフォルトは空文字（相対パス）- フォールバック
+  console.log('Using default relative path for API calls');
   return '';
 }
 
