@@ -25,9 +25,7 @@ export default function CreateTaskModal() {
       }
       
       return response.json();
-    },
-    staleTime: 10000, // 10 seconds
-    enabled: isModalOpen // モーダルが開いている時だけクエリを実行
+    }
   });
 
   const form = useForm({
@@ -54,7 +52,7 @@ export default function CreateTaskModal() {
         title: editingTask.title,
         description: editingTask.description || '',
         dueDate: formattedDate,
-        category: editingTask.category,
+        category: editingTask.categoryId ? String(editingTask.categoryId) : '',
         priority: editingTask.priority,
         completed: editingTask.completed
       });
@@ -73,65 +71,36 @@ export default function CreateTaskModal() {
   // Create task mutation
   const createTaskMutation = useMutation({
     mutationFn: async (data: any) => {
-      try {
-        // GraphQLでタスクを作成
-        const input: CreateTaskInput = {
-          title: data.title,
-          description: data.description || null,
-          dueDate: data.dueDate || null,
-          categoryId: data.category || null,
-          priority: data.priority.toUpperCase() as TaskPriority,  // 'low' -> 'LOW'
-          completed: data.completed || false
-        };
-        
-        const result = await executeGraphQL(createTask, {
-          input,
-          condition: null
-        });
-        
-        if (result && result.createTask) {
-          return result.createTask;
-        }
-        
-        throw new Error('Invalid response from AppSync');
-      } catch (graphqlError) {
-        console.error('GraphQL Error when creating task:', graphqlError);
-        
-        // フォールバック：REST APIでタスク作成
-        console.log('Falling back to REST API for task creation');
-        
-        const newTask = {
-          title: data.title,
-          description: data.description,
-          dueDate: data.dueDate,
-          categoryId: data.category ? parseInt(data.category, 10) : null,
-          priority: data.priority,
-          completed: data.completed || false,
-          userId: 3 // 仮のユーザーID
-        };
-        
-        const response = await fetch('/api/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newTask)
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to create task');
-        }
-        
-        return await response.json();
+      console.log('Creating task using REST API:', data);
+      
+      const newTask = {
+        title: data.title,
+        description: data.description,
+        dueDate: data.dueDate,
+        categoryId: data.category ? parseInt(data.category, 10) : null,
+        priority: data.priority,
+        completed: data.completed || false,
+        userId: 3 // 仮のユーザーID
+      };
+      
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newTask)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create task');
       }
+      
+      return await response.json();
     },
     onSuccess: () => {
-      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを作成しました",
         description: "タスクが正常に作成されました。"
@@ -152,65 +121,35 @@ export default function CreateTaskModal() {
     mutationFn: async (data: any) => {
       if (!editingTask) return null;
       
-      try {
-        // GraphQLでタスクを更新
-        const input: UpdateTaskInput = {
-          id: editingTask.id.toString(),
-          title: data.title,
-          description: data.description || null,
-          dueDate: data.dueDate || null,
-          categoryId: data.category || null,
-          priority: data.priority.toUpperCase() as TaskPriority,  // 'low' -> 'LOW'
-          completed: data.completed
-        };
-        
-        const result = await executeGraphQL(updateTask, {
-          input,
-          condition: null
-        });
-        
-        if (result && result.updateTask) {
-          return result.updateTask;
-        }
-        
-        throw new Error('Invalid response from AppSync');
-      } catch (graphqlError) {
-        console.error('GraphQL Error when updating task:', graphqlError);
-        
-        // フォールバック：REST APIでタスク更新
-        console.log('Falling back to REST API for task update');
-        
-        const updatedTask = {
-          title: data.title,
-          description: data.description,
-          dueDate: data.dueDate,
-          categoryId: data.category ? parseInt(data.category, 10) : null,
-          priority: data.priority,
-          completed: data.completed
-        };
-        
-        const response = await fetch(`/api/tasks/${editingTask.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(updatedTask)
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to update task');
-        }
-        
-        return await response.json();
+      console.log('Updating task using REST API:', data);
+      
+      const updatedTask = {
+        title: data.title,
+        description: data.description,
+        dueDate: data.dueDate,
+        categoryId: data.category ? parseInt(data.category, 10) : null,
+        priority: data.priority,
+        completed: data.completed
+      };
+      
+      const response = await fetch(`/api/tasks/${editingTask.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedTask)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update task');
       }
+      
+      return await response.json();
     },
     onSuccess: () => {
-      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを更新しました",
         description: "タスクが正常に更新されました。"
@@ -255,7 +194,7 @@ export default function CreateTaskModal() {
       <div className="flex items-center justify-center min-h-screen p-4">
         <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-xl max-w-md w-full mx-auto overflow-hidden transform transition-all">
           {/* Modal header */}
-          <div className="bg-primary-light dark:bg-primary-dark text-white px-6 py-4 flex items-center justify-between">
+          <div className="bg-blue-600 text-white px-6 py-4 flex items-center justify-between">
             <h3 className="text-lg font-medium">
               {isEditing ? 'タスクを編集' : '新規タスク作成'}
             </h3>
@@ -275,7 +214,7 @@ export default function CreateTaskModal() {
                   type="text" 
                   id="title" 
                   {...form.register('title')}
-                  className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white" 
+                  className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white" 
                   placeholder="タスクのタイトルを入力"
                 />
                 {form.formState.errors.title && (
@@ -293,7 +232,7 @@ export default function CreateTaskModal() {
                   id="description" 
                   {...form.register('description')}
                   rows={3} 
-                  className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white" 
+                  className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white" 
                   placeholder="タスクの説明を入力"
                 ></textarea>
               </div>
@@ -307,7 +246,7 @@ export default function CreateTaskModal() {
                     type="date" 
                     id="dueDate" 
                     {...form.register('dueDate')}
-                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white"
+                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white"
                   />
                 </div>
                 
@@ -318,20 +257,14 @@ export default function CreateTaskModal() {
                   <select 
                     id="category" 
                     {...form.register('category')}
-                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white"
+                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white"
                   >
-                    <option value="">カテゴリを選択</option>
-                    {isCategoriesLoading ? (
-                      <option value="" disabled>読み込み中...</option>
-                    ) : categories && categories.length > 0 ? (
-                      categories.map((category: any) => (
-                        <option key={category.id} value={category.id.toString()}>
-                          {category.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>カテゴリーがありません</option>
-                    )}
+                    <option value="">カテゴリなし</option>
+                    {categories?.map((category: any) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -340,70 +273,82 @@ export default function CreateTaskModal() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   優先度
                 </label>
-                <div className="flex items-center space-x-4">
-                  <label className="inline-flex items-center">
-                    <input 
-                      type="radio" 
-                      value="low"
-                      {...form.register('priority')}
-                      className="text-primary focus:ring-primary" 
-                    />
-                    <span className="ml-2 text-sm">低</span>
-                  </label>
-                  <label className="inline-flex items-center">
-                    <input 
-                      type="radio" 
-                      value="medium"
-                      {...form.register('priority')}
-                      className="text-primary focus:ring-primary" 
-                    />
-                    <span className="ml-2 text-sm">中</span>
-                  </label>
-                  <label className="inline-flex items-center">
-                    <input 
-                      type="radio" 
-                      value="high"
-                      {...form.register('priority')}
-                      className="text-primary focus:ring-primary" 
-                    />
-                    <span className="ml-2 text-sm">高</span>
-                  </label>
+                <div className="flex space-x-4">
+                  {['low', 'medium', 'high'].map((priority) => (
+                    <label key={priority} className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        value={priority}
+                        {...form.register('priority')}
+                        className="sr-only"
+                      />
+                      <div className={`w-4 h-4 mr-2 rounded-full border ${
+                        form.watch('priority') === priority
+                        ? priority === 'high'
+                          ? 'bg-red-500 border-red-500'
+                          : priority === 'medium'
+                            ? 'bg-yellow-500 border-yellow-500'
+                            : 'bg-green-500 border-green-500'
+                        : 'bg-transparent'
+                      }`}>
+                      </div>
+                      <span className="capitalize">
+                        {priority === 'high' ? '高' : priority === 'medium' ? '中' : '低'}
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
-
+              
               {isEditing && (
                 <div className="mb-4">
-                  <label className="inline-flex items-center">
-                    <input 
+                  <label className="flex items-center cursor-pointer">
+                    <input
                       type="checkbox"
                       {...form.register('completed')}
-                      className="text-primary focus:ring-primary" 
+                      className="sr-only"
                     />
-                    <span className="ml-2 text-sm">完了</span>
+                    <div className={`w-5 h-5 mr-2 rounded border ${
+                      form.watch('completed')
+                      ? 'bg-green-500 border-green-500 flex items-center justify-center'
+                      : 'bg-white border-gray-300'
+                    }`}>
+                      {form.watch('completed') && (
+                        <span className="material-icons text-white text-xs">check</span>
+                      )}
+                    </div>
+                    <span>完了としてマーク</span>
                   </label>
                 </div>
               )}
+              
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  キャンセル
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                  disabled={createTaskMutation.isPending || updateTaskMutation.isPending}
+                >
+                  {(createTaskMutation.isPending || updateTaskMutation.isPending) ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      処理中...
+                    </span>
+                  ) : (
+                    isEditing ? '更新' : '作成'
+                  )}
+                </button>
+              </div>
             </form>
-          </div>
-          
-          {/* Modal footer */}
-          <div className="px-6 py-4 bg-gray-50 dark:bg-neutral-700 flex justify-end space-x-2">
-            <button 
-              className="px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
-              onClick={closeModal}
-            >
-              キャンセル
-            </button>
-            <button 
-              className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors disabled:opacity-50"
-              onClick={form.handleSubmit(onSubmit)}
-              disabled={createTaskMutation.isPending || updateTaskMutation.isPending}
-            >
-              {(createTaskMutation.isPending || updateTaskMutation.isPending) 
-                ? '保存中...' 
-                : isEditing ? 'タスクを更新' : 'タスクを保存'
-              }
-            </button>
           </div>
         </div>
       </div>
