@@ -230,9 +230,14 @@ function updateCategoryCounts() {
     if (cat.id === 'all') {
       return { ...cat, count: tasks.length };
     }
+    // カテゴリIDが数値型の場合は文字列に変換して比較
+    const catId = typeof cat.id === 'number' ? cat.id.toString() : cat.id;
     return { 
       ...cat, 
-      count: tasks.filter(t => t.category === cat.id).length 
+      count: tasks.filter(t => {
+        // カテゴリー名での比較またはカテゴリーIDでの比較
+        return t.category === catId || (t.categoryId && t.categoryId === cat.id);
+      }).length 
     };
   });
 }

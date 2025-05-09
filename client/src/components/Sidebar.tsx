@@ -77,15 +77,23 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleCategoryClick(category.id);
+                        // カテゴリIDが数値型の場合は文字列に変換
+                        const categoryId = typeof category.id === 'number' 
+                          ? category.id.toString() 
+                          : category.id;
+                        handleCategoryClick(categoryId);
                       }}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
-                        activeCategory === category.id 
+                        activeCategory === (typeof category.id === 'number' ? category.id.toString() : category.id)
                           ? 'bg-gray-100 dark:bg-neutral-700 text-primary-dark dark:text-primary-light' 
                           : 'hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300'
                       } transition-colors`}
                     >
-                      <span className="material-icons text-sm">{categoryIcons[category.id] || 'label'}</span>
+                      <span className="material-icons text-sm">{
+                        typeof category.id === 'number' 
+                          ? categoryIcons[category.id.toString()] || 'label'
+                          : categoryIcons[category.id] || 'label'
+                      }</span>
                       <span>{category.name}</span>
                       <span className="ml-auto bg-gray-200 dark:bg-neutral-600 text-gray-800 dark:text-gray-200 text-xs rounded-full px-2 py-0.5">
                         {category.count}
