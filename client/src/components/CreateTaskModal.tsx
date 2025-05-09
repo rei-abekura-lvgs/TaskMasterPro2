@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +11,20 @@ export default function CreateTaskModal() {
   const { isModalOpen, setIsModalOpen, editingTask, setEditingTask } = useTaskContext();
   const { toast } = useToast();
   const isEditing = !!editingTask;
+  
+  // APIからカテゴリーを取得
+  const { data: categories, isLoading: isCategoriesLoading } = useQuery({
+    queryKey: ['/api/categories'],
+    queryFn: async () => {
+      const response = await fetch('/api/categories?userId=3');
+      if (!response.ok) {
+        throw new Error('カテゴリーの取得に失敗しました');
+      }
+      return response.json();
+    },
+    staleTime: 10000, // 10 seconds
+    enabled: isModalOpen // モーダルが開いている時だけクエリを実行
+  });
 
   const form = useForm({
     resolver: zodResolver(isEditing ? updateTaskSchema : createTaskSchema),
@@ -82,6 +96,8 @@ export default function CreateTaskModal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを作成しました",
         description: "タスクが正常に作成されました。"
@@ -128,6 +144,8 @@ export default function CreateTaskModal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを更新しました",
         description: "タスクが正常に更新されました。"
@@ -238,11 +256,17 @@ export default function CreateTaskModal() {
                     className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-neutral-700 dark:text-white"
                   >
                     <option value="">カテゴリを選択</option>
-                    <option value="6">仕事</option>
-                    <option value="7">個人</option>
-                    <option value="8">買い物</option>
-                    <option value="9">健康</option>
-                    <option value="10">財務</option>
+                    {isCategoriesLoading ? (
+                      <option value="" disabled>読み込み中...</option>
+                    ) : categories && categories.length > 0 ? (
+                      categories.map((category: any) => (
+                        <option key={category.id} value={category.id.toString()}>
+                          {category.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>カテゴリーがありません</option>
+                    )}
                   </select>
                 </div>
               </div>
