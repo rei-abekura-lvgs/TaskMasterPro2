@@ -3,70 +3,80 @@ import { Task, Category } from '@/types';
 // モックタスクデータ
 const mockTasks: Task[] = [
   {
-    id: '1',
+    id: 1,
     title: '買い物リストを作成する',
     description: '週末の買い物のための食材リストを作成する',
     dueDate: new Date(Date.now() + 86400000).toISOString(), // 明日の日付
+    categoryId: 3,
     category: 'shopping',
     priority: 'medium',
     completed: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    userId: 1,
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
-    id: '2',
+    id: 2,
     title: '会議の準備',
     description: '明日の会議資料を準備し、プレゼンの練習をする',
     dueDate: new Date(Date.now() + 86400000).toISOString(), // 明日の日付
+    categoryId: 1,
     category: 'work',
     priority: 'high',
     completed: false,
-    createdAt: new Date(Date.now() - 86400000).toISOString(), // 昨日の日付
-    updatedAt: new Date(Date.now() - 86400000).toISOString()
+    userId: 1,
+    createdAt: new Date(Date.now() - 86400000),
+    updatedAt: new Date(Date.now() - 86400000)
   },
   {
-    id: '3',
+    id: 3,
     title: 'ジムに行く',
     description: '週3回のトレーニングルーティンを実行する',
     dueDate: new Date().toISOString(), // 今日の日付
+    categoryId: 4,
     category: 'health',
     priority: 'low',
     completed: true,
-    createdAt: new Date(Date.now() - 172800000).toISOString(), // 2日前の日付
-    updatedAt: new Date(Date.now() - 43200000).toISOString() // 12時間前
+    userId: 1,
+    createdAt: new Date(Date.now() - 172800000),
+    updatedAt: new Date(Date.now() - 43200000)
   },
   {
-    id: '4',
+    id: 4,
     title: '請求書の支払い',
     description: '電気代と水道代の請求書を支払う',
     dueDate: new Date(Date.now() + 259200000).toISOString(), // 3日後の日付
+    categoryId: 5,
     category: 'finance',
     priority: 'high',
     completed: false,
-    createdAt: new Date(Date.now() - 259200000).toISOString(), // 3日前の日付
-    updatedAt: new Date(Date.now() - 259200000).toISOString()
+    userId: 1,
+    createdAt: new Date(Date.now() - 259200000),
+    updatedAt: new Date(Date.now() - 259200000)
   },
   {
-    id: '5',
+    id: 5,
     title: '家族との夕食',
     description: '実家で家族と夕食を取る約束',
     dueDate: new Date(Date.now() + 432000000).toISOString(), // 5日後の日付
+    categoryId: 2,
     category: 'personal',
     priority: 'medium',
     completed: false,
-    createdAt: new Date(Date.now() - 345600000).toISOString(), // 4日前の日付
-    updatedAt: new Date(Date.now() - 345600000).toISOString()
+    userId: 1,
+    createdAt: new Date(Date.now() - 345600000),
+    updatedAt: new Date(Date.now() - 345600000)
   }
 ];
 
 // モックカテゴリデータ
 const mockCategories: Category[] = [
   { id: 'all', name: 'すべてのタスク', count: mockTasks.length },
-  { id: 'work', name: '仕事', count: mockTasks.filter(t => t.category === 'work').length },
-  { id: 'personal', name: '個人', count: mockTasks.filter(t => t.category === 'personal').length },
-  { id: 'shopping', name: 'ショッピング', count: mockTasks.filter(t => t.category === 'shopping').length },
-  { id: 'health', name: '健康', count: mockTasks.filter(t => t.category === 'health').length },
-  { id: 'finance', name: '金融', count: mockTasks.filter(t => t.category === 'finance').length }
+  { id: 1, name: '仕事', count: mockTasks.filter(t => t.category === 'work').length },
+  { id: 2, name: '個人', count: mockTasks.filter(t => t.category === 'personal').length },
+  { id: 3, name: 'ショッピング', count: mockTasks.filter(t => t.category === 'shopping').length },
+  { id: 4, name: '健康', count: mockTasks.filter(t => t.category === 'health').length },
+  { id: 5, name: '金融', count: mockTasks.filter(t => t.category === 'finance').length }
 ];
 
 // 簡易的なインメモリデータベース
@@ -129,7 +139,7 @@ export const mockDataService = {
     });
   },
   
-  getTask: (id: string): Promise<Task | undefined> => {
+  getTask: (id: number): Promise<Task | undefined> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const task = tasks.find(t => t.id === id);
@@ -142,16 +152,19 @@ export const mockDataService = {
     return new Promise((resolve) => {
       setTimeout(() => {
         const now = new Date();
+        const newId = Math.floor(Math.random() * 10000) + 6; // 簡易的なID生成
         const newTask: Task = {
-          id: generateId(),
+          id: newId,
           title: taskData.title || '',
           description: taskData.description,
           dueDate: taskData.dueDate,
+          categoryId: taskData.categoryId || 2,
           category: taskData.category || 'personal',
           priority: taskData.priority || 'medium',
           completed: taskData.completed || false,
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString()
+          userId: 1,
+          createdAt: now,
+          updatedAt: now
         };
         
         tasks.push(newTask);
@@ -162,7 +175,7 @@ export const mockDataService = {
     });
   },
   
-  updateTask: (id: string, updates: Partial<Task>): Promise<Task | undefined> => {
+  updateTask: (id: number, updates: Partial<Task>): Promise<Task | undefined> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = tasks.findIndex(t => t.id === id);
@@ -174,7 +187,7 @@ export const mockDataService = {
         const updatedTask: Task = {
           ...tasks[index],
           ...updates,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date()
         };
         
         tasks[index] = updatedTask;
@@ -185,7 +198,7 @@ export const mockDataService = {
     });
   },
   
-  deleteTask: (id: string): Promise<boolean> => {
+  deleteTask: (id: number): Promise<boolean> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const initialLength = tasks.length;

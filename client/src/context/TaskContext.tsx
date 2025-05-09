@@ -19,7 +19,7 @@ const LIST_TASKS = gql`
 `;
 
 type CategoryType = {
-  id: string;
+  id: string | number;
   name: string;
   count: number;
 };

@@ -2,34 +2,38 @@ import { z } from 'zod';
 
 // Task model
 export interface Task {
-  id: string;
+  id: number;
   title: string;
   description?: string;
   dueDate?: string;
-  category: string;
+  categoryId?: number;
+  category: string;  // 一時的にカテゴリ名を保持（UIで表示するため）
   priority: 'low' | 'medium' | 'high';
   completed: boolean;
-  createdAt: string;
-  updatedAt: string;
+  userId: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 // Validation schemas
 export const createTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'タイトルは必須です'),
   description: z.string().optional(),
   dueDate: z.string().optional(),
+  categoryId: z.number().optional(),
   category: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high']),
-  completed: z.boolean().default(false)
+  completed: z.boolean().default(false),
+  userId: z.number().optional()
 });
 
 export const updateTaskSchema = createTaskSchema.extend({
-  id: z.string().optional() // Optional because it comes from the context
+  id: z.number().optional() // コンテキストから取得するため省略可能
 });
 
 // Category type
 export interface Category {
-  id: string;
+  id: string | number;
   name: string;
   count: number;
 }
