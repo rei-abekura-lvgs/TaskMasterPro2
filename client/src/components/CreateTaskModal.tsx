@@ -6,45 +6,25 @@ import { queryClient } from '@/lib/queryClient';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 import { createTaskSchema, updateTaskSchema } from '@/types';
-import { createTask, updateTask } from '@/graphql/mutations';
-import { listCategories } from '@/graphql/queries';
-import { executeGraphQL } from '@/lib/amplify';
-import { CreateTaskInput, UpdateTaskInput, TaskPriority } from '@/graphql/API';
 
 export default function CreateTaskModal() {
   const { isModalOpen, setIsModalOpen, editingTask, setEditingTask } = useTaskContext();
   const { toast } = useToast();
   const isEditing = !!editingTask;
   
-  // カテゴリーの取得（GraphQLとフォールバックRESTの両方に対応）
+  // カテゴリーの取得 - REST APIを直接使用
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      try {
-        // GraphQLでカテゴリーを取得
-        const result = await executeGraphQL(listCategories, {
-          limit: 100,
-          filter: null
-        });
-        
-        if (result && result.listCategories && result.listCategories.items) {
-          return result.listCategories.items;
-        }
-        
-        throw new Error('Invalid response from AppSync');
-      } catch (graphqlError) {
-        console.error('GraphQL Error when fetching categories:', graphqlError);
-        
-        // フォールバック：REST APIからカテゴリーを取得
-        console.log('Falling back to REST API for categories');
-        const response = await fetch('/api/categories?userId=3');
-        
-        if (!response.ok) {
-          throw new Error('カテゴリーの取得に失敗しました');
-        }
-        
-        return response.json();
+      console.log('Using REST API directly for categories while GraphQL setup is in progress');
+      const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
+      const response = await fetch(`/api/categories?userId=${userId}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories from REST API');
       }
+      
+      return response.json();
     },
     staleTime: 10000, // 10 seconds
     enabled: isModalOpen // モーダルが開いている時だけクエリを実行

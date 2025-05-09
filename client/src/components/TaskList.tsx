@@ -100,37 +100,24 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       try {
         const filter = buildFilter();
         
-        // GraphQLクエリを試行
-        try {
-          // 標準のタスク一覧取得
-          const result = await executeGraphQL(listTasks, {});
-          
-          if (result && result.listTasks && result.listTasks.items) {
-            return result.listTasks.items.map(formatTaskFromGraphQL);
-          }
-          
-          // 正常なレスポンスが得られなかった場合
-          throw new Error('Invalid response from AppSync');
-        } catch (graphqlError) {
-          // GraphQLエラーをコンソールに表示
-          console.error('GraphQL Error:', graphqlError);
-          
-          // フォールバック：REST APIを使用
-          console.log('Falling back to REST API');
-          
-          // REST APIからタスクを取得
-          const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
-          const response = await fetch(`/api/tasks?userId=${userId}`);
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch tasks from REST API');
-          }
-          
-          const tasks = await response.json();
-          
-          // クライアント側でのフィルタリング
-          return filterTasksClient(tasks, filter);
+        // DynamoDBからのデータ取得を試行する代わりに、すぐにREST APIを使用
+        console.log('Using REST API directly for now, while GraphQL setup is in progress');
+        
+        // REST APIからタスクを取得
+        const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
+        console.log('Fetching with userId:', userId);
+        const response = await fetch(`/api/tasks?userId=${userId}`);
+        
+        if (!response.ok) {
+          console.error('REST API Error:', await response.text());
+          throw new Error('Failed to fetch tasks from REST API');
         }
+        
+        const tasks = await response.json();
+        console.log('Tasks from REST API:', tasks);
+        
+        // クライアント側でのフィルタリング
+        return filterTasksClient(tasks, filter);
       } catch (error) {
         console.error('Error fetching tasks:', error);
         throw error;
