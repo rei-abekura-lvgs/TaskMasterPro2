@@ -1,0 +1,161 @@
+61
+
+                                 # Executing command: npm run build
+
+62
+
+2025-05-09T10:01:29.441Z [INFO]: > rest-express@1.0.0 build
+
+63
+
+                                 > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+64
+
+2025-05-09T10:01:29.911Z [INFO]: vite v5.4.14 building for production...
+
+65
+
+2025-05-09T10:01:29.967Z [INFO]: transforming...
+
+66
+
+2025-05-09T10:01:30.247Z [WARNING]: Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+
+67
+
+                                    npx update-browserslist-db@latest
+
+68
+
+                                    Why you should do it regularly: https://github.com/browserslist/update-db#readme
+
+69
+
+2025-05-09T10:01:35.470Z [INFO]: ✓ 2513 modules transformed.
+
+70
+
+2025-05-09T10:01:35.833Z [INFO]: rendering chunks...
+
+71
+
+2025-05-09T10:01:35.845Z [INFO]: computing gzip size...
+
+72
+
+2025-05-09T10:01:35.928Z [INFO]: ../dist/public/index.html                   1.27 kB │ gzip:   0.61 kB
+
+73
+
+2025-05-09T10:01:35.928Z [INFO]: ../dist/public/assets/index-DA-__X-N.css   74.93 kB │ gzip:  12.76 kB
+
+74
+
+                                 ../dist/public/assets/index-DEBpeD9b.js   608.11 kB │ gzip: 188.11 kB
+
+75
+
+2025-05-09T10:01:35.928Z [WARNING]: (!) Some chunks are larger than 500 kB after minification. Consider:
+
+76
+
+                                    - Using dynamic import() to code-split the application
+
+77
+
+                                    - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+
+78
+
+                                    - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+79
+
+2025-05-09T10:01:35.929Z [INFO]: ✓ built in 6.00s
+
+80
+
+2025-05-09T10:01:35.965Z [WARNING]: dist/index.js  14.1kb
+
+81
+
+                                    ⚡ Done in 4ms
+
+82
+
+2025-05-09T10:01:35.971Z [INFO]: # Completed phase: build
+
+83
+
+                                 ## Completed Frontend Build
+
+84
+
+2025-05-09T10:01:36.200Z [INFO]: ## Build completed successfully
+
+85
+
+2025-05-09T10:01:36.201Z [INFO]: # Starting caching...
+
+86
+
+2025-05-09T10:01:36.205Z [INFO]: # Creating cache artifact...
+
+87
+
+2025-05-09T10:01:48.710Z [INFO]: # Created cache artifact
+
+88
+
+2025-05-09T10:01:48.815Z [INFO]: # Uploading cache artifact...
+
+89
+
+2025-05-09T10:01:54.132Z [INFO]: # Uploaded cache artifact
+
+90
+
+2025-05-09T10:01:54.233Z [INFO]: # Caching completed
+
+91
+
+2025-05-09T10:01:54.259Z [INFO]: # Starting build artifact upload process...
+
+92
+
+2025-05-09T10:01:54.306Z [INFO]: # Uploading build artifact '__artifacts.zip'...
+
+93
+
+2025-05-09T10:01:54.423Z [INFO]: # Build artifact upload completed
+
+94
+
+2025-05-09T10:01:54.423Z [INFO]: # Starting environment caching...
+
+95
+
+2025-05-09T10:01:54.424Z [INFO]: # Uploading environment cache artifact...
+
+96
+
+2025-05-09T10:01:54.524Z [INFO]: # Uploaded environment cache artifact
+
+97
+
+2025-05-09T10:01:54.524Z [INFO]: # Environment caching completed
+
+98
+
+99
+
+デプロイ
+8 秒
+0
+
+2025-05-09T10:02:03 [INFO]: Beginning deployment for application do510v6fsmjrf, branch:main, buildId 0000000006
+
+1
+
+2025-05-09T10:02:12 [INFO]: Deployment complete
