@@ -1,0 +1,161 @@
+62
+
+2025-05-09T09:33:02.171Z [INFO]: > rest-express@1.0.0 build
+
+63
+
+                                 > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+64
+
+2025-05-09T09:33:03.013Z [INFO]: vite v5.4.14 building for production...
+
+65
+
+2025-05-09T09:33:03.053Z [INFO]: transforming...
+
+66
+
+2025-05-09T09:33:03.243Z [WARNING]: Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+
+67
+
+                                    npx update-browserslist-db@latest
+
+68
+
+                                    Why you should do it regularly: https://github.com/browserslist/update-db#readme
+
+69
+
+2025-05-09T09:33:06.828Z [INFO]: ✓ 2512 modules transformed.
+
+70
+
+2025-05-09T09:33:07.074Z [INFO]: rendering chunks...
+
+71
+
+2025-05-09T09:33:07.083Z [INFO]: computing gzip size...
+
+72
+
+2025-05-09T09:33:07.223Z [INFO]: ../dist/public/index.html                   1.27 kB │ gzip:   0.61 kB
+
+73
+
+2025-05-09T09:33:07.223Z [INFO]: ../dist/public/assets/index-DA-__X-N.css   74.93 kB │ gzip:  12.76 kB
+
+74
+
+                                 ../dist/public/assets/index-BJJlLEgh.js   605.05 kB │ gzip: 187.83 kB
+
+75
+
+                                 ✓ built in 4.19s
+
+76
+
+2025-05-09T09:33:07.223Z [WARNING]: (!) Some chunks are larger than 500 kB after minification. Consider:
+
+77
+
+                                    - Using dynamic import() to code-split the application
+
+78
+
+                                    - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+
+79
+
+                                    - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+80
+
+2025-05-09T09:33:07.260Z [WARNING]: dist/index.js  14.1kb
+
+81
+
+                                    ⚡ Done in 3ms
+
+82
+
+2025-05-09T09:33:07.265Z [INFO]: # Completed phase: build
+
+83
+
+                                 ## Completed Frontend Build
+
+84
+
+2025-05-09T09:33:07.469Z [INFO]: ## Build completed successfully
+
+85
+
+2025-05-09T09:33:07.470Z [INFO]: # Starting caching...
+
+86
+
+2025-05-09T09:33:07.472Z [INFO]: # Creating cache artifact...
+
+87
+
+2025-05-09T09:33:13.979Z [INFO]: # Created cache artifact
+
+88
+
+2025-05-09T09:33:14.065Z [INFO]: # Uploading cache artifact...
+
+89
+
+2025-05-09T09:33:19.361Z [INFO]: # Uploaded cache artifact
+
+90
+
+2025-05-09T09:33:19.461Z [INFO]: # Caching completed
+
+91
+
+2025-05-09T09:33:19.487Z [WARNING]: !! No index.html detected in deploy folder: /codebuild/output/src1212228394/src/TaskMasterPro2/dist
+
+92
+
+2025-05-09T09:33:19.487Z [INFO]: # Starting build artifact upload process...
+
+93
+
+2025-05-09T09:33:19.514Z [INFO]: # Uploading build artifact '__artifacts.zip'...
+
+94
+
+2025-05-09T09:33:19.733Z [INFO]: # Build artifact upload completed
+
+95
+
+2025-05-09T09:33:19.734Z [INFO]: # Starting environment caching...
+
+96
+
+2025-05-09T09:33:19.734Z [INFO]: # Uploading environment cache artifact...
+
+97
+
+2025-05-09T09:33:19.808Z [INFO]: # Uploaded environment cache artifact
+
+98
+
+2025-05-09T09:33:19.808Z [INFO]: # Environment caching completed
+
+99
+
+100
+
+デプロイ
+8 秒
+0
+
+2025-05-09T09:33:27 [INFO]: Beginning deployment for application do510v6fsmjrf, branch:main, buildId 0000000003
+
+1
+
+2025-05-09T09:33:35 [INFO]: Deployment complete
