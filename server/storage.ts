@@ -66,16 +66,53 @@ export class DatabaseStorage implements IStorage {
 
   // タスクメソッド
   async getTask(id: number): Promise<Task | undefined> {
-    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
-    return task;
+    const [result] = await db
+      .select({
+        task: tasks,
+        categoryName: categories.name
+      })
+      .from(tasks)
+      .leftJoin(categories, eq(tasks.categoryId, categories.id))
+      .where(eq(tasks.id, id));
+    
+    if (!result) return undefined;
+    
+    return {
+      ...result.task,
+      category: result.categoryName || ''
+    } as Task;
   }
 
   async getTasksByUserId(userId: number): Promise<Task[]> {
-    return await db.select().from(tasks).where(eq(tasks.userId, userId));
+    const taskResults = await db
+      .select({
+        task: tasks,
+        categoryName: categories.name
+      })
+      .from(tasks)
+      .leftJoin(categories, eq(tasks.categoryId, categories.id))
+      .where(eq(tasks.userId, userId));
+    
+    return taskResults.map(result => ({
+      ...result.task,
+      category: result.categoryName || ''
+    }));
   }
 
   async getTasksByCategoryId(categoryId: number): Promise<Task[]> {
-    return await db.select().from(tasks).where(eq(tasks.categoryId, categoryId));
+    const taskResults = await db
+      .select({
+        task: tasks,
+        categoryName: categories.name
+      })
+      .from(tasks)
+      .leftJoin(categories, eq(tasks.categoryId, categories.id))
+      .where(eq(tasks.categoryId, categoryId));
+    
+    return taskResults.map(result => ({
+      ...result.task,
+      category: result.categoryName || ''
+    }));
   }
 
   async createTask(task: Partial<InsertTask>): Promise<Task> {
