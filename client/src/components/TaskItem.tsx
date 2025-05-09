@@ -29,10 +29,30 @@ export default function TaskItem({ task }: TaskItemProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { toast } = useToast();
   
-  // タスク削除処理 - シンプルに再実装
+  // タスク削除処理 - オプティミスティックUI更新
   const deleteTaskMutation = useMutation({
+    // オプティミスティック更新
+    onMutate: async () => {
+      // 進行中のクエリをキャンセル
+      await queryClient.cancelQueries({ queryKey: ['/api/tasks'] });
+      
+      // 以前のキャッシュデータを保存（ロールバック用）
+      const previousTasks = queryClient.getQueryData(['/api/tasks']);
+      
+      // UIから即座にタスクを削除
+      queryClient.setQueryData(['/api/tasks'], (old: any[] | undefined) => {
+        if (!old) return old;
+        console.log(`タスクID: ${task.id} をUI上で即時削除`);
+        return old.filter(t => t.id !== task.id);
+      });
+      
+      // ロールバック用に保存して返す
+      return { previousTasks };
+    },
+    
+    // 実際のAPI呼び出し
     mutationFn: async () => {
-      console.log(`タスクID: ${task.id} を削除します`);
+      console.log(`タスクID: ${task.id} を削除中...`);
       
       try {
         // 削除リクエスト
@@ -40,51 +60,80 @@ export default function TaskItem({ task }: TaskItemProps) {
         
         // エラーチェック
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`タスク削除エラー（ステータス ${response.status}）:`, errorText);
-          throw new Error(`タスクの削除に失敗しました（${response.status}）`);
+          throw new Error(`削除エラー: ${response.status}`);
         }
         
         // 成功の場合（DELETEは通常空レスポンスを返す）
-        console.log(`タスクID: ${task.id} が正常に削除されました`);
         return {
           success: true,
-          taskId: task.id,
-          message: "タスクが正常に削除されました"
+          taskId: task.id
         };
       } catch (error) {
-        console.error('タスク削除中にエラーが発生しました:', error);
+        console.error('タスク削除エラー:', error);
         throw error;
       }
     },
-    onSuccess: (result) => {
-      // 複数のキャッシュを更新
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-      
-      // 成功通知
+    
+    // ロールバック処理
+    onError: (err, variables, context: any) => {
+      console.error('エラーが発生したため変更を元に戻します:', err);
+      queryClient.setQueryData(['/api/tasks'], context?.previousTasks);
       toast({
-        title: "タスクが削除されました",
-        description: result.message
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "タスクの削除に失敗しました",
-        description: error.message,
+        title: "タスク削除に失敗しました",
+        description: "ネットワークエラーが発生しました。再試行してください。",
         variant: "destructive"
       });
+    },
+    
+    // 成功時の処理
+    onSuccess: () => {
+      // 警告トーストのみ表示
+      toast({
+        title: "タスクを削除しました",
+        variant: "default",
+        duration: 2000 // 短い表示時間
+      });
+      
+      // カテゴリカウント更新のために遅延リロード
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      }, 100);
     }
   });
 
-  // タスク完了状態の切り替え - 改良版
+  // オプティミスティックUI更新を使用したタスク完了状態の切り替え
   const toggleCompletionMutation = useMutation({
-    mutationFn: async () => {
-      // まず完了状態を逆にした値を保存しておく
+    // オプティミスティック更新のためのコンテキスト値
+    onMutate: async () => {
+      // 進行中のクエリをキャンセル
+      await queryClient.cancelQueries({ queryKey: ['/api/tasks'] });
+      
+      // 新しい完了状態
       const newCompletedState = !task.completed;
-      console.log(`タスク ${task.id} の完了状態を ${task.completed} から ${newCompletedState} に変更します`);
+      console.log(`タスク ${task.id} の完了状態を即時UI更新: ${task.completed} → ${newCompletedState}`);
+      
+      // 以前のキャッシュデータを保存（ロールバック用）
+      const previousTasks = queryClient.getQueryData(['/api/tasks']);
+      
+      // タスクリストのデータを直接更新
+      queryClient.setQueryData(['/api/tasks'], (old: any[] | undefined) => {
+        if (!old) return old;
+        return old.map(t => 
+          t.id === task.id ? { ...t, completed: newCompletedState } : t
+        );
+      });
+      
+      // ロールバック用に保存して返す
+      return { previousTasks };
+    },
+    
+    // 実際のAPI呼び出し
+    mutationFn: async () => {
+      // 状態をトグル
+      const newCompletedState = !task.completed;
       
       try {
+        // バックグラウンドでAPIを呼び出す
         const response = await apiRequest(
           'PATCH', 
           `/api/tasks/${task.id}`, 
@@ -92,45 +141,43 @@ export default function TaskItem({ task }: TaskItemProps) {
         );
         
         if (!response.ok) {
-          throw new Error(`サーバーからエラーレスポンスを受け取りました: ${response.status}`);
+          throw new Error(`APIエラー: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('タスク完了状態の更新に成功:', data);
-        return { ...data, successMessage: newCompletedState ? "タスクが完了に設定されました" : "タスクが未完了に設定されました" };
+        return { 
+          ...data, 
+          newCompletedState,
+          successMessage: newCompletedState ? "タスクを完了としてマークしました" : "タスクを未完了に戻しました" 
+        };
       } catch (error) {
-        console.error('タスク完了状態の更新に失敗:', error);
+        console.error('タスク状態更新エラー:', error);
         throw error;
       }
     },
-    onSuccess: (result) => {
-      console.log('完了状態トグル成功。キャッシュを更新します');
-      
-      // キャッシュを完全にクリアする
-      queryClient.removeQueries({ queryKey: ['/api/tasks'] });
-      queryClient.removeQueries({ queryKey: ['/api/categories'] });
-      
-      // キャッシュを無効化して再取得を強制する
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-      
-      // UIに反映させるための強制再取得
-      setTimeout(() => {
-        queryClient.refetchQueries({ queryKey: ['/api/tasks'] });
-        queryClient.refetchQueries({ queryKey: ['/api/categories'] });
-      }, 100);
-      
-      // 成功通知
+    
+    // ロールバック処理
+    onError: (err, newTodo, context: any) => {
+      console.error('エラーが発生したため変更を元に戻します:', err);
+      queryClient.setQueryData(['/api/tasks'], context?.previousTasks);
       toast({
-        title: result.successMessage,
-        description: "タスクのステータスが更新されました。"
+        title: "タスク状態の更新に失敗しました",
+        description: "ネットワークエラーが発生しました。再試行してください。",
+        variant: "destructive"
       });
     },
-    onError: (error: any) => {
+    
+    // 成功時の処理
+    onSuccess: (result) => {
+      console.log('API呼び出し成功 - バックグラウンド同期完了');
+      
+      // カテゴリカウントを更新するために少し遅延して再取得
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      
+      // トースト通知
       toast({
-        title: "ステータスの更新に失敗しました",
-        description: error.message,
-        variant: "destructive"
+        title: result.successMessage,
+        duration: 2000, // 短い通知
       });
     }
   });
