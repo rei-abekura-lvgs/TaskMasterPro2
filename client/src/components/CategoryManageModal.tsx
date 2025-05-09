@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { executeGraphQL } from '@/lib/amplify';
+import { createCategory, deleteCategory } from '@/graphql/mutations';
+import { listCategories } from '@/graphql/queries';
+import { CreateCategoryInput, DeleteCategoryInput, ModelCategoryFilterInput } from '@/graphql/API';
 
 type Category = {
   id: number;
@@ -23,11 +27,40 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   const { data: categories, isLoading } = useQuery<Category[]>({
     queryKey: ['categories', userId],
     queryFn: async () => {
-      const response = await fetch(`/api/categories?userId=${userId}`);
-      if (!response.ok) {
-        throw new Error('カテゴリーの取得に失敗しました');
+      try {
+        // GraphQLでカテゴリー一覧を取得
+        const filter: ModelCategoryFilterInput = {
+          // ユーザーIDでフィルタリング（AppSyncスキーマに合わせて調整が必要）
+          // ownerId: { eq: userId.toString() }
+        };
+        
+        const result = await executeGraphQL(listCategories, {
+          filter,
+          limit: 100
+        });
+        
+        if (result && result.listCategories && result.listCategories.items) {
+          // GraphQLレスポンスの形式に合わせて変換
+          return result.listCategories.items.map((item: any) => ({
+            id: parseInt(item.id, 10),
+            name: item.name,
+            userId: parseInt(item.ownerId || userId.toString(), 10)
+          }));
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when fetching categories:', graphqlError);
+        
+        // フォールバック：REST APIでカテゴリー取得
+        console.log('Falling back to REST API for categories');
+        
+        const response = await fetch(`/api/categories?userId=${userId}`);
+        if (!response.ok) {
+          throw new Error('カテゴリーの取得に失敗しました');
+        }
+        return response.json();
       }
-      return response.json();
     },
     enabled: isOpen,
   });
@@ -35,20 +68,48 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   // カテゴリー作成
   const createMutation = useMutation({
     mutationFn: async (name: string) => {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, userId }),
-      });
+      try {
+        // GraphQLでカテゴリーを作成
+        const input: CreateCategoryInput = {
+          name,
+          ownerId: userId.toString() // ユーザーIDを文字列に変換
+        };
+        
+        const result = await executeGraphQL(createCategory, {
+          input
+        });
+        
+        if (result && result.createCategory) {
+          // GraphQLレスポンスの形式に合わせて変換
+          return {
+            id: parseInt(result.createCategory.id, 10),
+            name: result.createCategory.name,
+            userId: parseInt(result.createCategory.ownerId || userId.toString(), 10)
+          };
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when creating category:', graphqlError);
+        
+        // フォールバック：REST APIでカテゴリー作成
+        console.log('Falling back to REST API for category creation');
+        
+        const response = await fetch('/api/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, userId }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'カテゴリーの作成に失敗しました');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'カテゴリーの作成に失敗しました');
+        }
+
+        return await response.json();
       }
-
-      return await response.json();
     },
     onSuccess: () => {
       toast({
@@ -56,12 +117,13 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
         description: newCategoryName,
       });
       setNewCategoryName('');
+      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: 'カテゴリーの作成に失敗しました',
         description: error.message,
@@ -73,27 +135,51 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   // カテゴリー削除
   const deleteMutation = useMutation({
     mutationFn: async (categoryId: number) => {
-      const response = await fetch(`/api/categories/${categoryId}`, {
-        method: 'DELETE',
-      });
+      try {
+        // GraphQLでカテゴリーを削除
+        const input: DeleteCategoryInput = {
+          id: categoryId.toString()
+        };
+        
+        const result = await executeGraphQL(deleteCategory, {
+          input,
+          condition: null
+        });
+        
+        if (result && result.deleteCategory) {
+          return result.deleteCategory;
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when deleting category:', graphqlError);
+        
+        // フォールバック：REST APIでカテゴリー削除
+        console.log('Falling back to REST API for category deletion');
+        
+        const response = await fetch(`/api/categories/${categoryId}`, {
+          method: 'DELETE',
+        });
 
-      if (!response.ok && response.status !== 204) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'カテゴリーの削除に失敗しました');
+        if (!response.ok && response.status !== 204) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'カテゴリーの削除に失敗しました');
+        }
+
+        return true;
       }
-
-      return true;
     },
     onSuccess: () => {
       toast({
         title: 'カテゴリーを削除しました',
       });
+      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: 'カテゴリーの削除に失敗しました',
         description: error.message,
