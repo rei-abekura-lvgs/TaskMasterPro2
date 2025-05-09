@@ -20,7 +20,7 @@ export const createTaskSchema = z.object({
   title: z.string().min(1, 'タイトルは必須です'),
   description: z.string().optional(),
   dueDate: z.string().optional(),
-  categoryId: z.number().optional(),
+  categoryId: z.union([z.number(), z.string()]).optional(),
   category: z.string().optional(),
   priority: z.enum(['low', 'medium', 'high']),
   completed: z.boolean().default(false),

@@ -78,12 +78,42 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tasks).where(eq(tasks.categoryId, categoryId));
   }
 
-  async createTask(task: InsertTask): Promise<Task> {
-    const [newTask] = await db.insert(tasks).values(task).returning();
+  async createTask(task: Partial<InsertTask>): Promise<Task> {
+    // タスクに必須のuserIdが含まれていることを確認
+    if (!task.userId) {
+      throw new Error('userId is required');
+    }
+    
+    // categoryIdが文字列で来た場合の対応
+    if (typeof task.categoryId === 'string') {
+      task.categoryId = parseInt(task.categoryId, 10);
+    }
+    
+    // 必須フィールドを設定
+    const taskToInsert = {
+      title: task.title || 'New Task',
+      description: task.description || '',
+      dueDate: task.dueDate || null,
+      priority: task.priority || 'medium',
+      completed: task.completed !== undefined ? task.completed : false,
+      userId: task.userId
+    };
+    
+    const [newTask] = await db.insert(tasks).values(taskToInsert).returning();
     return newTask;
   }
 
   async updateTask(id: number, updates: Partial<InsertTask>): Promise<Task | undefined> {
+    // categoryIdが文字列で来た場合の対応
+    if (typeof updates.categoryId === 'string') {
+      updates.categoryId = parseInt(updates.categoryId, 10);
+    }
+    
+    // category（表示用）が含まれている場合は削除
+    if ('category' in updates) {
+      delete updates['category' as keyof typeof updates];
+    }
+    
     const [updatedTask] = await db
       .update(tasks)
       .set({
