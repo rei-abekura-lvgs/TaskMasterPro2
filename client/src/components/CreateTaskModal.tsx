@@ -81,97 +81,183 @@ export default function CreateTaskModal() {
     }
   }, [editingTask, form]);
 
-  // タスク作成処理 - 改善版
+  // タスク作成処理 - オプティミスティックUI実装
   const createTaskMutation = useMutation({
+    // オプティミスティックUI更新
+    onMutate: async (data: any) => {
+      // リクエスト前にキャンセル
+      await queryClient.cancelQueries({ queryKey: ['/api/tasks'] });
+      
+      // 現在のタスクリストを保存
+      const previousTasks = queryClient.getQueryData(['/api/tasks']);
+      
+      // 仮のIDを生成
+      const tempId = `temp-${Date.now()}`;
+      
+      // カテゴリ名を取得
+      let categoryName = '';
+      if (data.category) {
+        const categoryId = parseInt(data.category, 10);
+        const categories = queryClient.getQueryData(['/api/categories']) as any[] || [];
+        const category = categories.find(c => c.id === categoryId);
+        categoryName = category?.name || '';
+      }
+      
+      // 一時的なタスクオブジェクトを作成
+      const tempTask = {
+        id: tempId,
+        title: data.title,
+        description: data.description || '',
+        dueDate: data.dueDate || null,
+        categoryId: data.category ? parseInt(data.category, 10) : null,
+        category: categoryName,
+        priority: data.priority || 'medium',
+        userId: 3, // 固定ユーザーID 
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        _isOptimistic: true // 楽観的更新フラグ
+      };
+      
+      // UIに即時反映
+      queryClient.setQueryData(['/api/tasks'], (old: any[] | undefined) => {
+        if (!old) return [tempTask];
+        return [tempTask, ...old];
+      });
+      
+      // オリジナルタスクとモーダル閉じるためのデータを返す
+      return {
+        previousTasks,
+        tempTask,
+        closeAfterSuccess: true
+      };
+    },
+    
+    // 実際のAPI呼び出し
     mutationFn: async (data: any) => {
-      console.log('新しいタスクを作成します:', data);
+      console.log('APIでタスクを作成します:', data);
       
       const newTask = {
         title: data.title,
         description: data.description || '',
         dueDate: data.dueDate || null,
         categoryId: data.category ? parseInt(data.category, 10) : null,
-        priority: data.priority,
-        completed: data.completed || false,
-        userId: 3 // 仮のユーザーID
+        priority: data.priority || 'medium',
+        userId: 3, // 固定ユーザー
+        completed: false,
       };
       
-      console.log('送信するタスクデータ:', JSON.stringify(newTask));
-      
       try {
-        // APIリクエスト
+        // 実際のAPI呼び出し
         const response = await apiRequest('POST', '/api/tasks', newTask);
         
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`タスク作成エラー(${response.status}):`, errorText);
-          throw new Error(`タスク作成に失敗しました: ${response.status}`);
+          throw new Error(`サーバーエラー (${response.status})`);
         }
         
-        // レスポンスを処理
         const responseText = await response.text();
-        
-        if (!responseText) {
-          return { success: true, message: 'タスクが作成されました' };
-        }
-        
         try {
-          const responseData = JSON.parse(responseText);
-          console.log('タスク作成成功:', responseData);
-          return responseData;
+          return responseText ? JSON.parse(responseText) : { success: true };
         } catch (e) {
-          console.warn('JSONでないレスポンス:', responseText);
-          return { success: true, message: 'タスクが作成されました (非JSONレスポンス)' };
+          return { success: true };
         }
       } catch (error) {
         console.error('タスク作成エラー:', error);
         throw error;
       }
     },
-    onSuccess: (result) => {
-      console.log('タスク作成成功。キャッシュを更新します');
-      
-      // 重要: タスクとカテゴリのキャッシュを完全に無効化してリロード
-      queryClient.removeQueries({ queryKey: ['/api/tasks'] });
-      queryClient.removeQueries({ queryKey: ['/api/categories'] });
-      
-      // 強制的にデータを再取得
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-      
-      // 成功メッセージを表示
+    
+    // エラー処理とロールバック
+    onError: (err, newTodo, context: any) => {
+      console.error('タスク作成に失敗、変更を元に戻します:', err);
+      queryClient.setQueryData(['/api/tasks'], context?.previousTasks);
       toast({
-        title: "タスクを作成しました",
-        description: "タスクが正常に作成されました。"
-      });
-      
-      // 若干の遅延を入れて、UIが確実に更新されるようにする
-      setTimeout(() => {
-        closeModal();
-        
-        // リストを確実に更新するため、追加のデータ再取得
-        setTimeout(() => {
-          console.log('追加のデータ再取得を実行');
-          queryClient.refetchQueries({ queryKey: ['/api/tasks'] });
-          queryClient.refetchQueries({ queryKey: ['/api/categories'] });
-        }, 300);
-      }, 300);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "タスクの作成に失敗しました",
-        description: error.message,
+        title: "タスク作成に失敗しました",
+        description: "ネットワークエラーが発生しました。再試行してください。",
         variant: "destructive"
       });
+    },
+    
+    // 成功処理
+    onSuccess: (data, variables, context: any) => {
+      console.log('タスク作成API呼び出し成功');
+      
+      // モーダルを閉じる
+      if (context?.closeAfterSuccess) {
+        closeModal();
+      }
+      
+      // 短い通知
+      toast({
+        title: "タスクを作成しました",
+        duration: 2000
+      });
+      
+      // 実際のデータで更新するために遅延リロード
+      setTimeout(() => {
+        // 一時的なオプティミスティックな項目を実際のサーバーデータに置き換える
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      }, 500); // サーバーのレスポンスを待つために少し遅延
     }
   });
 
-  // タスク更新処理 - 改善版
+  // タスク更新処理 - オプティミスティックUI実装
   const updateTaskMutation = useMutation({
+    // オプティミスティックUI更新
+    onMutate: async (data: any) => {
+      if (!editingTask) return null;
+      
+      // リクエスト前にキャンセル
+      await queryClient.cancelQueries({ queryKey: ['/api/tasks'] });
+      
+      // 現在のタスクリストを保存
+      const previousTasks = queryClient.getQueryData(['/api/tasks']);
+      
+      // カテゴリ名を取得
+      let categoryName = '';
+      if (data.category) {
+        const categoryId = parseInt(data.category, 10);
+        const categories = queryClient.getQueryData(['/api/categories']) as any[] || [];
+        const category = categories.find(c => c.id === categoryId);
+        categoryName = category?.name || '';
+      }
+      
+      // オプティミスティック更新用のタスクオブジェクトを作成
+      const optimisticTask = {
+        ...editingTask,
+        title: data.title,
+        description: data.description || '',
+        dueDate: data.dueDate || null,
+        categoryId: data.category ? parseInt(data.category, 10) : null,
+        category: categoryName,
+        priority: data.priority,
+        completed: data.completed,
+        updatedAt: new Date().toISOString(),
+        _isOptimistic: true // 楽観的更新フラグ
+      };
+      
+      // UIに即時反映
+      queryClient.setQueryData(['/api/tasks'], (old: any[] | undefined) => {
+        if (!old) return [optimisticTask];
+        return old.map(task => 
+          task.id === editingTask.id ? optimisticTask : task
+        );
+      });
+      
+      // オリジナルタスクとモーダル閉じるためのデータを返す
+      return {
+        previousTasks,
+        optimisticTask,
+        closeAfterSuccess: true
+      };
+    },
+    
+    // 実際のAPI呼び出し
     mutationFn: async (data: any) => {
       if (!editingTask) return null;
       
-      console.log('タスクを更新します:', data);
+      console.log('APIでタスクを更新します:', data);
       
       const updatedTask = {
         title: data.title,
@@ -182,72 +268,58 @@ export default function CreateTaskModal() {
         completed: data.completed
       };
       
-      console.log('更新するタスクデータ:', JSON.stringify(updatedTask));
-      
       try {
-        // APIリクエスト
+        // 実際のAPI呼び出し
         const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
         
         if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`タスク更新エラー(${response.status}):`, errorText);
-          throw new Error(`タスク更新に失敗しました: ${response.status}`);
+          throw new Error(`サーバーエラー (${response.status})`);
         }
         
-        // レスポンスを処理
         const responseText = await response.text();
-        
-        if (!responseText) {
-          return { success: true, message: 'タスクが更新されました' };
-        }
-        
         try {
-          const responseData = JSON.parse(responseText);
-          console.log('タスク更新成功:', responseData);
-          return responseData;
+          return responseText ? JSON.parse(responseText) : { success: true };
         } catch (e) {
-          console.warn('JSONでないレスポンス:', responseText);
-          return { success: true, message: 'タスクが更新されました (非JSONレスポンス)' };
+          return { success: true };
         }
       } catch (error) {
         console.error('タスク更新エラー:', error);
         throw error;
       }
     },
-    onSuccess: (result) => {
-      console.log('タスク更新成功。キャッシュを更新します');
-      
-      // キャッシュを完全に無効化してリロード
-      queryClient.removeQueries({ queryKey: ['/api/tasks'] });
-      queryClient.removeQueries({ queryKey: ['/api/categories'] });
-      
-      // 強制的にデータを再取得
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-      
-      // 成功メッセージを表示
+    
+    // エラー処理とロールバック
+    onError: (err, newTodo, context: any) => {
+      console.error('タスク更新に失敗、変更を元に戻します:', err);
+      queryClient.setQueryData(['/api/tasks'], context?.previousTasks);
       toast({
-        title: "タスクを更新しました",
-        description: "タスクが正常に更新されました。"
-      });
-      
-      // UI更新のための遅延処理
-      setTimeout(() => {
-        closeModal();
-        
-        // さらにデータを確実に更新
-        setTimeout(() => {
-          queryClient.refetchQueries({ queryKey: ['/api/tasks'] });
-          queryClient.refetchQueries({ queryKey: ['/api/categories'] });
-        }, 300);
-      }, 300);
-    },
-    onError: (error: any) => {
-      toast({
-        title: "タスクの更新に失敗しました",
-        description: error.message,
+        title: "タスク更新に失敗しました",
+        description: "ネットワークエラーが発生しました。再試行してください。",
         variant: "destructive"
       });
+    },
+    
+    // 成功処理
+    onSuccess: (data, variables, context: any) => {
+      console.log('タスク更新API呼び出し成功');
+      
+      // モーダルを閉じる
+      if (context?.closeAfterSuccess) {
+        closeModal();
+      }
+      
+      // 短い通知
+      toast({
+        title: "タスクを更新しました",
+        duration: 2000
+      });
+      
+      // 実際のデータで更新するために遅延リロード
+      setTimeout(() => {
+        // 一時的なオプティミスティックな項目を実際のサーバーデータに置き換える
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      }, 500); // サーバーのレスポンスを待つために少し遅延
     }
   });
 
