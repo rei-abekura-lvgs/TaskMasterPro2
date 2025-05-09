@@ -21,6 +21,7 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editedName, setEditedName] = useState('');
   const { toast } = useToast();
+  const { refreshCategories } = useTaskContext();
 
   // カテゴリー一覧取得クエリ - REST APIを使用
   const {
@@ -79,6 +80,7 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
       // キャッシュ更新と再フェッチ
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       refetch(); // 明示的に再フェッチ
+      refreshCategories(); // TaskContextを通じて全コンポーネントに通知
       setNewCategoryName('');
       toast({
         title: 'カテゴリーが作成されました',
@@ -131,6 +133,9 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
       
       // 最も重要: refetchは最も直接的な方法
       refetch();
+      
+      // TaskContextを通じて全コンポーネントに通知
+      refreshCategories();
       
       toast({
         title: 'カテゴリーが削除されました',
@@ -224,7 +229,10 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-lg font-medium text-gray-700 dark:text-gray-300">カテゴリー一覧</h4>
                 <button 
-                  onClick={() => refetch()} 
+                  onClick={() => {
+                    refetch(); 
+                    refreshCategories();
+                  }} 
                   className="text-sm px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded"
                   title="カテゴリー一覧を更新"
                 >
