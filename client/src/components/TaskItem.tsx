@@ -29,42 +29,43 @@ export default function TaskItem({ task }: TaskItemProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { toast } = useToast();
   
-  // Delete task mutation
+  // タスク削除処理 - シンプルに再実装
   const deleteTaskMutation = useMutation({
     mutationFn: async () => {
-      console.log('Deleting task using REST API:', task.id);
+      console.log(`タスクID: ${task.id} を削除します`);
       
       try {
-        // 環境に応じたAPIリクエスト
+        // 削除リクエスト
         const response = await apiRequest('DELETE', `/api/tasks/${task.id}`);
         
-        // レスポンスの処理
-        const responseText = await response.text();
-        // 空のレスポンスの場合は成功として扱う
-        if (!responseText.trim()) {
-          return true;
+        // エラーチェック
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`タスク削除エラー（ステータス ${response.status}）:`, errorText);
+          throw new Error(`タスクの削除に失敗しました（${response.status}）`);
         }
         
-        // JSONレスポンスがある場合は解析
-        try {
-          const responseData = JSON.parse(responseText);
-          console.log('Task deleted successfully:', responseData);
-          return true;
-        } catch (e) {
-          console.log('Deletion successful with non-JSON response');
-          return true;
-        }
+        // 成功の場合（DELETEは通常空レスポンスを返す）
+        console.log(`タスクID: ${task.id} が正常に削除されました`);
+        return {
+          success: true,
+          taskId: task.id,
+          message: "タスクが正常に削除されました"
+        };
       } catch (error) {
-        console.error('Error deleting task:', error);
+        console.error('タスク削除中にエラーが発生しました:', error);
         throw error;
       }
     },
-    onSuccess: () => {
-      // 最適化: 正確なクエリキーを使用
+    onSuccess: (result) => {
+      // 複数のキャッシュを更新
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      
+      // 成功通知
       toast({
         title: "タスクが削除されました",
-        description: "タスクが正常に削除されました。"
+        description: result.message
       });
     },
     onError: (error: any) => {

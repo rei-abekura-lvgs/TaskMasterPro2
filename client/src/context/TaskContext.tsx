@@ -92,47 +92,48 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  // カテゴリAPIデータが更新されたらカテゴリリストを更新
+  // カテゴリAPIデータとタスクデータを元にカテゴリリストを更新
   useEffect(() => {
-    if (categoryData) {
-      console.log('カテゴリデータが更新されました:', categoryData);
+    if (categoryData && data) {
+      // 正確なタスク数を算出
+      const actualTaskCount = data.length;
+      console.log(`実際のタスク数: ${actualTaskCount}件`);
       
-      // カテゴリカウントを計算（タスクデータがある場合）
-      const categoryCounts: Record<string, number> = { all: 0 };
+      // カテゴリごとのタスク数をリセット
+      const categoryCounts: Record<string, number> = { all: actualTaskCount };
       
-      if (data) {
-        // 'all'カテゴリは全タスク数
-        categoryCounts.all = data.length;
-        
-        // タスクごとにカテゴリIDベースでカウント
-        data.forEach((task: Task) => {
-          if (task.categoryId) {
-            const categoryId = task.categoryId.toString();
-            categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
-          }
-        });
-      }
+      // タスクのカテゴリごとにカウント
+      data.forEach((task: Task) => {
+        if (task.categoryId) {
+          const categoryId = task.categoryId.toString();
+          categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
+          console.log(`カテゴリID: ${categoryId} のタスク: ${task.title}`);
+        }
+      });
       
-      // カテゴリデータとカウントを統合
+      // カテゴリデータと正確なカウントを統合
       const apiCategories = categoryData.map((cat: any) => {
         const catId = cat.id.toString();
+        const count = categoryCounts[catId] || 0;
+        console.log(`カテゴリ「${cat.name}」(ID: ${catId}) のタスク数: ${count}件`);
         return {
           id: catId,
           name: cat.name,
-          count: categoryCounts[catId] || 0
+          count: count
         };
       });
       
-      // 完全な新しいカテゴリ配列をセット
-      setCategories([
-        { id: 'all', name: 'すべてのタスク', count: categoryCounts.all || 0 },
-        ...apiCategories
-      ]);
+      // 更新情報をログで確認
+      console.log(`「すべてのタスク」のカウント: ${actualTaskCount}件`);
       
-      console.log('更新されたカテゴリ一覧:', [
-        { id: 'all', name: 'すべてのタスク', count: categoryCounts.all || 0 },
+      // 完全な新しいカテゴリ配列をセット
+      const newCategories = [
+        { id: 'all', name: 'すべてのタスク', count: actualTaskCount },
         ...apiCategories
-      ]);
+      ];
+      setCategories(newCategories);
+      
+      console.log('更新されたカテゴリ一覧:', newCategories);
     }
   }, [categoryData, data]);
 
