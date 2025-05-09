@@ -90,6 +90,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/categories/:id', async (req, res) => {
+    try {
+      const result = await storage.deleteCategory(Number(req.params.id));
+      if (!result) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to delete category', error });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
 
