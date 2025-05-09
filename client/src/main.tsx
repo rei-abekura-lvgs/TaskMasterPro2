@@ -1,16 +1,15 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { configureAmplify } from "@/lib/amplify";
 
-// 後でAmplifyを使用するときのために設定部分はコメントアウトしておく
-// import { Amplify } from "aws-amplify";
-// import { Authenticator } from "@aws-amplify/ui-react";
-// import "@aws-amplify/ui-react/styles.css";
-// import amplifyConfig from "./lib/amplify";
-// Amplify.configure(amplifyConfig);
+// 本番環境の場合にAmplify設定を適用
+configureAmplify();
 
 createRoot(document.getElementById("root")!).render(
-  // <Authenticator>
+  <QueryClientProvider client={queryClient}>
     <App />
-  // </Authenticator>
+  </QueryClientProvider>
 );
