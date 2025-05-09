@@ -98,14 +98,59 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         
         try {
           // AppSyncのGraphQLを使用してデータ取得
-          const result = await executeGraphQL(listTasks, {
-            filter: modelFilter && modelFilter.and && modelFilter.and.length > 0 ? modelFilter : null,
-            limit: 100
-          });
+          // Amplifyスキーマに合わせたクエリに変更
+          let result;
           
-          if (result && result.listTasks && result.listTasks.items) {
-            // GraphQLから返されたタスクをフロントエンド用のフォーマットに変換
-            return result.listTasks.items.map((item: any) => ({
+          // フィルター条件に基づいて適切なクエリを選択
+          if (filter.category && filter.category.eq) {
+            // カテゴリーでフィルタリング
+            result = await executeGraphQL(getTasksByCategory, {
+              categoryId: filter.category.eq
+            });
+            
+            if (result && result.getTasksByCategory) {
+              // 配列でラップして統一した形式に
+              return [result.getTasksByCategory].map((item: any) => ({
+                id: item.id,
+                title: item.title,
+                description: item.description || '',
+                dueDate: item.dueDate || '',
+                categoryId: item.category ? item.category.id : undefined,
+                category: item.category ? item.category.name : '',
+                priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
+                completed: item.completed,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+                userId: 0 // ダミー値
+              }));
+            }
+          } else if (filter.priority && filter.priority.eq) {
+            // 優先度でフィルタリング
+            result = await executeGraphQL(getTasksByPriority, {
+              priority: filter.priority.eq
+            });
+            
+            if (result && result.getTasksByPriority) {
+              return result.getTasksByPriority.map((item: any) => ({
+                id: item.id,
+                title: item.title,
+                description: item.description || '',
+                dueDate: item.dueDate || '',
+                categoryId: item.category ? item.category.id : undefined,
+                category: item.category ? item.category.name : '',
+                priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
+                completed: item.completed,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+                userId: 0 // ダミー値
+              }));
+            }
+          } else {
+            // 標準のタスク一覧取得
+            result = await executeGraphQL(listTasks, {});
+            
+            if (result && result.listTaskItems && result.listTaskItems.items) {
+              return result.listTaskItems.items.map((item: any) => ({
               id: item.id,
               title: item.title,
               description: item.description || '',

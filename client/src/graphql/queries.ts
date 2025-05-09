@@ -1,7 +1,7 @@
 // GraphQL Queries
 export const listTasks = /* GraphQL */ `
-  query ListTasks($filter: ModelTaskFilterInput, $limit: Int, $nextToken: String) {
-    listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  query ListTasks {
+    listTaskItems {
       items {
         id
         title
@@ -16,7 +16,6 @@ export const listTasks = /* GraphQL */ `
         createdAt
         updatedAt
       }
-      nextToken
     }
   }
 `;
@@ -41,60 +40,53 @@ export const getTask = /* GraphQL */ `
 `;
 
 export const listCategories = /* GraphQL */ `
-  query ListCategories($filter: ModelCategoryFilterInput, $limit: Int, $nextToken: String) {
-    listCategories(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  query ListCategories {
+    listCategoryItems {
       items {
         id
         name
         createdAt
       }
-      nextToken
     }
   }
 `;
 
 // カテゴリーIDでフィルタリングしたタスクの取得
 export const getTasksByCategory = /* GraphQL */ `
-  query ListTasks($filter: ModelTaskFilterInput, $limit: Int, $nextToken: String) {
-    listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
+  query GetTasksByCategory($categoryId: ID!) {
+    getTasksByCategory(categoryId: $categoryId) {
+      id
+      title
+      description
+      dueDate
+      priority
+      completed
+      category {
         id
-        title
-        description
-        dueDate
-        priority
-        completed
-        category {
-          id
-          name
-        }
-        createdAt
-        updatedAt
+        name
       }
-      nextToken
+      createdAt
+      updatedAt
     }
   }
 `;
 
 // 優先度でフィルタリングしたタスクの取得
 export const getTasksByPriority = /* GraphQL */ `
-  query ListTasks($filter: ModelTaskFilterInput, $limit: Int, $nextToken: String) {
-    listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
+  query GetTasksByPriority($priority: TaskPriority!) {
+    getTasksByPriority(priority: $priority) {
+      id
+      title
+      description
+      dueDate
+      priority
+      completed
+      category {
         id
-        title
-        description
-        dueDate
-        priority
-        completed
-        category {
-          id
-          name
-        }
-        createdAt
-        updatedAt
+        name
       }
-      nextToken
+      createdAt
+      updatedAt
     }
   }
 `;
