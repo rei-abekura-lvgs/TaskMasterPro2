@@ -34,45 +34,47 @@ export function configureAmplify() {
 
 // GraphQLクエリを実行する関数
 export async function executeGraphQL(query: string, variables: Record<string, any> = {}) {
-  if (import.meta.env.PROD) {
-    try {
-      if (!client) {
-        // クライアントが初期化されていない場合は初期化
-        configureAmplify();
-        client = generateClient();
-      }
-      
-      // GraphQLクエリを実行
-      const response = await client.graphql({
-        query,
-        variables
-      });
-      
-      return response.data;
-    } catch (error) {
-      console.error('Error executing GraphQL query:', error);
-      throw error;
-    }
-  } else {
-    // 開発環境ではRESTful APIを使用
-    // パスをクエリタイプから推測（単純化のため）
-    const isQuery = query.includes('query');
-    const isMutation = query.includes('mutation');
-    const path = getPathFromQuery(query);
-    
-    const method = isMutation ? 'POST' : 'GET';
-    const options: RequestInit = {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    };
-    
-    if (method === 'POST') {
-      options.body = JSON.stringify(variables);
+  try {
+    if (!client) {
+      // クライアントが初期化されていない場合は初期化
+      configureAmplify();
+      client = generateClient();
     }
     
-    return fetch(`/api/${path}`, options).then(res => res.json());
+    // GraphQLクエリを実行
+    const response = await client.graphql({
+      query,
+      variables
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error executing GraphQL query:', error);
+    
+    // 開発環境では、AppSyncが使えない場合に備えてRESTful APIにフォールバック
+    if (!import.meta.env.PROD) {
+      console.log('Falling back to REST API...');
+      // パスをクエリタイプから推測（単純化のため）
+      const isQuery = query.includes('query');
+      const isMutation = query.includes('mutation');
+      const path = getPathFromQuery(query);
+      
+      const method = isMutation ? 'POST' : 'GET';
+      const options: RequestInit = {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      };
+      
+      if (method === 'POST') {
+        options.body = JSON.stringify(variables);
+      }
+      
+      return fetch(`/api/${path}`, options).then(res => res.json());
+    }
+    
+    throw error;
   }
 }
 

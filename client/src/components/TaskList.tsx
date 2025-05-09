@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import TaskItem from './TaskItem';
 import { useTaskContext } from '@/context/TaskContext';
 import { Task } from '@/types';
+import { listTasks } from '@/graphql/queries';
+import { executeGraphQL } from '@/lib/amplify';
 
 type SortOption = 'dateNewest' | 'dateOldest' | 'priority' | 'alphabetical';
 type FilterType = 'all' | 'active' | 'completed';
@@ -51,59 +53,85 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     return filter;
   };
   
+  // GraphQLクエリを実行
   const { data, isLoading, error } = useQuery({
     queryKey: ['tasks', activeCategory, activeFilter, filterType],
     queryFn: async () => {
       try {
-        // データベースからデータ取得 (仮のユーザーID=3を使用)
-        const userId = 3;
-        const response = await fetch(`/api/tasks?userId=${userId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch tasks');
-        }
-        
-        const tasks = await response.json();
-        
-        // フィルター処理（一時的にクライアント側でフィルタリング）
         const filter = buildFilter();
-        let filteredTasks = [...tasks];
+        
+        // DynamoDBのクエリフィルタに変換
+        const modelFilter: any = {
+          and: []
+        };
         
         // カテゴリーフィルター
         if (filter.category && filter.category.eq) {
-          filteredTasks = filteredTasks.filter(task => task.category === filter.category.eq);
+          modelFilter.and.push({ 
+            'category': { 'id': { 'eq': filter.category.eq } } 
+          });
         }
         
         // 完了状態フィルター
         if (filter.completed !== undefined && filter.completed.eq !== undefined) {
-          filteredTasks = filteredTasks.filter(task => task.completed === filter.completed.eq);
+          modelFilter.and.push({ 
+            'completed': { 'eq': filter.completed.eq } 
+          });
         }
         
         // 優先度フィルター
         if (filter.priority && filter.priority.eq) {
-          filteredTasks = filteredTasks.filter(task => task.priority === filter.priority.eq);
+          modelFilter.and.push({ 
+            'priority': { 'eq': filter.priority.eq } 
+          });
         }
         
-        // 日付フィルター
-        if (filter.dueDate) {
-          if (filter.dueDate.ge) {
-            const geDate = new Date(filter.dueDate.ge);
-            filteredTasks = filteredTasks.filter(task => {
-              if (!task.dueDate) return false;
-              return new Date(task.dueDate) >= geDate;
-            });
+        try {
+          // AppSyncのGraphQLを使用してデータ取得
+          const result = await executeGraphQL(listTasks, {
+            filter: modelFilter.and.length > 0 ? modelFilter : null,
+            limit: 100
+          });
+          
+          if (result && result.listTasks && result.listTasks.items) {
+            return result.listTasks.items;
           }
           
-          if (filter.dueDate.lt) {
-            const ltDate = new Date(filter.dueDate.lt);
-            filteredTasks = filteredTasks.filter(task => {
-              if (!task.dueDate) return false;
-              return new Date(task.dueDate) < ltDate;
-            });
+          throw new Error('Invalid response from AppSync');
+        } catch (graphqlError) {
+          console.error('GraphQL Error:', graphqlError);
+          
+          // フォールバック：REST APIを使用
+          console.log('Falling back to REST API');
+          const userId = 3; // 仮のユーザーID
+          const response = await fetch(`/api/tasks?userId=${userId}`);
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch tasks from REST API');
           }
+          
+          const tasks = await response.json();
+          
+          // フィルター処理（クライアント側でフィルタリング）
+          let filteredTasks = [...tasks];
+          
+          // カテゴリーフィルター
+          if (filter.category && filter.category.eq) {
+            filteredTasks = filteredTasks.filter(task => task.category === filter.category.eq);
+          }
+          
+          // 完了状態フィルター
+          if (filter.completed !== undefined && filter.completed.eq !== undefined) {
+            filteredTasks = filteredTasks.filter(task => task.completed === filter.completed.eq);
+          }
+          
+          // 優先度フィルター
+          if (filter.priority && filter.priority.eq) {
+            filteredTasks = filteredTasks.filter(task => task.priority === filter.priority.eq);
+          }
+          
+          return filteredTasks;
         }
-        
-        return filteredTasks;
       } catch (error) {
         console.error('Error fetching tasks:', error);
         throw error;

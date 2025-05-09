@@ -53,40 +53,48 @@ export const listCategories = /* GraphQL */ `
   }
 `;
 
+// カテゴリーIDでフィルタリングしたタスクの取得
 export const getTasksByCategory = /* GraphQL */ `
-  query GetTasksByCategory($categoryId: ID!) {
-    getTasksByCategory(categoryId: $categoryId) {
-      id
-      title
-      description
-      dueDate
-      priority
-      completed
-      category {
+  query ListTasks($filter: ModelTaskFilterInput, $limit: Int, $nextToken: String) {
+    listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
         id
-        name
+        title
+        description
+        dueDate
+        priority
+        completed
+        category {
+          id
+          name
+        }
+        createdAt
+        updatedAt
       }
-      createdAt
-      updatedAt
+      nextToken
     }
   }
 `;
 
+// 優先度でフィルタリングしたタスクの取得
 export const getTasksByPriority = /* GraphQL */ `
-  query GetTasksByPriority($priority: TaskPriority!) {
-    getTasksByPriority(priority: $priority) {
-      id
-      title
-      description
-      dueDate
-      priority
-      completed
-      category {
+  query ListTasks($filter: ModelTaskFilterInput, $limit: Int, $nextToken: String) {
+    listTasks(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
         id
-        name
+        title
+        description
+        dueDate
+        priority
+        completed
+        category {
+          id
+          name
+        }
+        createdAt
+        updatedAt
       }
-      createdAt
-      updatedAt
+      nextToken
     }
   }
 `;
