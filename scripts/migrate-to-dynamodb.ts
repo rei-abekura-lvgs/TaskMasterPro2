@@ -49,11 +49,12 @@ interface Task {
 interface CreateUserInput {
   username: string;
   email: string;
+  displayName?: string;
 }
 
 interface CreateCategoryInput {
   name: string;
-  ownerId: string;
+  ownerId: string;  // User IDへの参照
 }
 
 interface CreateTaskInput {
@@ -62,7 +63,8 @@ interface CreateTaskInput {
   dueDate?: string;
   priority?: 'LOW' | 'MEDIUM' | 'HIGH';
   completed: boolean;
-  categoryId?: string;
+  categoryId?: string;  // Category IDへの参照
+  ownerId: string;  // User IDへの参照
 }
 
 // 移行ログ型定義
@@ -94,6 +96,9 @@ const CREATE_USER = `
       id
       username
       email
+      displayName
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -103,7 +108,10 @@ const CREATE_CATEGORY = `
     createCategory(input: $input) {
       id
       name
-      ownerId
+      owner {
+        id
+      }
+      createdAt
     }
   }
 `;
@@ -117,7 +125,14 @@ const CREATE_TASK = `
       dueDate
       priority
       completed
-      categoryId
+      category {
+        id
+      }
+      owner {
+        id
+      }
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -267,6 +282,8 @@ async function migrateDataToDynamoDB(
       // プリオリティを大文字に変換（DynamoDBスキーマ要件）
       const priority = task.priority ? task.priority.toUpperCase() as 'LOW' | 'MEDIUM' | 'HIGH' : 'MEDIUM';
       
+      const ownerId = userIdMapping[task.userId] || task.userId.toString();
+      
       const input: CreateTaskInput = {
         title: task.title,
         description: task.description,
@@ -274,6 +291,7 @@ async function migrateDataToDynamoDB(
         priority,
         completed: task.completed,
         categoryId,
+        ownerId,
       };
       
       const result = await executeGraphQL<{ createTask: { id: string } }>(CREATE_TASK, { input });
