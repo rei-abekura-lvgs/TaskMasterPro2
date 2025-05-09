@@ -1,11 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
-import { createTaskSchema, updateTaskSchema } from '@/types';
+import * as z from 'zod';
+
+// Define schemas locally to avoid dependency issues
+const createTaskSchema = z.object({
+  title: z.string().min(1, 'タイトルは必須項目です'),
+  description: z.string().optional(),
+  dueDate: z.string().optional(),
+  category: z.string().optional(),
+  priority: z.enum(['low', 'medium', 'high']),
+  completed: z.boolean().default(false),
+});
+
+const updateTaskSchema = createTaskSchema.extend({});
 
 export default function CreateTaskModal() {
   const { isModalOpen, setIsModalOpen, editingTask, setEditingTask } = useTaskContext();
@@ -199,11 +211,21 @@ export default function CreateTaskModal() {
     }
   });
 
-  const onSubmit = (data: any) => {
-    if (isEditing) {
-      updateTaskMutation.mutate(data);
-    } else {
-      createTaskMutation.mutate(data);
+  const onSubmit = async (data: any) => {
+    try {
+      console.log('Form submitted with data:', data);
+      if (isEditing) {
+        await updateTaskMutation.mutateAsync(data);
+      } else {
+        await createTaskMutation.mutateAsync(data);
+      }
+    } catch (error) {
+      console.error('Error in form submission:', error);
+      toast({
+        title: isEditing ? "タスクの更新に失敗しました" : "タスクの作成に失敗しました",
+        description: error instanceof Error ? error.message : "不明なエラーが発生しました",
+        variant: "destructive"
+      });
     }
   };
 

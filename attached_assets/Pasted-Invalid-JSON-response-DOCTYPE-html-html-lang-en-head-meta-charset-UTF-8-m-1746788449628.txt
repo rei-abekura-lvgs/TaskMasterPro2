@@ -1,0 +1,52 @@
+Invalid JSON response: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TaskMaster - Amplify Todo App</title>
+    <meta name="description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="TaskMaster - Amplify Todo App">
+    <meta property="og:description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <meta property="og:type" content="website">
+    <script type="module" crossorigin src="/assets/index-CED__G9L.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DSZ1NgMN.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
+
+mutationFn @ index-CED__G9L.js:131
+await in mutationFn
+fn @ index-CED__G9L.js:48
+v @ index-CED__G9L.js:48
+start @ index-CED__G9L.js:48
+execute @ index-CED__G9L.js:48
+await in execute
+mutate @ index-CED__G9L.js:48
+(anonymous) @ index-CED__G9L.js:48
+d @ index-CED__G9L.js:131
+(anonymous) @ index-CED__G9L.js:131
+await in (anonymous)
+kk @ index-CED__G9L.js:37
+Nk @ index-CED__G9L.js:37
+Ak @ index-CED__G9L.js:37
+Uy @ index-CED__G9L.js:37
+Gw @ index-CED__G9L.js:37
+(anonymous) @ index-CED__G9L.js:37
+nm @ index-CED__G9L.js:40
+gw @ index-CED__G9L.js:37
+Gd @ index-CED__G9L.js:37
+Ip @ index-CED__G9L.js:37
+Wk @ index-CED__G9L.js:37Understand this error
+index-CED__G9L.js:131 Error creating task: Error: Invalid response format: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" con
+    at Object.mutationFn (index-CED__G9L.js:131:104126)
