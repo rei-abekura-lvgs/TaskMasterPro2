@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Task } from '@/types';
+import { apiRequest } from '@/lib/queryClient';
 
 type CategoryType = {
   id: string | number;
@@ -26,11 +27,13 @@ interface TaskContextType {
   setActiveCategory: (category: string) => void;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
+  refreshCategories: () => void; // カテゴリの強制更新関数
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export function TaskProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -132,6 +135,15 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     }
   }, [data]);
 
+  // カテゴリデータを強制的に更新する関数
+  const refreshCategories = () => {
+    console.log('カテゴリを強制更新します');
+    // カテゴリキャッシュを無効化してデータを再取得
+    queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+    // タスクキャッシュも無効化して関連データをすべて更新
+    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+  };
+
   const value = {
     isModalOpen,
     setIsModalOpen,
@@ -142,7 +154,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     activeCategory,
     setActiveCategory,
     activeFilter,
-    setActiveFilter
+    setActiveFilter,
+    refreshCategories
   };
 
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
