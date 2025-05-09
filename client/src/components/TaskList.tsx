@@ -184,7 +184,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   };
 
   return (
-    <main className="flex-1 overflow-hidden flex flex-col bg-gray-50">
+    <main className="flex-1 overflow-hidden flex flex-col bg-gray-50 w-full">
       {/* Task Toolbar */}
       <div className="bg-white shadow p-5 flex flex-col space-y-4">
         <div className="flex items-center justify-between">

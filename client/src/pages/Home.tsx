@@ -25,7 +25,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Header toggleSidebar={toggleSidebar} />
       
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         <Sidebar 
           isOpen={sidebarOpen} 
           onClose={closeSidebar} 
@@ -40,7 +40,9 @@ export default function Home() {
           ></div>
         )}
         
-        <TaskList onOpenNewTaskModal={openNewTaskModal} />
+        <div className="flex-1 md:pl-72">
+          <TaskList onOpenNewTaskModal={openNewTaskModal} />
+        </div>
       </div>
       
       <CreateTaskModal />
