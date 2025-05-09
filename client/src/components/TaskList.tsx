@@ -176,125 +176,125 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   return (
     <main className="flex-1 overflow-hidden flex flex-col bg-gray-50">
       {/* Task Toolbar */}
-      <div className="bg-white shadow-sm p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-medium">{getViewTitle()}</h2>
-          <div className="text-sm text-gray-500 hidden sm:block">
-            {sortedTasks.length} 件のタスク
+      <div className="bg-white shadow-sm p-4 flex flex-col space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <h2 className="text-lg font-medium">{getViewTitle()}</h2>
+            <div className="text-sm text-gray-500 hidden sm:block">
+              {sortedTasks.length} 件のタスク
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            {/* Filter dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setFilterMenuOpen(!filterMenuOpen)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <span className="material-icons">filter_list</span>
+              </button>
+              {filterMenuOpen && (
+                <div 
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
+                  onBlur={() => setFilterMenuOpen(false)}
+                >
+                  <button 
+                    onClick={() => {
+                      setFilterType('all');
+                      setFilterMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    すべてのタスク
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setFilterType('active');
+                      setFilterMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    未完了のタスク
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setFilterType('completed');
+                      setFilterMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    完了済みのタスク
+                  </button>
+                </div>
+              )}
+            </div>
+            
+            {/* Sort dropdown */}
+            <div className="relative">
+              <button 
+                onClick={() => setSortMenuOpen(!sortMenuOpen)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <span className="material-icons">sort</span>
+              </button>
+              {sortMenuOpen && (
+                <div 
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
+                  onBlur={() => setSortMenuOpen(false)}
+                >
+                  <button 
+                    onClick={() => {
+                      setSortOption('dateNewest');
+                      setSortMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    日付（新しい順）
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSortOption('dateOldest');
+                      setSortMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    日付（古い順）
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSortOption('priority');
+                      setSortMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    優先度
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSortOption('alphabetical');
+                      setSortMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    アルファベット順
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          {/* Filter dropdown */}
-          <div className="relative">
-            <button 
-              onClick={() => setFilterMenuOpen(!filterMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <span className="material-icons">filter_list</span>
-            </button>
-            {filterMenuOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
-                onBlur={() => setFilterMenuOpen(false)}
-              >
-                <button 
-                  onClick={() => {
-                    setFilterType('all');
-                    setFilterMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  すべてのタスク
-                </button>
-                <button 
-                  onClick={() => {
-                    setFilterType('active');
-                    setFilterMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  未完了のタスク
-                </button>
-                <button 
-                  onClick={() => {
-                    setFilterType('completed');
-                    setFilterMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  完了済みのタスク
-                </button>
-              </div>
-            )}
-          </div>
-          
-          {/* Sort dropdown */}
-          <div className="relative">
-            <button 
-              onClick={() => setSortMenuOpen(!sortMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-            >
-              <span className="material-icons">sort</span>
-            </button>
-            {sortMenuOpen && (
-              <div 
-                className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10"
-                onBlur={() => setSortMenuOpen(false)}
-              >
-                <button 
-                  onClick={() => {
-                    setSortOption('dateNewest');
-                    setSortMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  日付（新しい順）
-                </button>
-                <button 
-                  onClick={() => {
-                    setSortOption('dateOldest');
-                    setSortMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  日付（古い順）
-                </button>
-                <button 
-                  onClick={() => {
-                    setSortOption('priority');
-                    setSortMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  優先度
-                </button>
-                <button 
-                  onClick={() => {
-                    setSortOption('alphabetical');
-                    setSortMenuOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  アルファベット順
-                </button>
-              </div>
-            )}
-          </div>
-          
-          {/* Mobile search button */}
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors md:hidden">
-            <span className="material-icons">search</span>
-          </button>
-          
-          {/* New task button */}
-          <button 
-            onClick={onOpenNewTaskModal}
-            className="flex items-center space-x-1 bg-primary hover:bg-primary-dark text-white rounded-lg py-2 px-3 transition-colors shadow-sm"
-          >
-            <span className="material-icons text-sm">add</span>
-            <span className="hidden sm:inline">新規タスク</span>
-          </button>
+        {/* Search input row */}
+        <div className="w-full flex relative">
+          <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span className="material-icons text-gray-400 text-sm">search</span>
+          </span>
+          <input 
+            type="text" 
+            placeholder="タスクを検索..." 
+            className="pl-10 pr-4 py-2 w-full rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+          />
         </div>
       </div>
       
