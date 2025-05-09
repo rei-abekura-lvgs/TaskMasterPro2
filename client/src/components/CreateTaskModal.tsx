@@ -75,28 +75,45 @@ export default function CreateTaskModal() {
       
       const newTask = {
         title: data.title,
-        description: data.description,
-        dueDate: data.dueDate,
+        description: data.description || '',
+        dueDate: data.dueDate || null,
         categoryId: data.category ? parseInt(data.category, 10) : null,
         priority: data.priority,
         completed: data.completed || false,
         userId: 3 // 仮のユーザーID
       };
       
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newTask)
-      });
+      console.log('Task data being sent:', JSON.stringify(newTask));
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create task');
+      try {
+        const response = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newTask)
+        });
+        
+        // レスポンスがJSONでない場合の処理
+        const responseText = await response.text();
+        let responseData;
+        
+        try {
+          responseData = JSON.parse(responseText);
+        } catch (e) {
+          console.error('Invalid JSON response:', responseText);
+          throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
+        }
+        
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to create task');
+        }
+        
+        return responseData;
+      } catch (error) {
+        console.error('Error creating task:', error);
+        throw error;
       }
-      
-      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -125,27 +142,44 @@ export default function CreateTaskModal() {
       
       const updatedTask = {
         title: data.title,
-        description: data.description,
-        dueDate: data.dueDate,
+        description: data.description || '',
+        dueDate: data.dueDate || null,
         categoryId: data.category ? parseInt(data.category, 10) : null,
         priority: data.priority,
         completed: data.completed
       };
       
-      const response = await fetch(`/api/tasks/${editingTask.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedTask)
-      });
+      console.log('Updated task data being sent:', JSON.stringify(updatedTask));
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update task');
+      try {
+        const response = await fetch(`/api/tasks/${editingTask.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedTask)
+        });
+        
+        // レスポンスがJSONでない場合の処理
+        const responseText = await response.text();
+        let responseData;
+        
+        try {
+          responseData = JSON.parse(responseText);
+        } catch (e) {
+          console.error('Invalid JSON response:', responseText);
+          throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
+        }
+        
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Failed to update task');
+        }
+        
+        return responseData;
+      } catch (error) {
+        console.error('Error updating task:', error);
+        throw error;
       }
-      
-      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

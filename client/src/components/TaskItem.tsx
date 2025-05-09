@@ -5,6 +5,21 @@ import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
+// Define the Task interface locally to avoid dependency issues
+interface Task {
+  id: number;
+  title: string;
+  description?: string;
+  dueDate?: string;
+  categoryId?: number;
+  priority: 'low' | 'medium' | 'high';
+  completed: boolean;
+  userId: number;
+  category?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface TaskItemProps {
   task: Task;
 }
