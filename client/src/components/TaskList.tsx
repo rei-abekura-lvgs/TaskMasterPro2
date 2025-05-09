@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import TaskItem from './TaskItem';
 import { useTaskContext } from '@/context/TaskContext';
@@ -12,6 +12,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const { activeCategory, activeFilter } = useTaskContext();
   
@@ -137,7 +138,25 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     }
   };
   
-  const sortedTasks = data ? sortTasks(data) : [];
+  // 検索とソート処理
+  const filteredAndSortedTasks = useMemo(() => {
+    if (!data) return [];
+    
+    // 1. 検索フィルタリング
+    let filtered = [...data];
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.trim().toLowerCase();
+      filtered = filtered.filter(task => 
+        task.title.toLowerCase().includes(query) ||
+        (task.description && task.description.toLowerCase().includes(query))
+      );
+    }
+    
+    // 2. ソート処理
+    return sortTasks(filtered);
+  }, [data, searchQuery, sortOption]);
+  
+  const sortedTasks = filteredAndSortedTasks;
   
   // 現在のビュータイトルを取得
   const getViewTitle = () => {
@@ -283,6 +302,8 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           </span>
           <input 
             type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="タスクを検索..." 
             className="pl-10 pr-4 py-2 w-full rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
           />
