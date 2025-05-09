@@ -94,6 +94,7 @@ export class DatabaseStorage implements IStorage {
       title: task.title || 'New Task',
       description: task.description || '',
       dueDate: task.dueDate || null,
+      categoryId: task.categoryId || null,
       priority: task.priority || 'medium',
       completed: task.completed !== undefined ? task.completed : false,
       userId: task.userId

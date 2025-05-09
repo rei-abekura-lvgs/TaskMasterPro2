@@ -59,8 +59,7 @@ export default function CreateTaskModal() {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
-        // categoryIdはDBスキーマの型に合わせた形式で送信
-        // categoryIdを省略してサーバー側でデフォルト値を使用
+        categoryId: data.category ? parseInt(data.category, 10) : null,
         priority: data.priority,
         completed: data.completed || false,
         userId: 3 // 仮のユーザーID
@@ -107,7 +106,7 @@ export default function CreateTaskModal() {
         title: data.title,
         description: data.description,
         dueDate: data.dueDate,
-        // categoryIdを省略
+        categoryId: data.category ? parseInt(data.category, 10) : null,
         priority: data.priority,
         completed: data.completed
       };
