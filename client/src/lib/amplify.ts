@@ -32,10 +32,23 @@ export async function callAPI(path: string, options: RequestInit = {}) {
   // 本番環境ではAmplify APIを使用し、開発環境では直接Fetchを使用
   if (import.meta.env.PROD) {
     try {
-      // @ts-ignore
       const { API } = await import('aws-amplify');
       const apiName = 'todoAPI';
-      const response = await API.endpoint.get(apiName, path, options);
+      const method = options.method?.toLowerCase() || 'get';
+      
+      let response;
+      if (method === 'get') {
+        response = await API.get(apiName, path, options);
+      } else if (method === 'post') {
+        response = await API.post(apiName, path, options);
+      } else if (method === 'put' || method === 'patch') {
+        response = await API.put(apiName, path, options);
+      } else if (method === 'delete') {
+        response = await API.del(apiName, path, options);
+      } else {
+        throw new Error(`Unsupported method: ${method}`);
+      }
+      
       return response;
     } catch (error) {
       console.error('Error calling Amplify API:', error);
