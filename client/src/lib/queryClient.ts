@@ -125,14 +125,23 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
+      // 自動更新の設定
+      refetchInterval: 3000, // 3秒ごとに自動更新（常時最新状態を保つ）
+      refetchIntervalInBackground: true, // バックグラウンドでも更新
+      refetchOnMount: true, // コンポーネントがマウントされるたびに更新
       refetchOnWindowFocus: true, // ウィンドウにフォーカスが戻った時にデータを再取得する
-      staleTime: 5000, // 5秒後にデータを古いと見なす (Infinityから変更)
-      gcTime: 60 * 1000, // 1分後にキャッシュからデータが削除される
-      retry: false,
+      refetchOnReconnect: true, // ネットワーク接続が回復した時に更新
+      
+      // キャッシュの設定
+      staleTime: 0, // データは取得後すぐに「古い」と見なす (stale)
+      gcTime: 10 * 1000, // 10秒後にキャッシュからデータが削除される
+      
+      // エラー設定
+      retry: 3, // エラー時に3回リトライ
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // 指数バックオフ
     },
     mutations: {
-      retry: false,
+      retry: 2, // 変更操作も2回までリトライ
     },
   },
 });

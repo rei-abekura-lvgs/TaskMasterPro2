@@ -20,6 +20,23 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   const { activeCategory, activeFilter } = useTaskContext();
   const queryClient = useQueryClient(); // QueryClientを使用するための初期化
   
+  // フィルターやカテゴリー変更時にデータを再取得
+  useEffect(() => {
+    console.log("フィルターまたはカテゴリーが変更されました - データを再取得します");
+    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+    refetch(); // 明示的に再取得
+  }, [activeCategory, activeFilter, filterType, queryClient]);
+  
+  // データ更新のためのポーリング設定（最後の手段）
+  useEffect(() => {
+    // 2秒ごとに自動更新
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, [queryClient]);
+  
   // Build the filter based on active category and filter
   const buildFilter = () => {
     let filter: any = {};
