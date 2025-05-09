@@ -66,4 +66,7 @@ export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
 
 export type InsertTask = z.infer<typeof insertTaskSchema>;
-export type Task = typeof tasks.$inferSelect;
+// タスク型に category フィールドを追加
+export type Task = typeof tasks.$inferSelect & {
+  category?: string;
+};

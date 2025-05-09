@@ -138,7 +138,20 @@ export class DatabaseStorage implements IStorage {
     };
     
     const [newTask] = await db.insert(tasks).values(taskToInsert).returning();
-    return newTask;
+    
+    // カテゴリ名を取得して追加
+    let categoryName = '';
+    if (newTask.categoryId) {
+      const category = await this.getCategory(newTask.categoryId);
+      if (category) {
+        categoryName = category.name;
+      }
+    }
+    
+    return {
+      ...newTask,
+      category: categoryName
+    };
   }
 
   async updateTask(id: number, updates: Partial<InsertTask>): Promise<Task | undefined> {
@@ -160,7 +173,22 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(tasks.id, id))
       .returning();
-    return updatedTask;
+      
+    if (!updatedTask) return undefined;
+    
+    // カテゴリ名を取得して追加
+    let categoryName = '';
+    if (updatedTask.categoryId) {
+      const category = await this.getCategory(updatedTask.categoryId);
+      if (category) {
+        categoryName = category.name;
+      }
+    }
+    
+    return {
+      ...updatedTask,
+      category: categoryName
+    };
   }
 
   async deleteTask(id: number): Promise<boolean> {
