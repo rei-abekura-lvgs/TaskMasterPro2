@@ -125,23 +125,23 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
-      // 自動更新の設定
-      refetchInterval: 3000, // 3秒ごとに自動更新（常時最新状態を保つ）
-      refetchIntervalInBackground: true, // バックグラウンドでも更新
-      refetchOnMount: true, // コンポーネントがマウントされるたびに更新
-      refetchOnWindowFocus: true, // ウィンドウにフォーカスが戻った時にデータを再取得する
-      refetchOnReconnect: true, // ネットワーク接続が回復した時に更新
+      // 自動更新の設定 - コスト削減のために頻度を下げる
+      refetchInterval: 30000, // 30秒ごとに自動更新（大幅に頻度を下げる）
+      refetchIntervalInBackground: false, // バックグラウンドでは更新しない
+      refetchOnMount: "stale", // 古いデータの場合のみマウント時に更新
+      refetchOnWindowFocus: false, // ウィンドウフォーカス時の自動更新をオフ
+      refetchOnReconnect: "stale", // ネットワーク再接続時は古いデータのみ更新
       
-      // キャッシュの設定
-      staleTime: 0, // データは取得後すぐに「古い」と見なす (stale)
-      gcTime: 10 * 1000, // 10秒後にキャッシュからデータが削除される
+      // キャッシュの設定 - 長期間キャッシュを維持
+      staleTime: 60 * 1000, // データは1分間は新鮮とみなす
+      gcTime: 5 * 60 * 1000, // 5分間キャッシュを維持
       
       // エラー設定
-      retry: 3, // エラー時に3回リトライ
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // 指数バックオフ
+      retry: 2, // エラー時の再試行回数を減らす
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // 最大10秒までの指数バックオフ
     },
     mutations: {
-      retry: 2, // 変更操作も2回までリトライ
+      retry: 1, // 変更操作は1回だけリトライ
     },
   },
 });
