@@ -1,22 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { executeQuery } from '@/lib/utils';
-import { mockCategories, mockDataService } from '@/lib/mockData';
 import { Task } from '@/types';
-import { gql } from '@apollo/client';
-
-// GraphQL query for categories
-const LIST_TASKS = gql`
-  query ListTasks {
-    listTasks {
-      items {
-        id
-        category
-        completed
-      }
-    }
-  }
-`;
 
 type CategoryType = {
   id: string | number;
@@ -70,12 +54,15 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     { id: 'completed', name: '完了済み', icon: 'check_circle', count: 0 }
   ]);
   
-  // モックデータでタスクを取得
-  const { data } = useQuery({
-    queryKey: ['task-counts'],
+  // REST APIでタスクを取得 (ユーザーID固定)
+  const { data } = useQuery<Task[]>({
+    queryKey: ['/api/tasks'],
     queryFn: async () => {
-      const tasks = await mockDataService.getTasks();
-      return tasks;
+      const response = await fetch('/api/tasks?userId=3');
+      if (!response.ok) {
+        throw new Error('タスクの取得に失敗しました');
+      }
+      return response.json();
     },
     staleTime: 10000 // 10 seconds
   });
@@ -86,7 +73,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       // カテゴリごとのカウント
       const categoryCounts: Record<string, number> = { all: data.length };
       
-      data.forEach(task => {
+      data.forEach((task: Task) => {
         const category = task.category || 'uncategorized';
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
       });
@@ -102,8 +89,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const completedCount = data.filter(task => task.completed).length;
-      const todayCount = data.filter(task => {
+      const completedCount = data.filter((task: Task) => task.completed).length;
+      const todayCount = data.filter((task: Task) => {
         if (!task.dueDate) return false;
         const taskDate = new Date(task.dueDate);
         return (
@@ -113,13 +100,13 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         );
       }).length;
       
-      const upcomingCount = data.filter(task => {
+      const upcomingCount = data.filter((task: Task) => {
         if (!task.dueDate) return false;
         const taskDate = new Date(task.dueDate);
         return taskDate >= today;
       }).length;
       
-      const importantCount = data.filter(task => task.priority === 'high').length;
+      const importantCount = data.filter((task: Task) => task.priority === 'high').length;
       
       setFilters(prevFilters => 
         prevFilters.map(filter => {
