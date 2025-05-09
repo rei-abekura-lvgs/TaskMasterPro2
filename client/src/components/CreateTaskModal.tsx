@@ -26,12 +26,18 @@ export default function CreateTaskModal() {
   
   // カテゴリーの取得 - REST APIを直接使用
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ['/api/categories?userId=3'],
-    queryFn: async ({ queryKey }) => {
+    queryKey: ['/api/categories'],
+    queryFn: async () => {
       console.log('Using REST API directly for categories while GraphQL setup is in progress');
-      // queryClientが自動的にAPIリクエストを処理
-      // 環境に応じたベースURLは内部で処理される
-      return [];
+      try {
+        const response = await apiRequest('GET', '/api/categories?userId=3');
+        const data = await response.json();
+        console.log('CreateTaskModal - Categories:', data);
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        return [];
+      }
     }
   });
 
@@ -114,8 +120,8 @@ export default function CreateTaskModal() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを作成しました",
         description: "タスクが正常に作成されました。"
@@ -171,8 +177,8 @@ export default function CreateTaskModal() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを更新しました",
         description: "タスクが正常に更新されました。"
