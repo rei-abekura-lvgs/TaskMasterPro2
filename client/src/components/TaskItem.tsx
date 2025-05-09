@@ -5,6 +5,9 @@ import { Task } from '@/types';
 import { formatDate, priorityColors, priorityLabels } from '@/lib/utils';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { deleteTask, updateTask } from '@/graphql/mutations';
+import { executeGraphQL } from '@/lib/amplify';
+import { DeleteTaskInput, UpdateTaskInput, TaskPriority } from '@/graphql/API';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,29 +31,55 @@ export default function TaskItem({ task }: TaskItemProps) {
   // Toggle task completion status
   const toggleMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ completed: !task.completed })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update task');
+      try {
+        // GraphQLでタスク完了状態を更新
+        const input: UpdateTaskInput = {
+          id: task.id.toString(),
+          completed: !task.completed
+        };
+        
+        const result = await executeGraphQL(updateTask, {
+          input,
+          condition: null
+        });
+        
+        if (result && result.updateTask) {
+          return result.updateTask;
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when toggling task:', graphqlError);
+        
+        // フォールバック：REST APIでタスク更新
+        console.log('Falling back to REST API for task toggle');
+        
+        const response = await fetch(`/api/tasks/${task.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ completed: !task.completed })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to update task');
+        }
+        
+        return await response.json();
       }
-      
-      return await response.json();
     },
     onSuccess: () => {
+      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       toast({
         title: task.completed ? "タスクを未完了に戻しました" : "タスクを完了しました",
         description: task.title,
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "タスクの更新に失敗しました",
         description: error.message,
@@ -62,25 +91,50 @@ export default function TaskItem({ task }: TaskItemProps) {
   // Delete task
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok && response.status !== 204) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to delete task');
+      try {
+        // GraphQLでタスクを削除
+        const input: DeleteTaskInput = {
+          id: task.id.toString()
+        };
+        
+        const result = await executeGraphQL(deleteTask, {
+          input,
+          condition: null
+        });
+        
+        if (result && result.deleteTask) {
+          return result.deleteTask;
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when deleting task:', graphqlError);
+        
+        // フォールバック：REST APIでタスク削除
+        console.log('Falling back to REST API for task deletion');
+        
+        const response = await fetch(`/api/tasks/${task.id}`, {
+          method: 'DELETE'
+        });
+        
+        if (!response.ok && response.status !== 204) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Failed to delete task');
+        }
+        
+        return true;
       }
-      
-      return true;
     },
     onSuccess: () => {
+      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       toast({
         title: "タスクを削除しました",
         description: task.title,
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "タスクの削除に失敗しました",
         description: error.message,
