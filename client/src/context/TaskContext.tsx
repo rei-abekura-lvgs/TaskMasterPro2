@@ -48,6 +48,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   
   // 優先度フィルター
   const [filters, setFilters] = useState<FilterType[]>([
+    { id: 'all_priority', name: 'すべての優先度', icon: 'filter_list', count: 0 },
     { id: 'high', name: '優先度: 高', icon: 'arrow_upward', count: 0 },
     { id: 'medium', name: '優先度: 中', icon: 'remove', count: 0 },
     { id: 'low', name: '優先度: 低', icon: 'arrow_downward', count: 0 }
@@ -88,6 +89,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       const highPriorityCount = data.filter((task: Task) => task.priority === 'high').length;
       const mediumPriorityCount = data.filter((task: Task) => task.priority === 'medium').length;
       const lowPriorityCount = data.filter((task: Task) => task.priority === 'low').length;
+      const allPriorityCount = data.length;
       
       setFilters(prevFilters => 
         prevFilters.map(filter => {
@@ -97,6 +99,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
             return { ...filter, count: mediumPriorityCount };
           } else if (filter.id === 'low') {
             return { ...filter, count: lowPriorityCount };
+          } else if (filter.id === 'all_priority') {
+            return { ...filter, count: allPriorityCount };
           }
           return filter;
         })

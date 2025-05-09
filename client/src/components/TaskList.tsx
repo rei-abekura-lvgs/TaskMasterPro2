@@ -36,6 +36,9 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         case 'low':
           filter.priority = { eq: 'low' };
           break;
+        case 'all_priority':
+          // すべての優先度のタスクを表示するため、フィルターは設定しない
+          break;
       }
     }
     
@@ -140,10 +143,10 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   const getViewTitle = () => {
     if (activeFilter) {
       switch (activeFilter) {
-        case 'today': return '今日のタスク';
-        case 'upcoming': return '今後のタスク';
-        case 'important': return '重要なタスク';
-        case 'completed': return '完了済みタスク';
+        case 'high': return '優先度「高」のタスク';
+        case 'medium': return '優先度「中」のタスク';
+        case 'low': return '優先度「低」のタスク';
+        case 'all_priority': return 'すべての優先度のタスク';
         default: return 'すべてのタスク';
       }
     }
