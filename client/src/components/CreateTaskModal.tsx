@@ -305,7 +305,7 @@ export default function CreateTaskModal() {
               className="px-4 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
               onClick={closeModal}
             >
-              Cancel
+              キャンセル
             </button>
             <button 
               className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors disabled:opacity-50"
@@ -313,8 +313,8 @@ export default function CreateTaskModal() {
               disabled={createTaskMutation.isPending || updateTaskMutation.isPending}
             >
               {(createTaskMutation.isPending || updateTaskMutation.isPending) 
-                ? 'Saving...' 
-                : isEditing ? 'Update Task' : 'Save Task'
+                ? '保存中...' 
+                : isEditing ? 'タスクを更新' : 'タスクを保存'
               }
             </button>
           </div>

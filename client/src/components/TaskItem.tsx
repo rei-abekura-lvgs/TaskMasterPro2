@@ -2,27 +2,9 @@ import React from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useTaskContext } from '@/context/TaskContext';
 import { Task } from '@/types';
-import { formatDate, priorityColors, priorityLabels, executeMutation } from '@/lib/utils';
+import { formatDate, priorityColors, priorityLabels } from '@/lib/utils';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { gql } from '@apollo/client';
-
-const UPDATE_TASK = gql`
-  mutation UpdateTask($input: UpdateTaskInput!) {
-    updateTask(input: $input) {
-      id
-      completed
-    }
-  }
-`;
-
-const DELETE_TASK = gql`
-  mutation DeleteTask($input: DeleteTaskInput!) {
-    deleteTask(input: $input) {
-      id
-    }
-  }
-`;
 
 interface TaskItemProps {
   task: Task;
@@ -53,13 +35,13 @@ export default function TaskItem({ task }: TaskItemProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: task.completed ? "Task marked as incomplete" : "Task completed",
+        title: task.completed ? "タスクを未完了に戻しました" : "タスクを完了しました",
         description: task.title,
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to update task",
+        title: "タスクの更新に失敗しました",
         description: error.message,
         variant: "destructive"
       });
@@ -83,13 +65,13 @@ export default function TaskItem({ task }: TaskItemProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       toast({
-        title: "Task deleted",
+        title: "タスクを削除しました",
         description: task.title,
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to delete task",
+        title: "タスクの削除に失敗しました",
         description: error.message,
         variant: "destructive"
       });
@@ -104,7 +86,7 @@ export default function TaskItem({ task }: TaskItemProps) {
 
   // Delete task with confirmation
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
+    if (window.confirm("このタスクを削除してもよろしいですか？")) {
       deleteMutation.mutate();
     }
   };
