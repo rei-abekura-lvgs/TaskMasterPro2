@@ -6,21 +6,45 @@ import { queryClient } from '@/lib/queryClient';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 import { createTaskSchema, updateTaskSchema } from '@/types';
+import { createTask, updateTask } from '@/graphql/mutations';
+import { listCategories } from '@/graphql/queries';
+import { executeGraphQL } from '@/lib/amplify';
+import { CreateTaskInput, UpdateTaskInput, TaskPriority } from '@/graphql/API';
 
 export default function CreateTaskModal() {
   const { isModalOpen, setIsModalOpen, editingTask, setEditingTask } = useTaskContext();
   const { toast } = useToast();
   const isEditing = !!editingTask;
   
-  // APIからカテゴリーを取得
+  // カテゴリーの取得（GraphQLとフォールバックRESTの両方に対応）
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ['/api/categories'],
+    queryKey: ['categories'],
     queryFn: async () => {
-      const response = await fetch('/api/categories?userId=3');
-      if (!response.ok) {
-        throw new Error('カテゴリーの取得に失敗しました');
+      try {
+        // GraphQLでカテゴリーを取得
+        const result = await executeGraphQL(listCategories, {
+          limit: 100,
+          filter: null
+        });
+        
+        if (result && result.listCategories && result.listCategories.items) {
+          return result.listCategories.items;
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when fetching categories:', graphqlError);
+        
+        // フォールバック：REST APIからカテゴリーを取得
+        console.log('Falling back to REST API for categories');
+        const response = await fetch('/api/categories?userId=3');
+        
+        if (!response.ok) {
+          throw new Error('カテゴリーの取得に失敗しました');
+        }
+        
+        return response.json();
       }
-      return response.json();
     },
     staleTime: 10000, // 10 seconds
     enabled: isModalOpen // モーダルが開いている時だけクエリを実行
@@ -69,34 +93,64 @@ export default function CreateTaskModal() {
   // Create task mutation
   const createTaskMutation = useMutation({
     mutationFn: async (data: any) => {
-      const newTask = {
-        title: data.title,
-        description: data.description,
-        dueDate: data.dueDate,
-        categoryId: data.category ? parseInt(data.category, 10) : null,
-        priority: data.priority,
-        completed: data.completed || false,
-        userId: 3 // 仮のユーザーID
-      };
-      
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newTask)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create task');
+      try {
+        // GraphQLでタスクを作成
+        const input: CreateTaskInput = {
+          title: data.title,
+          description: data.description || null,
+          dueDate: data.dueDate || null,
+          categoryId: data.category || null,
+          priority: data.priority.toUpperCase() as TaskPriority,  // 'low' -> 'LOW'
+          completed: data.completed || false
+        };
+        
+        const result = await executeGraphQL(createTask, {
+          input,
+          condition: null
+        });
+        
+        if (result && result.createTask) {
+          return result.createTask;
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when creating task:', graphqlError);
+        
+        // フォールバック：REST APIでタスク作成
+        console.log('Falling back to REST API for task creation');
+        
+        const newTask = {
+          title: data.title,
+          description: data.description,
+          dueDate: data.dueDate,
+          categoryId: data.category ? parseInt(data.category, 10) : null,
+          priority: data.priority,
+          completed: data.completed || false,
+          userId: 3 // 仮のユーザーID
+        };
+        
+        const response = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newTask)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to create task');
+        }
+        
+        return await response.json();
       }
-      
-      return await response.json();
     },
     onSuccess: () => {
+      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを作成しました",
@@ -118,33 +172,64 @@ export default function CreateTaskModal() {
     mutationFn: async (data: any) => {
       if (!editingTask) return null;
       
-      const updatedTask = {
-        title: data.title,
-        description: data.description,
-        dueDate: data.dueDate,
-        categoryId: data.category ? parseInt(data.category, 10) : null,
-        priority: data.priority,
-        completed: data.completed
-      };
-      
-      const response = await fetch(`/api/tasks/${editingTask.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedTask)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update task');
+      try {
+        // GraphQLでタスクを更新
+        const input: UpdateTaskInput = {
+          id: editingTask.id.toString(),
+          title: data.title,
+          description: data.description || null,
+          dueDate: data.dueDate || null,
+          categoryId: data.category || null,
+          priority: data.priority.toUpperCase() as TaskPriority,  // 'low' -> 'LOW'
+          completed: data.completed
+        };
+        
+        const result = await executeGraphQL(updateTask, {
+          input,
+          condition: null
+        });
+        
+        if (result && result.updateTask) {
+          return result.updateTask;
+        }
+        
+        throw new Error('Invalid response from AppSync');
+      } catch (graphqlError) {
+        console.error('GraphQL Error when updating task:', graphqlError);
+        
+        // フォールバック：REST APIでタスク更新
+        console.log('Falling back to REST API for task update');
+        
+        const updatedTask = {
+          title: data.title,
+          description: data.description,
+          dueDate: data.dueDate,
+          categoryId: data.category ? parseInt(data.category, 10) : null,
+          priority: data.priority,
+          completed: data.completed
+        };
+        
+        const response = await fetch(`/api/tasks/${editingTask.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedTask)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to update task');
+        }
+        
+        return await response.json();
       }
-      
-      return await response.json();
     },
     onSuccess: () => {
+      // 両方のキャッシュをクリア（GraphQLとREST）
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       toast({
         title: "タスクを更新しました",
