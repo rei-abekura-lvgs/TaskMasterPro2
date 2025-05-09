@@ -81,10 +81,10 @@ export default function CreateTaskModal() {
     }
   }, [editingTask, form]);
 
-  // Create task mutation
+  // タスク作成処理 - 改善版
   const createTaskMutation = useMutation({
     mutationFn: async (data: any) => {
-      console.log('Creating task using REST API:', data);
+      console.log('新しいタスクを作成します:', data);
       
       const newTask = {
         title: data.title,
@@ -96,37 +96,66 @@ export default function CreateTaskModal() {
         userId: 3 // 仮のユーザーID
       };
       
-      console.log('Task data being sent:', JSON.stringify(newTask));
+      console.log('送信するタスクデータ:', JSON.stringify(newTask));
       
       try {
-        // apiRequest関数を使用して環境に応じたURLで呼び出し
+        // APIリクエスト
         const response = await apiRequest('POST', '/api/tasks', newTask);
         
-        // レスポンスがJSONでない場合の処理
-        const responseText = await response.text();
-        let responseData;
-        
-        try {
-          responseData = JSON.parse(responseText);
-        } catch (e) {
-          console.error('Invalid JSON response:', responseText);
-          throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`タスク作成エラー(${response.status}):`, errorText);
+          throw new Error(`タスク作成に失敗しました: ${response.status}`);
         }
         
-        return responseData;
+        // レスポンスを処理
+        const responseText = await response.text();
+        
+        if (!responseText) {
+          return { success: true, message: 'タスクが作成されました' };
+        }
+        
+        try {
+          const responseData = JSON.parse(responseText);
+          console.log('タスク作成成功:', responseData);
+          return responseData;
+        } catch (e) {
+          console.warn('JSONでないレスポンス:', responseText);
+          return { success: true, message: 'タスクが作成されました (非JSONレスポンス)' };
+        }
       } catch (error) {
-        console.error('Error creating task:', error);
+        console.error('タスク作成エラー:', error);
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log('タスク作成成功。キャッシュを更新します');
+      
+      // 重要: タスクとカテゴリのキャッシュを完全に無効化してリロード
+      queryClient.removeQueries({ queryKey: ['/api/tasks'] });
+      queryClient.removeQueries({ queryKey: ['/api/categories'] });
+      
+      // 強制的にデータを再取得
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      
+      // 成功メッセージを表示
       toast({
         title: "タスクを作成しました",
         description: "タスクが正常に作成されました。"
       });
-      closeModal();
+      
+      // 若干の遅延を入れて、UIが確実に更新されるようにする
+      setTimeout(() => {
+        closeModal();
+        
+        // リストを確実に更新するため、追加のデータ再取得
+        setTimeout(() => {
+          console.log('追加のデータ再取得を実行');
+          queryClient.refetchQueries({ queryKey: ['/api/tasks'] });
+          queryClient.refetchQueries({ queryKey: ['/api/categories'] });
+        }, 300);
+      }, 300);
     },
     onError: (error: any) => {
       toast({
@@ -137,12 +166,12 @@ export default function CreateTaskModal() {
     }
   });
 
-  // Update task mutation
+  // タスク更新処理 - 改善版
   const updateTaskMutation = useMutation({
     mutationFn: async (data: any) => {
       if (!editingTask) return null;
       
-      console.log('Updating task using REST API:', data);
+      console.log('タスクを更新します:', data);
       
       const updatedTask = {
         title: data.title,
@@ -153,37 +182,65 @@ export default function CreateTaskModal() {
         completed: data.completed
       };
       
-      console.log('Updated task data being sent:', JSON.stringify(updatedTask));
+      console.log('更新するタスクデータ:', JSON.stringify(updatedTask));
       
       try {
-        // apiRequest関数を使用して環境に応じたURLで呼び出し
+        // APIリクエスト
         const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
         
-        // レスポンスがJSONでない場合の処理
-        const responseText = await response.text();
-        let responseData;
-        
-        try {
-          responseData = JSON.parse(responseText);
-        } catch (e) {
-          console.error('Invalid JSON response:', responseText);
-          throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`タスク更新エラー(${response.status}):`, errorText);
+          throw new Error(`タスク更新に失敗しました: ${response.status}`);
         }
         
-        return responseData;
+        // レスポンスを処理
+        const responseText = await response.text();
+        
+        if (!responseText) {
+          return { success: true, message: 'タスクが更新されました' };
+        }
+        
+        try {
+          const responseData = JSON.parse(responseText);
+          console.log('タスク更新成功:', responseData);
+          return responseData;
+        } catch (e) {
+          console.warn('JSONでないレスポンス:', responseText);
+          return { success: true, message: 'タスクが更新されました (非JSONレスポンス)' };
+        }
       } catch (error) {
-        console.error('Error updating task:', error);
+        console.error('タスク更新エラー:', error);
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log('タスク更新成功。キャッシュを更新します');
+      
+      // キャッシュを完全に無効化してリロード
+      queryClient.removeQueries({ queryKey: ['/api/tasks'] });
+      queryClient.removeQueries({ queryKey: ['/api/categories'] });
+      
+      // 強制的にデータを再取得
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      
+      // 成功メッセージを表示
       toast({
         title: "タスクを更新しました",
         description: "タスクが正常に更新されました。"
       });
-      closeModal();
+      
+      // UI更新のための遅延処理
+      setTimeout(() => {
+        closeModal();
+        
+        // さらにデータを確実に更新
+        setTimeout(() => {
+          queryClient.refetchQueries({ queryKey: ['/api/tasks'] });
+          queryClient.refetchQueries({ queryKey: ['/api/categories'] });
+        }, 300);
+      }, 300);
     },
     onError: (error: any) => {
       toast({
