@@ -97,13 +97,19 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   // カテゴリとフィルターのカウントを更新
   useEffect(() => {
     if (data) {
-      // カテゴリごとのカウント
+      // カテゴリごとのカウント - 'all'は全タスク
       const categoryCounts: Record<string, number> = { all: data.length };
       
+      // カテゴリIDごとにカウント
       data.forEach((task: Task) => {
-        const category = task.category || 'uncategorized';
-        categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+        // categoryIdがあればカウント
+        if (task.categoryId) {
+          const categoryId = task.categoryId.toString();
+          categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
+        }
       });
+      
+      console.log('カテゴリカウント:', categoryCounts);
       
       setCategories(prevCategories => 
         prevCategories.map(cat => ({
