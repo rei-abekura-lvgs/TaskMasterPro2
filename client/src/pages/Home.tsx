@@ -3,10 +3,11 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import TaskList from '@/components/TaskList';
 import CreateTaskModal from '@/components/CreateTaskModal';
+import { useTaskContext } from '@/context/TaskContext';
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { setIsModalOpen } = useTaskContext();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
