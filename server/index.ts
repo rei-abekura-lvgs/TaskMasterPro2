@@ -11,8 +11,10 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:5000',
     'https://taskmasterpro2.do510v6fsmjrf.repl.co',
+    'https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev',
     'https://main.do510v6fsmjrf.amplifyapp.com',
-    /\.amplifyapp\.com$/ // Amplifyドメインをワイルドカードで許可
+    /\.amplifyapp\.com$/, // Amplifyドメインをワイルドカードで許可
+    /\.replit\.dev$/ // Replit開発ドメインをワイルドカードで許可
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,

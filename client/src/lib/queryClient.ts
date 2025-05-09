@@ -24,7 +24,7 @@ export function getApiBaseUrl(): string {
     // 開発中は一時的に開発サーバーURLを使う（プロダクションでは修正が必要）
     console.log('WARNING: No API endpoint configured. Using development API temporarily.');
     // Replitの開発サーバーURL - 本番環境ではこれを適切なAPIエンドポイントに変更する必要があります
-    return 'https://taskmasterpro2.do510v6fsmjrf.repl.co';
+    return 'https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev';
   }
   
   // カスタムAPIのベースURLが設定されている場合はそれを使用
