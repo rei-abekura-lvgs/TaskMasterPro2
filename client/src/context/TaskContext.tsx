@@ -100,28 +100,37 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       // カテゴリごとのカウント - 'all'は全タスク
       const categoryCounts: Record<string, number> = { all: data.length };
       
-      // カテゴリIDごとにカウント
+      // カテゴリIDごとにカウント - 問題特定のため詳細ログを追加
       data.forEach((task: Task) => {
-        // categoryIdがあればカウント
         if (task.categoryId) {
           const categoryId = task.categoryId.toString();
           categoryCounts[categoryId] = (categoryCounts[categoryId] || 0) + 1;
+          console.log(`タスク ${task.id} (${task.title}) はカテゴリID ${categoryId} に属しています`);
+        } else {
+          console.log(`タスク ${task.id} (${task.title}) はカテゴリに属していません`);
         }
       });
       
-      // アクティブなカテゴリごとのタスク数をログ出力（デバッグ用）
+      // アクティブなカテゴリごとのタスク数をログ出力
       console.log('カテゴリカウント:', categoryCounts);
       
-      setCategories(prevCategories => 
-        prevCategories.map(cat => {
-          // 文字列と数値の型不一致を解決: cat.idを常に文字列として扱う
+      // 全カテゴリを更新
+      setCategories(prevCategories => {
+        // 更新用の配列を作成
+        const updatedCategories = prevCategories.map(cat => {
+          // cat.idがnumberの場合は文字列に変換
           const catId = typeof cat.id === 'number' ? cat.id.toString() : cat.id;
+          console.log(`カテゴリ ${cat.name} (ID: ${catId}) のカウント: ${categoryCounts[catId] || 0}`);
+          
           return {
             ...cat,
             count: categoryCounts[catId] || 0
           };
-        })
-      );
+        });
+        
+        console.log('更新後のカテゴリ:', updatedCategories);
+        return updatedCategories;
+      });
       
       // 優先度ごとのカウント計算
       const highPriorityCount = data.filter((task: Task) => task.priority === 'high').length;
