@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { queryClient } from '@/lib/queryClient';
+import { queryClient, getApiBaseUrl, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
 type Category = {
@@ -27,16 +27,33 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
     isLoading,
     error
   } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['/api/categories', userId],
     queryFn: async () => {
       console.log('Using REST API directly for categories listing');
-      const response = await fetch(`/api/categories?userId=${userId}`);
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
+      try {
+        const baseUrl = getApiBaseUrl();
+        const fullUrl = baseUrl ? `${baseUrl}/api/categories?userId=${userId}` : `/api/categories?userId=${userId}`;
+        console.log(`Making category API request to: ${fullUrl}`);
+        
+        const response = await fetch(fullUrl, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('REST API Error:', errorText);
+          throw new Error(`Failed to fetch categories: ${response.status} ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Categories from REST API:', data);
+        return data;
+      } catch (error) {
+        console.error('Error in categories fetch:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     enabled: isOpen // モーダルが開いているときだけクエリを実行
   });
@@ -46,20 +63,27 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
     mutationFn: async (name: string) => {
       console.log('Creating category using REST API:', name);
       
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, userId })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create category');
+      try {
+        // 環境に応じたAPIリクエスト
+        const response = await apiRequest('POST', '/api/categories', { name, userId });
+        
+        // レスポンスからJSONを取得
+        const responseText = await response.text();
+        let responseData;
+        
+        try {
+          responseData = JSON.parse(responseText);
+        } catch (e) {
+          console.error('Invalid JSON response:', responseText);
+          throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
+        }
+        
+        console.log('Category created successfully:', responseData);
+        return responseData;
+      } catch (error) {
+        console.error('Error creating category:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
@@ -83,16 +107,30 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
     mutationFn: async (categoryId: number) => {
       console.log('Deleting category using REST API:', categoryId);
       
-      const response = await fetch(`/api/categories/${categoryId}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete category');
+      try {
+        // 環境に応じたAPIリクエスト
+        const response = await apiRequest('DELETE', `/api/categories/${categoryId}`);
+        
+        // レスポンスの処理
+        const responseText = await response.text();
+        // 空のレスポンスの場合は成功として扱う
+        if (!responseText.trim()) {
+          return true;
+        }
+        
+        // JSONレスポンスがある場合は解析
+        try {
+          const responseData = JSON.parse(responseText);
+          console.log('Category deleted successfully:', responseData);
+          return true;
+        } catch (e) {
+          console.log('Deletion successful with non-JSON response');
+          return true;
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        throw error;
       }
-      
-      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
