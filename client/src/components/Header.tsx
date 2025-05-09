@@ -30,7 +30,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
             >
               <span className="material-icons">menu</span>
             </button>
-            <h1 className="text-xl font-medium text-primary-dark dark:text-primary-light">TaskMaster</h1>
+            <h1 className="text-xl font-medium text-primary-dark dark:text-primary-light">タスクマスター</h1>
           </div>
           
           <div className="flex items-center space-x-4">
@@ -41,7 +41,7 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
               </span>
               <input 
                 type="text" 
-                placeholder="Search tasks..." 
+                placeholder="タスクを検索..." 
                 className="pl-10 pr-4 py-2 w-64 rounded-lg bg-gray-100 dark:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
               />
             </div>
@@ -76,14 +76,14 @@ export default function Header({ toggleSidebar }: { toggleSidebar: () => void })
               
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-md shadow-lg py-1 z-50">
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700">Profile</a>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700">Settings</a>
+                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700">プロフィール</a>
+                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700">設定</a>
                   <div className="border-t border-gray-200 dark:border-neutral-700"></div>
                   <button 
                     onClick={() => alert('サインアウト機能は現在実装されていません')} 
                     className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-neutral-700"
                   >
-                    Sign out
+                    サインアウト
                   </button>
                 </div>
               )}

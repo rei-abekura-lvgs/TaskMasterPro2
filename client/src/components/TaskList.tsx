@@ -117,29 +117,29 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   
   const sortedTasks = data ? sortTasks(data) : [];
   
-  // Get current view title
+  // 現在のビュータイトルを取得
   const getViewTitle = () => {
     if (activeFilter) {
       switch (activeFilter) {
-        case 'today': return 'Today';
-        case 'upcoming': return 'Upcoming';
-        case 'important': return 'Important';
-        case 'completed': return 'Completed';
-        default: return 'All Tasks';
+        case 'today': return '今日のタスク';
+        case 'upcoming': return '今後のタスク';
+        case 'important': return '重要なタスク';
+        case 'completed': return '完了済みタスク';
+        default: return 'すべてのタスク';
       }
     }
     
-    if (activeCategory === 'all') return 'All Tasks';
+    if (activeCategory === 'all') return 'すべてのタスク';
     
     const categoryMap: Record<string, string> = {
-      work: 'Work',
-      personal: 'Personal',
-      shopping: 'Shopping',
-      health: 'Health',
-      finance: 'Finance'
+      work: '仕事',
+      personal: '個人',
+      shopping: 'ショッピング',
+      health: '健康',
+      finance: '金融'
     };
     
-    return categoryMap[activeCategory] || 'Tasks';
+    return categoryMap[activeCategory] ? `${categoryMap[activeCategory]}のタスク` : 'タスク';
   };
 
   return (
@@ -149,7 +149,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         <div className="flex items-center space-x-4">
           <h2 className="text-lg font-medium">{getViewTitle()}</h2>
           <div className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-            {sortedTasks.length} tasks
+            {sortedTasks.length} 件のタスク
           </div>
         </div>
         
@@ -174,7 +174,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  All Tasks
+                  すべてのタスク
                 </button>
                 <button 
                   onClick={() => {
@@ -183,7 +183,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  Active Tasks
+                  未完了のタスク
                 </button>
                 <button 
                   onClick={() => {
@@ -192,7 +192,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  Completed Tasks
+                  完了済みのタスク
                 </button>
               </div>
             )}
@@ -218,7 +218,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  Date (Newest)
+                  日付（新しい順）
                 </button>
                 <button 
                   onClick={() => {
@@ -227,7 +227,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  Date (Oldest)
+                  日付（古い順）
                 </button>
                 <button 
                   onClick={() => {
@@ -236,7 +236,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  Priority
+                  優先度
                 </button>
                 <button 
                   onClick={() => {
@@ -245,7 +245,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700"
                 >
-                  Alphabetical
+                  アルファベット順
                 </button>
               </div>
             )}
@@ -262,7 +262,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
             className="flex items-center space-x-1 bg-primary hover:bg-primary-dark text-white rounded-lg py-2 px-3 transition-colors shadow-sm"
           >
             <span className="material-icons text-sm">add</span>
-            <span className="hidden sm:inline">New Task</span>
+            <span className="hidden sm:inline">新規タスク</span>
           </button>
         </div>
       </div>

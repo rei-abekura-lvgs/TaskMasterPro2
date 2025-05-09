@@ -8,9 +8,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Tasks routes
   app.get('/api/tasks', async (req, res) => {
     try {
-      const userId = req.query.userId as string;
-      if (!userId) {
-        return res.status(400).json({ message: 'User ID is required' });
+      const userId = parseInt(req.query.userId as string, 10);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Valid User ID is required' });
       }
       
       const tasks = await storage.getTasksByUserId(userId);
@@ -69,9 +69,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Categories routes
   app.get('/api/categories', async (req, res) => {
     try {
-      const userId = req.query.userId as string;
-      if (!userId) {
-        return res.status(400).json({ message: 'User ID is required' });
+      const userId = parseInt(req.query.userId as string, 10);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Valid User ID is required' });
       }
       
       const categories = await storage.getCategoriesByUserId(userId);

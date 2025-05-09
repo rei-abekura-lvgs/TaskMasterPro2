@@ -1,110 +1,125 @@
-import { tasks, categories, type Task, type InsertTask, type Category, type InsertCategory } from "@shared/schema";
+import { 
+  users, tasks, categories, 
+  type User, type InsertUser,
+  type Task, type InsertTask, 
+  type Category, type InsertCategory 
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
+  // Users
+  getUser(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  
   // Tasks
   getTask(id: number): Promise<Task | undefined>;
-  getTasksByUserId(userId: string): Promise<Task[]>;
+  getTasksByUserId(userId: number): Promise<Task[]>;
+  getTasksByCategoryId(categoryId: number): Promise<Task[]>;
   createTask(task: InsertTask): Promise<Task>;
   updateTask(id: number, task: Partial<InsertTask>): Promise<Task | undefined>;
   deleteTask(id: number): Promise<boolean>;
   
   // Categories
   getCategory(id: number): Promise<Category | undefined>;
-  getCategoriesByUserId(userId: string): Promise<Category[]>;
+  getCategoriesByUserId(userId: number): Promise<Category[]>;
   createCategory(category: InsertCategory): Promise<Category>;
   deleteCategory(id: number): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private tasks: Map<number, Task>;
-  private categories: Map<number, Category>;
-  private taskId: number;
-  private categoryId: number;
-
-  constructor() {
-    this.tasks = new Map();
-    this.categories = new Map();
-    this.taskId = 1;
-    this.categoryId = 1;
-    
-    // Initialize with default categories
-    const defaultCategories = ['Work', 'Personal', 'Shopping', 'Health', 'Finance'];
-    const userId = 'default-user';
-    
-    defaultCategories.forEach(name => {
-      this.createCategory({ name, userId });
-    });
+export class DatabaseStorage implements IStorage {
+  // ユーザーメソッド
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
-  // Task methods
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+
+  async updateUser(id: number, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser;
+  }
+
+  // タスクメソッド
   async getTask(id: number): Promise<Task | undefined> {
-    return this.tasks.get(id);
-  }
-
-  async getTasksByUserId(userId: string): Promise<Task[]> {
-    return Array.from(this.tasks.values()).filter(task => task.userId === userId);
-  }
-
-  async createTask(insertTask: InsertTask): Promise<Task> {
-    const id = this.taskId++;
-    const now = new Date();
-    const task: Task = {
-      ...insertTask,
-      id,
-      createdAt: now,
-      updatedAt: now
-    };
-    
-    this.tasks.set(id, task);
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
     return task;
   }
 
+  async getTasksByUserId(userId: number): Promise<Task[]> {
+    return await db.select().from(tasks).where(eq(tasks.userId, userId));
+  }
+
+  async getTasksByCategoryId(categoryId: number): Promise<Task[]> {
+    return await db.select().from(tasks).where(eq(tasks.categoryId, categoryId));
+  }
+
+  async createTask(task: InsertTask): Promise<Task> {
+    const [newTask] = await db.insert(tasks).values(task).returning();
+    return newTask;
+  }
+
   async updateTask(id: number, updates: Partial<InsertTask>): Promise<Task | undefined> {
-    const existingTask = this.tasks.get(id);
-    
-    if (!existingTask) {
-      return undefined;
-    }
-    
-    const updatedTask: Task = {
-      ...existingTask,
-      ...updates,
-      updatedAt: new Date()
-    };
-    
-    this.tasks.set(id, updatedTask);
+    const [updatedTask] = await db
+      .update(tasks)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(tasks.id, id))
+      .returning();
     return updatedTask;
   }
 
   async deleteTask(id: number): Promise<boolean> {
-    return this.tasks.delete(id);
+    const result = await db.delete(tasks).where(eq(tasks.id, id)).returning();
+    return result.length > 0;
   }
 
-  // Category methods
+  // カテゴリーメソッド
   async getCategory(id: number): Promise<Category | undefined> {
-    return this.categories.get(id);
-  }
-
-  async getCategoriesByUserId(userId: string): Promise<Category[]> {
-    return Array.from(this.categories.values()).filter(category => category.userId === userId);
-  }
-
-  async createCategory(insertCategory: InsertCategory): Promise<Category> {
-    const id = this.categoryId++;
-    const now = new Date();
-    const category: Category = {
-      ...insertCategory,
-      id,
-      createdAt: now
-    };
-    
-    this.categories.set(id, category);
+    const [category] = await db.select().from(categories).where(eq(categories.id, id));
     return category;
   }
 
+  async getCategoriesByUserId(userId: number): Promise<Category[]> {
+    return await db.select().from(categories).where(eq(categories.userId, userId));
+  }
+
+  async createCategory(category: InsertCategory): Promise<Category> {
+    const [newCategory] = await db.insert(categories).values(category).returning();
+    return newCategory;
+  }
+
   async deleteCategory(id: number): Promise<boolean> {
-    return this.categories.delete(id);
+    const result = await db.delete(categories).where(eq(categories.id, id)).returning();
+    return result.length > 0;
   }
 }
 
-export const storage = new MemStorage();
+// MemStorageをコメントアウトして、DatabaseStorageに切り替える
+export const storage = new DatabaseStorage();

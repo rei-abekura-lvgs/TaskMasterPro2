@@ -2,34 +2,45 @@ import { pgTable, text, serial, varchar, boolean, timestamp } from "drizzle-orm/
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// ユーザーテーブル
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: varchar("username", { length: 100 }).notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  displayName: varchar("display_name", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// カテゴリーテーブル
+export const categories = pgTable("categories", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  userId: serial("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp("created_at").defaultNow()
+});
+
+// タスクテーブル
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description"),
   dueDate: varchar("due_date"),
-  category: varchar("category").default("personal"),
-  priority: varchar("priority").default("medium"),
+  categoryId: serial("category_id").references(() => categories.id, { onDelete: 'set null' }),
+  priority: varchar("priority", { length: 10 }).default("medium"),
   completed: boolean("completed").default(false),
-  userId: varchar("user_id").notNull(),
+  userId: serial("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });
 
-export const categories = pgTable("categories", {
-  id: serial("id").primaryKey(),
-  name: varchar("name").notNull(),
-  userId: varchar("user_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow()
-});
-
-export const insertTaskSchema = createInsertSchema(tasks).pick({
-  title: true,
-  description: true,
-  dueDate: true,
-  category: true,
-  priority: true,
-  completed: true,
-  userId: true
+// 挿入スキーマ
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  email: true,
+  passwordHash: true,
+  displayName: true,
 });
 
 export const insertCategorySchema = createInsertSchema(categories).pick({
@@ -37,8 +48,22 @@ export const insertCategorySchema = createInsertSchema(categories).pick({
   userId: true
 });
 
-export type InsertTask = z.infer<typeof insertTaskSchema>;
-export type Task = typeof tasks.$inferSelect;
+export const insertTaskSchema = createInsertSchema(tasks).pick({
+  title: true,
+  description: true,
+  dueDate: true,
+  categoryId: true,
+  priority: true,
+  completed: true,
+  userId: true
+});
+
+// 型定義
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = typeof users.$inferSelect;
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type Category = typeof categories.$inferSelect;
+
+export type InsertTask = z.infer<typeof insertTaskSchema>;
+export type Task = typeof tasks.$inferSelect;

@@ -39,14 +39,14 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
             className="w-full flex items-center justify-center space-x-2 bg-primary hover:bg-primary-dark text-white rounded-lg py-2 px-4 transition-colors shadow-md"
           >
             <span className="material-icons text-sm">add</span>
-            <span>New Task</span>
+            <span>新しいタスク</span>
           </button>
         </div>
         
         <nav className="flex-1 overflow-y-auto">
           {/* Categories */}
           <div className="px-2">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 py-2">Categories</h2>
+            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 py-2">カテゴリー</h2>
             <ul>
               <li>
                 <a 
@@ -62,7 +62,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
                   } transition-colors`}
                 >
                   <span className="material-icons text-sm">list</span>
-                  <span>All Tasks</span>
+                  <span>すべてのタスク</span>
                   <span className="ml-auto bg-gray-200 dark:bg-neutral-600 text-gray-800 dark:text-gray-200 text-xs rounded-full px-2 py-0.5">
                     {categories.find(c => c.id === 'all')?.count || 0}
                   </span>
@@ -100,7 +100,7 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
           
           {/* Filters */}
           <div className="px-2">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 py-2">Filters</h2>
+            <h2 className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 px-3 py-2">フィルター</h2>
             <ul>
               {filters.map(filter => (
                 <li key={filter.id}>
@@ -131,9 +131,9 @@ export default function Sidebar({ isOpen, onClose, onOpenNewTaskModal }: Sidebar
         <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
           <div className="flex items-center justify-between">
             <div className="text-xs text-gray-500 dark:text-gray-400">
-              Storage: 4/10 MB
+              ストレージ: 4/10 MB
             </div>
-            <a href="#" className="text-xs text-primary-dark dark:text-primary-light hover:underline">Upgrade</a>
+            <a href="#" className="text-xs text-primary-dark dark:text-primary-light hover:underline">アップグレード</a>
           </div>
           <div className="mt-2 h-2 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
             <div className="h-full bg-primary rounded-full" style={{ width: '40%' }}></div>
