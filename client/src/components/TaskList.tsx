@@ -83,8 +83,8 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     queryKey: ['tasks', activeCategory, activeFilter, filterType],
     queryFn: async () => {
       try {
-        // データベースからデータ取得 (仮のユーザーID=1を使用)
-        const userId = 1;
+        // データベースからデータ取得 (仮のユーザーID=3を使用)
+        const userId = 3;
         const response = await fetch(`/api/tasks?userId=${userId}`);
         
         if (!response.ok) {
