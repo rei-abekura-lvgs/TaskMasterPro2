@@ -1,0 +1,44 @@
+type User @model {
+  id: ID!
+  username: String!
+  email: String!
+  displayName: String
+  tasks: [Task] @hasMany
+  categories: [Category] @hasMany
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+type Category @model {
+  id: ID!
+  name: String!
+  owner: User @belongsTo
+  tasks: [Task] @hasMany
+  createdAt: AWSDateTime
+}
+
+type Task @model {
+  id: ID!
+  title: String!
+  description: String
+  dueDate: String
+  category: Category @belongsTo
+  priority: TaskPriority
+  completed: Boolean!
+  owner: User @belongsTo
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+type Query {
+  getTasksByCategory(categoryId: ID!): [Task]
+    @function(name: "getTasksByCategory-${env}")
+  getTasksByPriority(priority: TaskPriority!): [Task]
+    @function(name: "getTasksByPriority-${env}")
+}

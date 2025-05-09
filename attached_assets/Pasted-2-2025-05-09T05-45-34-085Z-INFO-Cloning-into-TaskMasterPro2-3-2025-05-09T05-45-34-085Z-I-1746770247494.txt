@@ -1,0 +1,146 @@
+2
+
+2025-05-09T05:45:34.085Z [INFO]: Cloning into 'TaskMasterPro2'...
+
+3
+
+2025-05-09T05:45:34.085Z [INFO]: # Checking for Git submodules at: /codebuild/output/src603875797/src/TaskMasterPro2/.gitmodules
+
+4
+
+2025-05-09T05:45:34.094Z [INFO]: # Retrieving environment cache...
+
+5
+
+2025-05-09T05:45:34.132Z [WARNING]: ! Unable to write cache: {"code":"ERR_BAD_REQUEST","message":"Request failed with status code 404"})}
+
+6
+
+2025-05-09T05:45:34.133Z [INFO]: ---- Setting Up SSM Secrets ----
+
+7
+
+2025-05-09T05:45:34.133Z [INFO]: SSM params {"Path":"/amplify/do510v6fsmjrf/main/","WithDecryption":true}
+
+8
+
+2025-05-09T05:45:34.185Z [WARNING]: !Failed to set up process.env.secrets
+
+9
+
+2025-05-09T05:45:34.795Z [INFO]: # No package override configuration found.
+
+10
+
+2025-05-09T05:45:34.799Z [INFO]: # Retrieving cache...
+
+11
+
+2025-05-09T05:45:34.833Z [INFO]: # Retrieved cache
+
+12
+
+2025-05-09T05:45:54.250Z [INFO]: ## Starting Backend Build
+
+13
+
+                                 # Starting phase: build
+
+14
+
+                                 # Executing command: npm ci
+
+15
+
+2025-05-09T05:46:09.782Z [WARNING]: npm warn deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+
+16
+
+2025-05-09T05:46:10.152Z [WARNING]: npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+
+17
+
+2025-05-09T05:46:10.179Z [WARNING]: npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+
+18
+
+2025-05-09T05:46:22.044Z [INFO]: added 807 packages, and audited 808 packages in 25s
+
+19
+
+2025-05-09T05:46:22.048Z [INFO]: 83 packages are looking for funding
+
+20
+
+                                 run `npm fund` for details
+
+21
+
+2025-05-09T05:46:22.089Z [INFO]: 7 moderate severity vulnerabilities
+
+22
+
+                                 To address issues that do not require attention, run:
+
+23
+
+                                 npm audit fix
+
+24
+
+                                 To address all issues (including breaking changes), run:
+
+25
+
+                                 npm audit fix --force
+
+26
+
+                                 Run `npm audit` for details.
+
+27
+
+2025-05-09T05:46:22.111Z [INFO]: # Executing command: npm run db:push
+
+28
+
+2025-05-09T05:46:22.236Z [INFO]: > rest-express@1.0.0 db:push
+
+29
+
+                                 > drizzle-kit push
+
+30
+
+2025-05-09T05:46:22.373Z [INFO]: No config path provided, using default 'drizzle.config.ts'
+
+31
+
+2025-05-09T05:46:22.374Z [INFO]: Reading config file '/codebuild/output/src603875797/src/TaskMasterPro2/drizzle.config.ts'
+
+32
+
+2025-05-09T05:46:22.466Z [WARNING]: DATABASE_URL, ensure the database is provisioned
+
+33
+
+2025-05-09T05:46:22.478Z [ERROR]: !!! Build failed
+
+34
+
+2025-05-09T05:46:22.478Z [ERROR]: !!! Error: Command failed with exit code 1
+
+35
+
+2025-05-09T05:46:22.479Z [INFO]: # Starting environment caching...
+
+36
+
+2025-05-09T05:46:22.480Z [INFO]: # Environment caching completed
+
+37
+
+38
+
+デプロイ
+デプロイがキ

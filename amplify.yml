@@ -20,7 +20,7 @@ backend:
     build:
       commands:
         - npm ci
-        - npm run db:push
+        # AWS AppSync + DynamoDBを使用するため、db:pushは不要
   artifacts:
     baseDirectory: server
     files:
