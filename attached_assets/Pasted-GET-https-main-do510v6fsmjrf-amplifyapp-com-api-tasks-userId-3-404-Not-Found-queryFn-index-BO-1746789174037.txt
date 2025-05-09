@@ -1,0 +1,142 @@
+GET https://main.do510v6fsmjrf.amplifyapp.com/api/tasks/?userId=3 404 (Not Found)
+queryFn @ index-BOEHsBVb.js:78
+s @ index-BOEHsBVb.js:48
+v @ index-BOEHsBVb.js:48
+start @ index-BOEHsBVb.js:48
+fetch @ index-BOEHsBVb.js:48
+Ho @ index-BOEHsBVb.js:48
+onSubscribe @ index-BOEHsBVb.js:48
+subscribe @ index-BOEHsBVb.js:48
+(anonymous) @ index-BOEHsBVb.js:48
+ox @ index-BOEHsBVb.js:38
+Uu @ index-BOEHsBVb.js:40
+Ts @ index-BOEHsBVb.js:40
+dg @ index-BOEHsBVb.js:40
+gi @ index-BOEHsBVb.js:38
+JC @ index-BOEHsBVb.js:40
+Ei @ index-BOEHsBVb.js:40
+Fx @ index-BOEHsBVb.js:40
+b @ index-BOEHsBVb.js:25
+R @ index-BOEHsBVb.js:25Understand this error
+index-BOEHsBVb.js:131 Form submitted with data: {title: 'aaaa', description: 'aaa', dueDate: '', category: '', priority: 'medium', …}
+index-BOEHsBVb.js:131 Creating task using REST API: {title: 'aaaa', description: 'aaa', dueDate: '', category: '', priority: 'medium', …}
+index-BOEHsBVb.js:131 Task data being sent: {"title":"aaaa","description":"aaa","dueDate":null,"categoryId":null,"priority":"medium","completed":false,"userId":3}
+index-BOEHsBVb.js:131 
+            
+            
+           GET https://main.do510v6fsmjrf.amplifyapp.com/api/tasks/ 404 (Not Found)
+mutationFn @ index-BOEHsBVb.js:131
+fn @ index-BOEHsBVb.js:48
+v @ index-BOEHsBVb.js:48
+start @ index-BOEHsBVb.js:48
+execute @ index-BOEHsBVb.js:48
+await in execute
+mutate @ index-BOEHsBVb.js:48
+d @ index-BOEHsBVb.js:131
+(anonymous) @ index-BOEHsBVb.js:131
+await in (anonymous)
+vk @ index-BOEHsBVb.js:37
+xk @ index-BOEHsBVb.js:37
+Ek @ index-BOEHsBVb.js:37
+Ly @ index-BOEHsBVb.js:37
+Kw @ index-BOEHsBVb.js:37
+(anonymous) @ index-BOEHsBVb.js:37
+Xp @ index-BOEHsBVb.js:40
+pw @ index-BOEHsBVb.js:37
+Fd @ index-BOEHsBVb.js:37
+kp @ index-BOEHsBVb.js:37
+jk @ index-BOEHsBVb.js:37Understand this error
+index-BOEHsBVb.js:131 Invalid JSON response: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>TaskMaster - Amplify Todo App</title>
+    <meta name="description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="TaskMaster - Amplify Todo App">
+    <meta property="og:description" content="A powerful todo application built with AWS Amplify, AppSync, and DynamoDB">
+    <meta property="og:type" content="website">
+    <script type="module" crossorigin src="/assets/index-BOEHsBVb.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DSZ1NgMN.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>
+
+mutationFn @ index-BOEHsBVb.js:131
+await in mutationFn
+fn @ index-BOEHsBVb.js:48
+v @ index-BOEHsBVb.js:48
+start @ index-BOEHsBVb.js:48
+execute @ index-BOEHsBVb.js:48
+await in execute
+mutate @ index-BOEHsBVb.js:48
+d @ index-BOEHsBVb.js:131
+(anonymous) @ index-BOEHsBVb.js:131
+await in (anonymous)
+vk @ index-BOEHsBVb.js:37
+xk @ index-BOEHsBVb.js:37
+Ek @ index-BOEHsBVb.js:37
+Ly @ index-BOEHsBVb.js:37
+Kw @ index-BOEHsBVb.js:37
+(anonymous) @ index-BOEHsBVb.js:37
+Xp @ index-BOEHsBVb.js:40
+pw @ index-BOEHsBVb.js:37
+Fd @ index-BOEHsBVb.js:37
+kp @ index-BOEHsBVb.js:37
+jk @ index-BOEHsBVb.js:37Understand this error
+index-BOEHsBVb.js:131 Error creating task: Error: Invalid response format: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" con
+    at Object.mutationFn (index-BOEHsBVb.js:131:101471)
+mutationFn @ index-BOEHsBVb.js:131
+await in mutationFn
+fn @ index-BOEHsBVb.js:48
+v @ index-BOEHsBVb.js:48
+start @ index-BOEHsBVb.js:48
+execute @ index-BOEHsBVb.js:48
+await in execute
+mutate @ index-BOEHsBVb.js:48
+d @ index-BOEHsBVb.js:131
+(anonymous) @ index-BOEHsBVb.js:131
+await in (anonymous)
+vk @ index-BOEHsBVb.js:37
+xk @ index-BOEHsBVb.js:37
+Ek @ index-BOEHsBVb.js:37
+Ly @ index-BOEHsBVb.js:37
+Kw @ index-BOEHsBVb.js:37
+(anonymous) @ index-BOEHsBVb.js:37
+Xp @ index-BOEHsBVb.js:40
+pw @ index-BOEHsBVb.js:37
+Fd @ index-BOEHsBVb.js:37
+kp @ index-BOEHsBVb.js:37
+jk @ index-BOEHsBVb.js:37Understand this error
+index-BOEHsBVb.js:131 Error in form submission: Error: Invalid response format: <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" con
+    at Object.mutationFn (index-BOEHsBVb.js:131:101471)
+d @ index-BOEHsBVb.js:131
+await in d
+(anonymous) @ index-BOEHsBVb.js:131
+await in (anonymous)
+vk @ index-BOEHsBVb.js:37
+xk @ index-BOEHsBVb.js:37
+Ek @ index-BOEHsBVb.js:37
+Ly @ index-BOEHsBVb.js:37
+Kw @ index-BOEHsBVb.js:37
+(anonymous) @ index-BOEHsBVb.js:37
+Xp @ index-BOEHsBVb.js:40
+pw @ index-BOEHsBVb.js:37
+Fd @ index-BOEHsBVb.js:37
+kp @ index-BOEHsBVb.js:37
+jk @ index-BOEHsBVb.js:37Understand this error

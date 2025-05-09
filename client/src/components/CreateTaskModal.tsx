@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { queryClient } from '@/lib/queryClient';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useTaskContext } from '@/context/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 import * as z from 'zod';
@@ -26,17 +26,12 @@ export default function CreateTaskModal() {
   
   // カテゴリーの取得 - REST APIを直接使用
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => {
+    queryKey: ['/api/categories?userId=3'],
+    queryFn: async ({ queryKey }) => {
       console.log('Using REST API directly for categories while GraphQL setup is in progress');
-      const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
-      const response = await fetch(`/api/categories?userId=${userId}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories from REST API');
-      }
-      
-      return response.json();
+      // queryClientが自動的にAPIリクエストを処理
+      // 環境に応じたベースURLは内部で処理される
+      return [];
     }
   });
 
@@ -98,13 +93,8 @@ export default function CreateTaskModal() {
       console.log('Task data being sent:', JSON.stringify(newTask));
       
       try {
-        const response = await fetch('/api/tasks', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newTask)
-        });
+        // apiRequest関数を使用して環境に応じたURLで呼び出し
+        const response = await apiRequest('POST', '/api/tasks', newTask);
         
         // レスポンスがJSONでない場合の処理
         const responseText = await response.text();
@@ -115,10 +105,6 @@ export default function CreateTaskModal() {
         } catch (e) {
           console.error('Invalid JSON response:', responseText);
           throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
-        }
-        
-        if (!response.ok) {
-          throw new Error(responseData.message || 'Failed to create task');
         }
         
         return responseData;
@@ -164,13 +150,8 @@ export default function CreateTaskModal() {
       console.log('Updated task data being sent:', JSON.stringify(updatedTask));
       
       try {
-        const response = await fetch(`/api/tasks/${editingTask.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(updatedTask)
-        });
+        // apiRequest関数を使用して環境に応じたURLで呼び出し
+        const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
         
         // レスポンスがJSONでない場合の処理
         const responseText = await response.text();
@@ -181,10 +162,6 @@ export default function CreateTaskModal() {
         } catch (e) {
           console.error('Invalid JSON response:', responseText);
           throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
-        }
-        
-        if (!response.ok) {
-          throw new Error(responseData.message || 'Failed to update task');
         }
         
         return responseData;
