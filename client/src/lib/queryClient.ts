@@ -126,8 +126,9 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      refetchOnWindowFocus: true, // ウィンドウにフォーカスが戻った時にデータを再取得する
+      staleTime: 5000, // 5秒後にデータを古いと見なす (Infinityから変更)
+      gcTime: 60 * 1000, // 1分後にキャッシュからデータが削除される
       retry: false,
     },
     mutations: {

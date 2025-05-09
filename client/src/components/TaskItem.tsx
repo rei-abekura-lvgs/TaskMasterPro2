@@ -77,7 +77,7 @@ export default function TaskItem({ task }: TaskItemProps) {
     }
   });
 
-  // シンプルで確実なタスク完了状態の切り替え
+  // タスク完了状態の切り替え - 改良版
   const toggleCompletionMutation = useMutation({
     mutationFn: async () => {
       // まず完了状態を逆にした値を保存しておく
@@ -104,10 +104,21 @@ export default function TaskItem({ task }: TaskItemProps) {
       }
     },
     onSuccess: (result) => {
-      // タスクリストを再読み込み
+      console.log('完了状態トグル成功。キャッシュを更新します');
+      
+      // キャッシュを完全にクリアする
+      queryClient.removeQueries({ queryKey: ['/api/tasks'] });
+      queryClient.removeQueries({ queryKey: ['/api/categories'] });
+      
+      // キャッシュを無効化して再取得を強制する
       queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-      // カテゴリも更新（カウント変更のため）
       queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      
+      // UIに反映させるための強制再取得
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/tasks'] });
+        queryClient.refetchQueries({ queryKey: ['/api/categories'] });
+      }, 100);
       
       // 成功通知
       toast({

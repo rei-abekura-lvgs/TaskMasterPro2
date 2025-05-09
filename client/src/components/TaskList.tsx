@@ -1,11 +1,11 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import TaskItem from './TaskItem';
 import { useTaskContext } from '@/context/TaskContext';
 import { Task } from '@/types';
 import { listTasks } from '@/graphql/queries';
 import { executeGraphQL } from '@/lib/amplify';
-import { getApiBaseUrl } from '@/lib/queryClient';
+import { getApiBaseUrl, apiRequest } from '@/lib/queryClient';
 
 type SortOption = 'dateNewest' | 'dateOldest' | 'priority' | 'alphabetical';
 type FilterType = 'all' | 'active' | 'completed';
@@ -18,6 +18,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   const { activeCategory, activeFilter } = useTaskContext();
+  const queryClient = useQueryClient(); // QueryClientを使用するための初期化
   
   // Build the filter based on active category and filter
   const buildFilter = () => {
@@ -94,48 +95,45 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     return filteredTasks;
   };
   
-  // GraphQLクエリを実行
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['tasks', activeCategory, activeFilter, filterType],
+  // タスクデータを取得 - 統一されたキーでクエリを実行
+  const { data, isLoading, error, refetch } = useQuery({
+    // 重要: 標準化されたキーを使用 - 他のコンポーネントと同じキーを使用することで
+    // キャッシュの無効化が正しく機能する
+    queryKey: ['/api/tasks'],
+    // フィルター関連の依存配列を追加して、フィルターが変更されたときにクエリを再実行
+    enabled: true,
+    // キャッシュデータを取得したら毎回最新データを取得するように
+    staleTime: 0,
+    // 関数の定義
     queryFn: async () => {
       try {
         const filter = buildFilter();
         
-        // DynamoDBからのデータ取得を試行する代わりに、すぐにREST APIを使用
-        console.log('Using REST API directly for now, while GraphQL setup is in progress');
-        
         // REST APIからタスクを取得
         const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
-        console.log('Fetching with userId:', userId);
+        console.log('タスクリスト: データを取得中...');
         
-        // 環境に応じて適切なURL構築を行うためにgetApiBaseUrl関数とAPIリクエストを直接使用
         try {
-          const baseUrl = getApiBaseUrl();
-          const fullUrl = baseUrl ? `${baseUrl}/api/tasks?userId=${userId}` : `/api/tasks?userId=${userId}`;
-          console.log(`Making API request to: ${fullUrl}`);
-          
-          const response = await fetch(fullUrl, {
-            method: 'GET',
-            credentials: 'include',
-          });
+          const response = await apiRequest('GET', `/api/tasks?userId=${userId}`);
           
           if (!response.ok) {
-            const errorText = await response.text();
-            console.error('REST API Error:', errorText);
-            throw new Error(`Failed to fetch tasks from REST API: ${response.status} ${errorText}`);
+            throw new Error(`タスク取得エラー: ${response.status}`);
           }
           
           const tasks = await response.json();
-          console.log('Tasks from REST API:', tasks);
+          console.log(`${tasks.length}件のタスクを取得しました`);
           
           // クライアント側でのフィルタリング
-          return filterTasksClient(tasks, filter);
+          const filteredTasks = filterTasksClient(tasks, filter);
+          console.log(`フィルタリング後: ${filteredTasks.length}件のタスクを表示`);
+          
+          return filteredTasks;
         } catch (error) {
-          console.error('Error in task fetch:', error);
+          console.error('タスク取得中にエラー発生:', error);
           throw error;
         }
       } catch (error) {
-        console.error('Error fetching tasks:', error);
+        console.error('タスク取得エラー:', error);
         throw error;
       }
     }
