@@ -31,13 +31,13 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     if (activeFilter) {
       switch (activeFilter) {
         case 'high':
-          filter.priority = { eq: 'high' };
+          filter.priority = { eq: 'HIGH' }; // AppSyncでは大文字
           break;
         case 'medium':
-          filter.priority = { eq: 'medium' };
+          filter.priority = { eq: 'MEDIUM' }; // AppSyncでは大文字
           break;
         case 'low':
-          filter.priority = { eq: 'low' };
+          filter.priority = { eq: 'LOW' }; // AppSyncでは大文字
           break;
         case 'all_priority':
           // すべての優先度のタスクを表示するため、フィルターは設定しない
@@ -60,41 +60,65 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
       try {
         const filter = buildFilter();
         
-        // DynamoDBのクエリフィルタに変換
-        const modelFilter: any = {
-          and: []
-        };
+        // AppSyncのクエリフィルタに変換
+        // スキーマに合わせた適切なフィルター形式を作成
+        let modelFilter: any = null;
+        const filterConditions = [];
         
         // カテゴリーフィルター
         if (filter.category && filter.category.eq) {
-          modelFilter.and.push({ 
-            'category': { 'id': { 'eq': filter.category.eq } } 
+          // AppSyncスキーマではカテゴリーは関連オブジェクト
+          // 通常このような複雑な条件はカスタムのResolver/Lambdaが必要
+          // 簡易的に実装 - REST APIフォールバックに依存することになる可能性あり
+          filterConditions.push({
+            categoryId: { eq: filter.category.eq }
           });
         }
         
         // 完了状態フィルター
         if (filter.completed !== undefined && filter.completed.eq !== undefined) {
-          modelFilter.and.push({ 
-            'completed': { 'eq': filter.completed.eq } 
+          filterConditions.push({
+            completed: { eq: filter.completed.eq }
           });
         }
         
         // 優先度フィルター
         if (filter.priority && filter.priority.eq) {
-          modelFilter.and.push({ 
-            'priority': { 'eq': filter.priority.eq } 
+          filterConditions.push({
+            priority: { eq: filter.priority.eq }
           });
+        }
+        
+        // フィルター条件が存在する場合のみフィルターを適用
+        if (filterConditions.length > 0) {
+          modelFilter = {
+            and: filterConditions
+          };
         }
         
         try {
           // AppSyncのGraphQLを使用してデータ取得
           const result = await executeGraphQL(listTasks, {
-            filter: modelFilter.and.length > 0 ? modelFilter : null,
+            filter: modelFilter && modelFilter.and && modelFilter.and.length > 0 ? modelFilter : null,
             limit: 100
           });
           
           if (result && result.listTasks && result.listTasks.items) {
-            return result.listTasks.items;
+            // GraphQLから返されたタスクをフロントエンド用のフォーマットに変換
+            return result.listTasks.items.map((item: any) => ({
+              id: item.id,
+              title: item.title,
+              description: item.description || '',
+              dueDate: item.dueDate || '',
+              categoryId: item.category ? item.category.id : undefined,
+              category: item.category ? item.category.name : '',
+              // AppSyncからの応答は大文字の列挙型、フロントエンドでは小文字で扱う
+              priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
+              completed: item.completed,
+              createdAt: item.createdAt,
+              updatedAt: item.updatedAt,
+              userId: item.userId || 0, // GraphQLにはownerIdがあるが、フロントエンドの型との互換性のため
+            }));
           }
           
           throw new Error('Invalid response from AppSync');
@@ -103,7 +127,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           
           // フォールバック：REST APIを使用
           console.log('Falling back to REST API');
-          const userId = 3; // 仮のユーザーID
+          const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
           const response = await fetch(`/api/tasks?userId=${userId}`);
           
           if (!response.ok) {
@@ -127,7 +151,9 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           
           // 優先度フィルター
           if (filter.priority && filter.priority.eq) {
-            filteredTasks = filteredTasks.filter(task => task.priority === filter.priority.eq);
+            // AppSyncでは大文字、REST APIでは小文字
+            const priorityValue = filter.priority.eq.toLowerCase();
+            filteredTasks = filteredTasks.filter(task => task.priority === priorityValue);
           }
           
           return filteredTasks;
