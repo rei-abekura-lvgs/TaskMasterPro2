@@ -5,6 +5,7 @@ import { useTaskContext } from '@/context/TaskContext';
 import { Task } from '@/types';
 import { listTasks } from '@/graphql/queries';
 import { executeGraphQL } from '@/lib/amplify';
+import { fetchGraphQL } from '@/lib/graphqlFetch'; // 新しい直接フェッチ方法
 import { getApiBaseUrl, apiRequest } from '@/lib/queryClient';
 
 type SortOption = 'dateNewest' | 'dateOldest' | 'priority' | 'alphabetical';
@@ -143,8 +144,9 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         console.log('タスクリスト: GraphQLでデータを取得中...');
         
         try {
-          // GraphQLでタスクを取得
-          const result = await executeGraphQL(listTasks, {
+          // GraphQLでタスクを取得 - 直接フェッチを試みる
+          console.log('直接フェッチによるGraphQL呼び出しを試行');
+          const result = await fetchGraphQL(listTasks, {
             // フィルターパラメータがある場合は追加
             filter: filter
           });
