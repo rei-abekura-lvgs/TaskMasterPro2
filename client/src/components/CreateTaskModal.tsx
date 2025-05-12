@@ -183,6 +183,9 @@ export default function CreateTaskModal() {
           
           // GraphQLが失敗した場合はRESTにフォールバック（移行期間中）
           console.warn('GraphQLに失敗したため、一時的にRESTで作成を試みます');
+          
+          // 正しいRESTエンドポイントを使用（AppSyncではなくReplitのバックエンド）
+          // getApiBaseUrl()関数は環境に応じたベースURLを返す
           const response = await apiRequest('POST', '/api/tasks', newTask);
           
           if (!response.ok) {
@@ -340,6 +343,8 @@ export default function CreateTaskModal() {
           
           // GraphQLが失敗した場合はRESTにフォールバック（移行期間中）
           console.warn('GraphQLに失敗したため、一時的にRESTで更新を試みます');
+          
+          // 正しいRESTエンドポイントを使用（AppSyncではなくReplitのバックエンド）
           const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
           
           if (!response.ok) {

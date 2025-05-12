@@ -12,17 +12,11 @@ export function getApiBaseUrl(): string {
   
   // AWS Amplifyにデプロイされた場合
   if (window.location.hostname.includes('amplifyapp.com')) {
-    // AppSyncのGraphQLエンドポイントが設定されている場合はそれを使用
-    if (import.meta.env.VITE_APPSYNC_ENDPOINT) {
-      console.log('Using AppSync endpoint:', import.meta.env.VITE_APPSYNC_ENDPOINT);
-      return import.meta.env.VITE_APPSYNC_ENDPOINT;
-    }
-    
-    // APIがローカルかAmplifyホスティングと同じOriginにない場合は
-    // 明示的にAPI URLを指定する必要があります
+    // 注意: AppSyncのGraphQLエンドポイントはGraphQL専用で、REST APIに使用すべきではない
+    // REST API用に別のエンドポイントがある場合はそれを使用
     
     // 開発中は一時的に開発サーバーURLを使う（プロダクションでは修正が必要）
-    console.log('WARNING: No API endpoint configured. Using development API temporarily.');
+    console.log('AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用');
     // Replitの開発サーバーURL - 本番環境ではこれを適切なAPIエンドポイントに変更する必要があります
     return 'https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev';
   }
