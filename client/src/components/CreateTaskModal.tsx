@@ -148,18 +148,53 @@ export default function CreateTaskModal() {
       };
       
       try {
-        // 実際のAPI呼び出し
-        const response = await apiRequest('POST', '/api/tasks', newTask);
+        // GraphQL APIの準備
+        const { createTask } = await import('@/graphql/mutations');
+        const { fetchGraphQL } = await import('@/lib/graphqlFetch');
         
-        if (!response.ok) {
-          throw new Error(`サーバーエラー (${response.status})`);
-        }
+        // TaskInput形式に変換
+        const createTaskInput = {
+          title: data.title,
+          description: data.description || null,
+          dueDate: data.dueDate || null,
+          categoryId: data.category ? data.category : null,
+          priority: data.priority.toUpperCase() || 'MEDIUM',
+          completed: Boolean(data.completed),
+          userId: "3" // GraphQLではIDは文字列として扱う
+        };
         
-        const responseText = await response.text();
+        console.log('GraphQLでタスクを作成します:', createTaskInput);
+        
         try {
-          return responseText ? JSON.parse(responseText) : { success: true };
-        } catch (e) {
-          return { success: true };
+          // GraphQL APIでタスク作成
+          const result = await fetchGraphQL(createTask, {
+            input: createTaskInput
+          });
+          
+          if (!result || !result.createTask) {
+            console.error('GraphQLタスク作成に失敗:', result);
+            throw new Error('タスク作成に失敗しました');
+          }
+          
+          console.log('GraphQLでタスクを作成しました:', result.createTask);
+          return result.createTask;
+        } catch (graphqlError) {
+          console.error('GraphQLエラー:', graphqlError);
+          
+          // GraphQLが失敗した場合はRESTにフォールバック（移行期間中）
+          console.warn('GraphQLに失敗したため、一時的にRESTで作成を試みます');
+          const response = await apiRequest('POST', '/api/tasks', newTask);
+          
+          if (!response.ok) {
+            throw new Error(`サーバーエラー (${response.status})`);
+          }
+          
+          const responseText = await response.text();
+          try {
+            return responseText ? JSON.parse(responseText) : { success: true };
+          } catch (e) {
+            return { success: true }; // JSON解析に失敗しても成功とみなす
+          }
         }
       } catch (error) {
         console.error('タスク作成エラー:', error);
@@ -269,18 +304,54 @@ export default function CreateTaskModal() {
       };
       
       try {
-        // 実際のAPI呼び出し
-        const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
+        // GraphQL APIの準備
+        const { updateTask } = await import('@/graphql/mutations');
+        const { fetchGraphQL } = await import('@/lib/graphqlFetch');
         
-        if (!response.ok) {
-          throw new Error(`サーバーエラー (${response.status})`);
-        }
+        // TaskInput形式に変換
+        const updateTaskInput = {
+          id: String(editingTask.id), // GraphQLではIDは文字列
+          title: data.title,
+          description: data.description || null,
+          dueDate: data.dueDate || null,
+          categoryId: data.category ? data.category : null,
+          priority: data.priority.toUpperCase(),
+          completed: Boolean(data.completed),
+          userId: "3" // GraphQLではIDは文字列として扱う
+        };
         
-        const responseText = await response.text();
+        console.log('GraphQLでタスクを更新します:', updateTaskInput);
+        
         try {
-          return responseText ? JSON.parse(responseText) : { success: true };
-        } catch (e) {
-          return { success: true };
+          // GraphQL APIでタスク更新
+          const result = await fetchGraphQL(updateTask, {
+            input: updateTaskInput
+          });
+          
+          if (!result || !result.updateTask) {
+            console.error('GraphQLタスク更新に失敗:', result);
+            throw new Error('タスク更新に失敗しました');
+          }
+          
+          console.log('GraphQLでタスクを更新しました:', result.updateTask);
+          return result.updateTask;
+        } catch (graphqlError) {
+          console.error('GraphQLエラー:', graphqlError);
+          
+          // GraphQLが失敗した場合はRESTにフォールバック（移行期間中）
+          console.warn('GraphQLに失敗したため、一時的にRESTで更新を試みます');
+          const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
+          
+          if (!response.ok) {
+            throw new Error(`サーバーエラー (${response.status})`);
+          }
+          
+          const responseText = await response.text();
+          try {
+            return responseText ? JSON.parse(responseText) : { success: true };
+          } catch (e) {
+            return { success: true };
+          }
         }
       } catch (error) {
         console.error('タスク更新エラー:', error);
