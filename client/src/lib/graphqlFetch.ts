@@ -4,8 +4,9 @@
  */
 
 // 環境変数から認証情報を取得
-const API_URL = import.meta.env.VITE_APPSYNC_ENDPOINT;
-const API_KEY = import.meta.env.VITE_APPSYNC_API_KEY;
+// 注意: 環境変数が変更された場合、Viteの再起動が必要な場合があります
+const API_URL = import.meta.env.VITE_APPSYNC_ENDPOINT as string;
+const API_KEY = import.meta.env.VITE_APPSYNC_API_KEY as string;
 
 /**
  * GraphQLクエリを実行する単純なフェッチ関数
@@ -29,13 +30,11 @@ export async function fetchGraphQL(query: string, variables: Record<string, any>
 
   try {
     // AWS AppSyncのAPI呼び出しに必要なヘッダーを設定
+    // AppSync API Keyは 'x-api-key' ヘッダーで送信する必要がある
     // 参考: https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html#api-key-authorization
     const headers = {
       'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      // API認証関連の追加ヘッダー - AWS AppSyncが期待する形式で設定
-      'X-Api-Key': API_KEY, // 大文字形式も試す
-      'Authorization': API_KEY // 別形式も試す
+      'x-api-key': API_KEY // 標準的なAWS AppSync API Key形式のヘッダー
     };
     
     console.log('APIヘッダー:', Object.keys(headers));

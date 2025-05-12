@@ -6,19 +6,76 @@ export default function GraphQLTester() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   
+  // スキーマ検証（タイプを確認する）
+  const testSchema = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // IntrospectionクエリでGraphQLスキーマを取得
+      const query = `
+        query IntrospectionQuery {
+          __schema {
+            queryType {
+              name
+              fields {
+                name
+                description
+                args {
+                  name
+                  description
+                  type {
+                    name
+                    kind
+                  }
+                }
+                type {
+                  name
+                  kind
+                }
+              }
+            }
+            types {
+              name
+              kind
+              description
+              fields {
+                name
+                description
+              }
+            }
+          }
+        }
+      `;
+      
+      const data = await fetchGraphQL(query);
+      setResult(data);
+    } catch (err: any) {
+      console.error('GraphQLスキーマ取得中のエラー:', err);
+      setError(err.message || 'GraphQLスキーマの取得中にエラーが発生しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 基本的なクエリテスト
   const testListQuery = async () => {
     setLoading(true);
     setError(null);
     
     try {
+      // AWS管理コンソールからクエリ名を確認後、適切なクエリを作成
       const query = `
-        query ListUsers {
-          listUsers {
+        query ListTasks {
+          listTaskses {
             items {
               id
-              username
-              email
+              title
+              description
+              dueDate
+              priority
+              completed
+              owner
             }
           }
         }
@@ -205,11 +262,19 @@ export default function GraphQLTester() {
         </button>
         
         <button 
+          onClick={testSchema}
+          className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600"
+          disabled={loading}
+        >
+          スキーマ検証
+        </button>
+        
+        <button 
           onClick={testListQuery}
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           disabled={loading}
         >
-          ListUsersクエリテスト
+          タスククエリテスト
         </button>
         
         <button 
