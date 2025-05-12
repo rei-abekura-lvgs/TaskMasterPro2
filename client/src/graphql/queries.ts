@@ -8,7 +8,8 @@ export const listTasks = /* GraphQL */ `
       dueDate
       priority
       completed
-      owner
+      userId
+      categoryId
       createdAt
       updatedAt
     }

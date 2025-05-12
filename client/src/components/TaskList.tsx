@@ -147,16 +147,24 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           // GraphQLでタスクを取得 - 直接フェッチを試みる
           console.log('直接フェッチによるGraphQL呼び出しを試行');
           const result = await fetchGraphQL(listTasks, {
-            // フィルターパラメータがある場合は追加
+            // GraphQLクエリの変数を渡す
+            userId: userId,
             filter: filter
           });
           
-          if (!result || !result.getUserTasks) {
-            console.error('GraphQLからのレスポンスが不正な形式です:', result);
+          // タスクデータがnullの場合は空配列を返す
+          if (!result) {
+            console.error('GraphQLからのレスポンスがありません');
             return [];
           }
           
-          // getUserTasksはリストを直接返します
+          // getUserTasksがnullの場合（タスクなし）
+          if (result.getUserTasks === null) {
+            console.log('GraphQLから取得したタスクはありません');
+            return [];
+          }
+          
+          // getUserTasksはリストまたは単一オブジェクトを返す可能性があります
           const tasksData = Array.isArray(result.getUserTasks) ? result.getUserTasks : [result.getUserTasks];
           
           // GraphQLレスポンスのフォーマット
