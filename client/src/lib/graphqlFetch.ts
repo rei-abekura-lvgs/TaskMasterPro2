@@ -28,12 +28,21 @@ export async function fetchGraphQL(query: string, variables: Record<string, any>
   console.log(`Variables: ${JSON.stringify(variables)}`);
 
   try {
+    // AWS AppSyncのAPI呼び出しに必要なヘッダーを設定
+    // 参考: https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html#api-key-authorization
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY,
+      // API認証関連の追加ヘッダー - AWS AppSyncが期待する形式で設定
+      'X-Api-Key': API_KEY, // 大文字形式も試す
+      'Authorization': API_KEY // 別形式も試す
+    };
+    
+    console.log('APIヘッダー:', Object.keys(headers));
+    
     const response = await fetch(API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
+      headers,
       body: JSON.stringify({
         query,
         variables

@@ -54,6 +54,68 @@ export default function GraphQLTester() {
     return true;
   };
   
+  // API情報を検証
+  const testApiConfig = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // 環境変数の情報を収集
+      const apiUrl = import.meta.env.VITE_APPSYNC_ENDPOINT;
+      const apiKey = import.meta.env.VITE_APPSYNC_API_KEY;
+      const region = import.meta.env.VITE_AWS_REGION;
+      
+      // AWS CLI configを参照
+      const configData = {
+        endpoint: apiUrl,
+        apiKey: apiKey ? `${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}` : null,
+        region,
+        encodedKey: apiKey ? btoa(apiKey) : null // Base64エンコード
+      };
+      
+      setResult(configData);
+      
+      // AWS AppSyncのエンドポイントが到達可能か確認
+      if (apiUrl) {
+        try {
+          const pingResponse = await fetch(apiUrl, {
+            method: 'OPTIONS',
+            mode: 'cors'
+          });
+          console.log('API エンドポイント接続テスト:', pingResponse.status, pingResponse.statusText);
+          
+          if (pingResponse.ok) {
+            setResult(prev => ({ 
+              ...prev, 
+              pingStatus: 'OK', 
+              pingStatusCode: pingResponse.status,
+              cors: 'Supported'
+            }));
+          } else {
+            setResult(prev => ({ 
+              ...prev, 
+              pingStatus: 'Error', 
+              pingStatusCode: pingResponse.status,
+              pingStatusText: pingResponse.statusText
+            }));
+          }
+        } catch (pingErr: any) {
+          console.error('API接続テスト中のエラー:', pingErr);
+          setResult(prev => ({ 
+            ...prev, 
+            pingStatus: 'Failed',
+            pingError: pingErr.message
+          }));
+        }
+      }
+    } catch (err: any) {
+      console.error('API構成検証中のエラー:', err);
+      setError(err.message || 'API構成の検証中にエラーが発生しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   // 手動HTTPリクエスト
   const testDirectFetch = async () => {
     setLoading(true);
@@ -67,6 +129,7 @@ export default function GraphQLTester() {
         throw new Error('API設定が見つかりません');
       }
       
+      // Introspection query to get schema info
       const query = `
         query {
           __schema {
@@ -77,17 +140,41 @@ export default function GraphQLTester() {
         }
       `;
       
+      // より多くのヘッダーバリエーションを試す
+      const headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'X-Api-Key': apiKey,
+        'Authorization': apiKey,
+        'Host': new URL(apiUrl).host,
+        'Accept': 'application/json',
+        'Accept-Encoding': 'gzip, deflate, br'
+      };
+      
+      console.log('API request headers:', Object.keys(headers).join(', '));
+      console.log('Request URL:', apiUrl);
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey
-        },
-        body: JSON.stringify({ query })
+        headers,
+        body: JSON.stringify({ query }),
+        mode: 'cors',
+        credentials: 'omit'
+      });
+      
+      // ステータス情報とヘッダーを含める
+      const responseHeaders: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
       });
       
       const data = await response.json();
-      setResult(data);
+      setResult({
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+        data
+      });
     } catch (err: any) {
       console.error('直接フェッチ中のエラー:', err);
       setError(err.message || '直接HTTPリクエスト中にエラーが発生しました');
@@ -100,13 +187,21 @@ export default function GraphQLTester() {
     <div className="p-4 border rounded-lg bg-white shadow">
       <h2 className="text-xl font-bold mb-4">GraphQL API テスター</h2>
       
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <button 
           onClick={checkApiKey}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           disabled={loading}
         >
           環境変数チェック
+        </button>
+        
+        <button 
+          onClick={testApiConfig}
+          className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
+          disabled={loading}
+        >
+          API構成検証
         </button>
         
         <button 
