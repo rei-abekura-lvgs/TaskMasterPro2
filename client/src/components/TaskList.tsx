@@ -151,13 +151,16 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
             filter: filter
           });
           
-          if (!result || !result.listTasks || !result.listTasks.items) {
+          if (!result || !result.getUserTasks) {
             console.error('GraphQLからのレスポンスが不正な形式です:', result);
             return [];
           }
           
+          // getUserTasksはリストを直接返します
+          const tasksData = Array.isArray(result.getUserTasks) ? result.getUserTasks : [result.getUserTasks];
+          
           // GraphQLレスポンスのフォーマット
-          const tasks = result.listTasks.items.map(formatTaskFromGraphQL);
+          const tasks = tasksData.map(formatTaskFromGraphQL);
           console.log(`GraphQLから${tasks.length}件のタスクを取得しました`);
           
           // クライアント側でのフィルタリング（追加の絞り込みが必要な場合）

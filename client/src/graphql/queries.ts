@@ -1,21 +1,16 @@
 // GraphQL Queries
 export const listTasks = /* GraphQL */ `
-  query ListTasks {
-    listTasks {
-      items {
-        id
-        title
-        description
-        dueDate
-        priority
-        completed
-        category {
-          id
-          name
-        }
-        createdAt
-        updatedAt
-      }
+  query GetUserTasks($userId: ID!) {
+    getUserTasks(userId: $userId) {
+      id
+      title
+      description
+      dueDate
+      priority
+      completed
+      owner
+      createdAt
+      updatedAt
     }
   }
 `;
