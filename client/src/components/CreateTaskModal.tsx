@@ -138,7 +138,7 @@ export default function CreateTaskModal() {
       };
       
       // UIに即時反映
-      queryClient.setQueryData(['/api/tasks'], (old: any[] | undefined) => {
+      queryClient.setQueryData(['getUserTasks'], (old: any[] | undefined) => {
         if (!old) return [tempTask];
         return [tempTask, ...old];
       });
@@ -212,7 +212,7 @@ export default function CreateTaskModal() {
     // エラー処理とロールバック
     onError: (err, newTodo, context: any) => {
       console.error('タスク作成に失敗、変更を元に戻します:', err);
-      queryClient.setQueryData(['/api/tasks'], context?.previousTasks);
+      queryClient.setQueryData(['getUserTasks'], context?.previousTasks);
       toast({
         title: "タスク作成に失敗しました",
         description: "ネットワークエラーが発生しました。再試行してください。",
