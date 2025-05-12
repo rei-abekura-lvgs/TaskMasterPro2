@@ -199,23 +199,9 @@ export default function CreateTaskModal() {
         } catch (graphqlError) {
           console.error('GraphQLエラー:', graphqlError);
           
-          // GraphQLが失敗した場合はRESTにフォールバック（移行期間中）
-          console.warn('GraphQLに失敗したため、一時的にRESTで作成を試みます');
-          
-          // 正しいRESTエンドポイントを使用（AppSyncではなくReplitのバックエンド）
-          // getApiBaseUrl()関数は環境に応じたベースURLを返す
-          const response = await apiRequest('POST', '/api/tasks', newTask);
-          
-          if (!response.ok) {
-            throw new Error(`サーバーエラー (${response.status})`);
-          }
-          
-          const responseText = await response.text();
-          try {
-            return responseText ? JSON.parse(responseText) : { success: true };
-          } catch (e) {
-            return { success: true }; // JSON解析に失敗しても成功とみなす
-          }
+          // GraphQLでの作成に失敗 - REST APIフォールバックは無効化
+          console.error('GraphQLによるタスク作成に失敗しました');
+          throw new Error('タスクの作成に失敗しました。もう一度お試しください。');
         }
       } catch (error) {
         console.error('タスク作成エラー:', error);
@@ -359,22 +345,9 @@ export default function CreateTaskModal() {
         } catch (graphqlError) {
           console.error('GraphQLエラー:', graphqlError);
           
-          // GraphQLが失敗した場合はRESTにフォールバック（移行期間中）
-          console.warn('GraphQLに失敗したため、一時的にRESTで更新を試みます');
-          
-          // 正しいRESTエンドポイントを使用（AppSyncではなくReplitのバックエンド）
-          const response = await apiRequest('PATCH', `/api/tasks/${editingTask.id}`, updatedTask);
-          
-          if (!response.ok) {
-            throw new Error(`サーバーエラー (${response.status})`);
-          }
-          
-          const responseText = await response.text();
-          try {
-            return responseText ? JSON.parse(responseText) : { success: true };
-          } catch (e) {
-            return { success: true };
-          }
+          // GraphQLでの更新に失敗 - REST APIフォールバックは無効化
+          console.error('GraphQLによるタスク更新に失敗しました');
+          throw new Error('タスクの更新に失敗しました。もう一度お試しください。');
         }
       } catch (error) {
         console.error('タスク更新エラー:', error);
