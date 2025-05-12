@@ -173,8 +173,7 @@ async function executeGraphQL<T>(query: string, variables: any): Promise<T> {
     
     const headers = {
       'Content-Type': 'application/json',
-      'x-api-key': appSyncConfig.aws_appsync_apiKey as string,
-      'Authorization': `Bearer ${appSyncConfig.aws_appsync_apiKey}`
+      'x-api-key': appSyncConfig.aws_appsync_apiKey as string
     };
     
     console.log('リクエストヘッダー:', Object.keys(headers));
@@ -277,6 +276,10 @@ async function migrateDataToDynamoDB(
   console.log(`カテゴリー移行開始 (${categories.length} 件)...`);
   for (const category of categories) {
     try {
+      if (category.userId === undefined) {
+        throw new Error('カテゴリーのuserIdが未定義です');
+      }
+      
       // ユーザーIDマッピングがない場合は直接文字列に変換
       const ownerId = category.userId.toString();
       
@@ -307,6 +310,10 @@ async function migrateDataToDynamoDB(
   console.log(`タスク移行開始 (${tasks.length} 件)...`);
   for (const task of tasks) {
     try {
+      if (task.userId === undefined) {
+        throw new Error('タスクのuserIdが未定義です');
+      }
+    
       // プリオリティを大文字に変換（DynamoDBスキーマ要件）
       const priority = task.priority ? task.priority.toUpperCase() as 'LOW' | 'MEDIUM' | 'HIGH' : 'MEDIUM';
       

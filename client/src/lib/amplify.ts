@@ -35,7 +35,8 @@ export function configureAmplify() {
     apiKey: apiKey,
     // ヘッダーを追加して認証情報を含める
     additionalHeaders: {
-      'x-api-key': apiKey
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json'
     }
   });
   
