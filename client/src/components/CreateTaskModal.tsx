@@ -239,7 +239,7 @@ export default function CreateTaskModal() {
       setTimeout(() => {
         // 一時的なオプティミスティックな項目を実際のサーバーデータに置き換える
         queryClient.invalidateQueries({ queryKey: ['getUserTasks'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+        queryClient.invalidateQueries({ queryKey: ['getUserCategories'] });
       }, 500); // サーバーのレスポンスを待つために少し遅延
     }
   });
@@ -280,7 +280,7 @@ export default function CreateTaskModal() {
       };
       
       // UIに即時反映
-      queryClient.setQueryData(['/api/tasks'], (old: any[] | undefined) => {
+      queryClient.setQueryData(['getUserTasks'], (old: any[] | undefined) => {
         if (!old) return [optimisticTask];
         return old.map(task => 
           task.id === editingTask.id ? optimisticTask : task
@@ -358,7 +358,7 @@ export default function CreateTaskModal() {
     // エラー処理とロールバック
     onError: (err, newTodo, context: any) => {
       console.error('タスク更新に失敗、変更を元に戻します:', err);
-      queryClient.setQueryData(['/api/tasks'], context?.previousTasks);
+      queryClient.setQueryData(['getUserTasks'], context?.previousTasks);
       toast({
         title: "タスク更新に失敗しました",
         description: "ネットワークエラーが発生しました。再試行してください。",
@@ -385,7 +385,7 @@ export default function CreateTaskModal() {
       setTimeout(() => {
         // 一時的なオプティミスティックな項目を実際のサーバーデータに置き換える
         queryClient.invalidateQueries({ queryKey: ['getUserTasks'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+        queryClient.invalidateQueries({ queryKey: ['getUserCategories'] });
       }, 500); // サーバーのレスポンスを待つために少し遅延
     }
   });
@@ -481,7 +481,7 @@ export default function CreateTaskModal() {
                     type="date" 
                     id="dueDate" 
                     {...form.register('dueDate')}
-                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white"
+                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white" 
                   />
                 </div>
                 
@@ -492,13 +492,12 @@ export default function CreateTaskModal() {
                   <select 
                     id="category" 
                     {...form.register('category')}
-                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white"
+                    className="w-full px-3 py-2 border dark:border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-neutral-700 dark:text-white appearance-none"
+                    defaultValue=""
                   >
                     <option value="">カテゴリなし</option>
-                    {categories?.map((category: any) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
+                    {categories && categories.map((category: any) => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
                   </select>
                 </div>
@@ -510,25 +509,15 @@ export default function CreateTaskModal() {
                 </label>
                 <div className="flex space-x-4">
                   {['low', 'medium', 'high'].map((priority) => (
-                    <label key={priority} className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        value={priority}
+                    <label key={priority} className="flex items-center space-x-2 cursor-pointer">
+                      <input 
+                        type="radio" 
                         {...form.register('priority')}
-                        className="sr-only"
+                        value={priority}
+                        className="form-radio text-blue-600 h-4 w-4" 
                       />
-                      <div className={`w-4 h-4 mr-2 rounded-full border ${
-                        form.watch('priority') === priority
-                        ? priority === 'high'
-                          ? 'bg-red-500 border-red-500'
-                          : priority === 'medium'
-                            ? 'bg-yellow-500 border-yellow-500'
-                            : 'bg-green-500 border-green-500'
-                        : 'bg-transparent'
-                      }`}>
-                      </div>
-                      <span className="capitalize">
-                        {priority === 'high' ? '高' : priority === 'medium' ? '中' : '低'}
+                      <span className="capitalize text-sm text-gray-700 dark:text-gray-300">
+                        {priority === 'low' ? '低' : priority === 'medium' ? '中' : '高'}
                       </span>
                     </label>
                   ))}
@@ -537,49 +526,39 @@ export default function CreateTaskModal() {
               
               {isEditing && (
                 <div className="mb-4">
-                  <label className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
                       {...form.register('completed')}
-                      className="sr-only"
+                      className="form-checkbox text-green-600 h-5 w-5" 
                     />
-                    <div className={`w-5 h-5 mr-2 rounded border ${
-                      form.watch('completed')
-                      ? 'bg-green-500 border-green-500 flex items-center justify-center'
-                      : 'bg-white border-gray-300'
-                    }`}>
-                      {form.watch('completed') && (
-                        <span className="material-icons text-white text-xs">check</span>
-                      )}
-                    </div>
-                    <span>完了としてマーク</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      完了としてマーク
+                    </span>
                   </label>
                 </div>
               )}
               
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  type="button"
+              {/* Form controls */}
+              <div className="mt-6 flex justify-end space-x-3">
+                <button 
+                  type="button" 
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 dark:hover:bg-neutral-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                   onClick={closeModal}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                 >
                   キャンセル
                 </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   disabled={createTaskMutation.isPending || updateTaskMutation.isPending}
                 >
-                  {(createTaskMutation.isPending || updateTaskMutation.isPending) ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      処理中...
-                    </span>
+                  {createTaskMutation.isPending || updateTaskMutation.isPending ? (
+                    '処理中...'
+                  ) : isEditing ? (
+                    '更新する'
                   ) : (
-                    isEditing ? '更新' : '作成'
+                    '作成する'
                   )}
                 </button>
               </div>
