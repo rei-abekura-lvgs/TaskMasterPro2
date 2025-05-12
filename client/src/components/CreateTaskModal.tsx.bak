@@ -104,10 +104,10 @@ export default function CreateTaskModal() {
     // オプティミスティックUI更新
     onMutate: async (data: any) => {
       // リクエスト前にキャンセル
-      await queryClient.cancelQueries({ queryKey: ['getUserTasks'] });
+      await queryClient.cancelQueries({ queryKey: ['/api/tasks'] });
       
       // 現在のタスクリストを保存
-      const previousTasks = queryClient.getQueryData(['getUserTasks']);
+      const previousTasks = queryClient.getQueryData(['/api/tasks']);
       
       // 仮のIDを生成
       const tempId = `temp-${Date.now()}`;
@@ -116,7 +116,7 @@ export default function CreateTaskModal() {
       let categoryName = '';
       if (data.category) {
         const categoryId = parseInt(data.category, 10);
-        const categories = queryClient.getQueryData(['getUserCategories']) as any[] || [];
+        const categories = queryClient.getQueryData(['/api/categories']) as any[] || [];
         const category = categories.find(c => c.id === categoryId);
         categoryName = category?.name || '';
       }
@@ -238,7 +238,7 @@ export default function CreateTaskModal() {
       // 実際のデータで更新するために遅延リロード
       setTimeout(() => {
         // 一時的なオプティミスティックな項目を実際のサーバーデータに置き換える
-        queryClient.invalidateQueries({ queryKey: ['getUserTasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
         queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       }, 500); // サーバーのレスポンスを待つために少し遅延
     }
@@ -251,16 +251,16 @@ export default function CreateTaskModal() {
       if (!editingTask) return null;
       
       // リクエスト前にキャンセル
-      await queryClient.cancelQueries({ queryKey: ['getUserTasks'] });
+      await queryClient.cancelQueries({ queryKey: ['/api/tasks'] });
       
       // 現在のタスクリストを保存
-      const previousTasks = queryClient.getQueryData(['getUserTasks']);
+      const previousTasks = queryClient.getQueryData(['/api/tasks']);
       
       // カテゴリ名を取得
       let categoryName = '';
       if (data.category) {
         const categoryId = parseInt(data.category, 10);
-        const categories = queryClient.getQueryData(['getUserCategories']) as any[] || [];
+        const categories = queryClient.getQueryData(['/api/categories']) as any[] || [];
         const category = categories.find(c => c.id === categoryId);
         categoryName = category?.name || '';
       }
@@ -384,7 +384,7 @@ export default function CreateTaskModal() {
       // 実際のデータで更新するために遅延リロード
       setTimeout(() => {
         // 一時的なオプティミスティックな項目を実際のサーバーデータに置き換える
-        queryClient.invalidateQueries({ queryKey: ['getUserTasks'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
         queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
       }, 500); // サーバーのレスポンスを待つために少し遅延
     }
