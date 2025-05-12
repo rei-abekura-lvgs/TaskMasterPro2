@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { queryClient, getApiBaseUrl, apiRequest } from '@/lib/queryClient';
+import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useTaskContext } from '@/context/TaskContext';
+import { fetchGraphQL } from '@/lib/graphqlFetch';
 
 type Category = {
-  id: number;
+  id: string;
   name: string;
-  userId: number;
+  userId: string;
+  createdAt?: string;
 };
 
 interface CategoryManageModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userId: number;
+  userId: string;
 }
 
 export default function CategoryManageModal({ isOpen, onClose, userId }: CategoryManageModalProps) {
@@ -23,39 +25,67 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   const { toast } = useToast();
   const { refreshCategories } = useTaskContext();
 
-  // カテゴリー一覧取得クエリ - REST APIを使用
+  // カテゴリー一覧取得クエリ - GraphQLを使用
   const {
     data: categories,
     isLoading,
     error,
     refetch
   } = useQuery({
-    queryKey: ['/api/categories', userId],
+    queryKey: ['getUserCategories', userId],
     queryFn: async () => {
-      console.log('Using REST API for categories listing');
+      console.log('GraphQLでカテゴリを取得します');
       
       try {
-        // 環境に応じたAPIリクエスト
-        const response = await apiRequest('GET', `/api/categories?userId=${userId}`);
+        // GraphQLクエリのインポート
+        const { getUserCategories } = await import('@/graphql/queries');
         
-        const data = await response.json();
-        console.log('Categories from REST API:', data);
-        return data;
+        // GraphQL APIを呼び出す
+        const result = await fetchGraphQL(getUserCategories, { userId });
+        
+        console.log('GraphQLからカテゴリを取得しました:', result?.getUserCategories || []);
+        
+        // 結果を返す (getUserCategoriesがundefinedの場合は空配列を返す)
+        return result?.getUserCategories || [];
       } catch (error) {
-        console.error('Error in categories fetch:', error);
-        throw error;
+        console.error('カテゴリ取得エラー:', error);
+        
+        // REST APIにフォールバック
+        console.warn('GraphQLに失敗したため、RESTで取得を試みます');
+        const response = await apiRequest('GET', `/api/categories?userId=${userId}`);
+        const data = await response.json();
+        console.log('RESTからカテゴリを取得:', data);
+        return data;
       }
     },
     enabled: isOpen // モーダルが開いているときだけクエリを実行
   });
 
-  // カテゴリー作成ミューテーション
+  // カテゴリー作成ミューテーション - GraphQLを使用
   const createCategoryMutation = useMutation({
     mutationFn: async (name: string) => {
-      console.log('Creating category using REST API:', name);
+      console.log('GraphQLでカテゴリを作成します:', name);
       
       try {
-        // 環境に応じたAPIリクエスト
+        // GraphQLミューテーションのインポート
+        const { createCategory } = await import('@/graphql/mutations');
+        
+        // GraphQL APIを呼び出す
+        const result = await fetchGraphQL(createCategory, {
+          input: {
+            name,
+            userId
+          }
+        });
+        
+        console.log('GraphQLカテゴリ作成結果:', result);
+        
+        if (result && result.createCategory) {
+          return result.createCategory;
+        }
+        
+        // GraphQLが失敗した場合、RESTにフォールバック
+        console.warn('GraphQL作成に失敗、RESTにフォールバック');
         const response = await apiRequest('POST', '/api/categories', { name, userId });
         
         // レスポンスからJSONを取得
@@ -69,16 +99,16 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
           throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
         }
         
-        console.log('Category created successfully:', responseData);
+        console.log('RESTカテゴリ作成成功:', responseData);
         return responseData;
       } catch (error) {
-        console.error('Error creating category:', error);
+        console.error('カテゴリ作成エラー:', error);
         throw error;
       }
     },
     onSuccess: () => {
       // キャッシュ更新と再フェッチ
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+      queryClient.invalidateQueries({ queryKey: ['getUserCategories'] });
       refetch(); // 明示的に再フェッチ
       refreshCategories(); // TaskContextを通じて全コンポーネントに通知
       setNewCategoryName('');
@@ -96,40 +126,70 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
     }
   });
 
-  // カテゴリー削除ミューテーション
+  // カテゴリー削除ミューテーション - GraphQLを使用
   const deleteCategoryMutation = useMutation({
-    mutationFn: async (categoryId: number) => {
-      console.log('Deleting category using REST API:', categoryId);
+    mutationFn: async (categoryId: string) => {
+      console.log('GraphQLでカテゴリを削除します:', categoryId);
       
       try {
-        // 環境に応じたAPIリクエスト
+        // GraphQLミューテーションのインポート
+        const { deleteCategory } = await import('@/graphql/mutations');
+        
+        // GraphQL APIを呼び出す
+        const result = await fetchGraphQL(deleteCategory, {
+          input: { id: categoryId }
+        });
+        
+        console.log('GraphQLカテゴリ削除結果:', result);
+        
+        if (result && result.deleteCategory) {
+          return {
+            success: true,
+            data: result.deleteCategory,
+            source: 'graphql'
+          };
+        }
+        
+        // GraphQLが失敗した場合、RESTにフォールバック
+        console.warn('GraphQL削除に失敗、RESTにフォールバック');
         const response = await apiRequest('DELETE', `/api/categories/${categoryId}`);
         
         // レスポンスの処理
         const responseText = await response.text();
         // 空のレスポンスの場合は成功として扱う
         if (!responseText.trim()) {
-          return true;
+          return {
+            success: true,
+            source: 'rest'
+          };
         }
         
         // JSONレスポンスがある場合は解析
         try {
           const responseData = JSON.parse(responseText);
-          console.log('Category deleted successfully:', responseData);
-          return true;
+          console.log('RESTカテゴリ削除成功:', responseData);
+          return {
+            success: true,
+            data: responseData,
+            source: 'rest'
+          };
         } catch (e) {
-          console.log('Deletion successful with non-JSON response');
-          return true;
+          console.log('RESTでの削除成功（非JSON応答）');
+          return {
+            success: true,
+            source: 'rest'
+          };
         }
       } catch (error) {
-        console.error('Error deleting category:', error);
+        console.error('カテゴリ削除エラー:', error);
         throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log('カテゴリ削除成功:', result);
       // キャッシュの無効化 - 明示的に完全なクエリキーを指定
-      queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['getUserCategories'] });
+      queryClient.invalidateQueries({ queryKey: ['getUserTasks'] });
       
       // 最も重要: refetchは最も直接的な方法
       refetch();
@@ -160,7 +220,7 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
   };
 
   // カテゴリーの削除を処理
-  const handleDeleteCategory = (categoryId: number) => {
+  const handleDeleteCategory = (categoryId: string) => {
     if (window.confirm('このカテゴリーを削除してもよろしいですか？このカテゴリーに属するタスクはカテゴリなしになります。')) {
       deleteCategoryMutation.mutate(categoryId);
     }

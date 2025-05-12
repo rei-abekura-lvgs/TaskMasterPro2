@@ -62,13 +62,12 @@ export const createCategory = /* GraphQL */ `
 `;
 
 export const deleteCategory = /* GraphQL */ `
-  mutation DeleteCategory(
-    $input: DeleteCategoryInput!
-    $condition: ModelCategoryConditionInput
-  ) {
-    deleteCategory(input: $input, condition: $condition) {
+  mutation DeleteCategory($input: DeleteCategoryInput!) {
+    deleteCategory(input: $input) {
       id
       name
+      userId
+      createdAt
     }
   }
 `;
