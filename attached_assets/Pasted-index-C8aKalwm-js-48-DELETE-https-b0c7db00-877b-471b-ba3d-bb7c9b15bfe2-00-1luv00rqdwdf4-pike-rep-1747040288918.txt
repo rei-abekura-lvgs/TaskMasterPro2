@@ -1,0 +1,53 @@
+index-C8aKalwm.js:48 
+ DELETE https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/5139d307-4aba-49ed-a93f-faff22a73dba 500 (Internal Server Error)
+
+index-C8aKalwm.js:131 タスク削除エラー: Error: 500: {"message":"Failed to delete task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $1 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:131:4352)
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:131 タスクID: 5139d307-4aba-49ed-a93f-faff22a73dba を削除中...
+index-C8aKalwm.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-C8aKalwm.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-C8aKalwm.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/5139d307-4aba-49ed-a93f-faff22a73dba
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+index-C8aKalwm.js:48 
+ DELETE https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/5139d307-4aba-49ed-a93f-faff22a73dba 500 (Internal Server Error)
+index-C8aKalwm.js:131 タスク削除エラー: Error: 500: {"message":"Failed to delete task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $1 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:131:4352)
+index-C8aKalwm.js:131 エラーが発生したため変更を元に戻します: Error: 500: {"message":"Failed to delete task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $1 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:131:4352)
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+﻿
+
