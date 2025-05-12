@@ -17,21 +17,16 @@ export const createTask = /* GraphQL */ `
 `;
 
 export const updateTask = /* GraphQL */ `
-  mutation UpdateTask(
-    $input: UpdateTaskInput!
-    $condition: ModelTaskConditionInput
-  ) {
-    updateTask(input: $input, condition: $condition) {
+  mutation UpdateTask($input: UpdateTaskInput!) {
+    updateTask(input: $input) {
       id
       title
       description
       dueDate
       priority
       completed
-      category {
-        id
-        name
-      }
+      categoryId
+      userId
       createdAt
       updatedAt
     }
@@ -39,25 +34,28 @@ export const updateTask = /* GraphQL */ `
 `;
 
 export const deleteTask = /* GraphQL */ `
-  mutation DeleteTask(
-    $input: DeleteTaskInput!
-    $condition: ModelTaskConditionInput
-  ) {
-    deleteTask(input: $input, condition: $condition) {
+  mutation DeleteTask($input: DeleteTaskInput!) {
+    deleteTask(input: $input) {
       id
       title
+      description
+      dueDate
+      priority
+      completed
+      categoryId
+      userId
+      createdAt
+      updatedAt
     }
   }
 `;
 
 export const createCategory = /* GraphQL */ `
-  mutation CreateCategory(
-    $input: CreateCategoryInput!
-    $condition: ModelCategoryConditionInput
-  ) {
-    createCategory(input: $input, condition: $condition) {
+  mutation CreateCategory($input: CreateCategoryInput!) {
+    createCategory(input: $input) {
       id
       name
+      userId
       createdAt
     }
   }

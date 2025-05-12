@@ -1,0 +1,121 @@
+index-C8aKalwm.js:154 GraphQLエラー: 
+(2) [{…}, {…}]
+
+index-C8aKalwm.js:154 GraphQL API呼び出し中の例外: Error: GraphQLエラー: [{"path":null,"locations":[{"line":4,"column":17,"sourceName":null}],"message":"Validation error of type UnknownType: Unknown type ModelTaskConditionInput"},{"path":null,"locations":[{"line":6,"column":31,"sourceName":null}],"message":"Validation error of type UnknownArgument: Unknown field argument condition @ 'updateTask'"}]
+    at cu (index-C8aKalwm.js:154:988)
+    at async Object.mutationFn (index-C8aKalwm.js:154:100982)
+index-C8aKalwm.js:154 GraphQLエラー: Error: GraphQLエラー: [{"path":null,"locations":[{"line":4,"column":17,"sourceName":null}],"message":"Validation error of type UnknownType: Unknown type ModelTaskConditionInput"},{"path":null,"locations":[{"line":6,"column":31,"sourceName":null}],"message":"Validation error of type UnknownArgument: Unknown field argument condition @ 'updateTask'"}]
+    at cu (index-C8aKalwm.js:154:988)
+    at async Object.mutationFn (index-C8aKalwm.js:154:100982)
+index-C8aKalwm.js:154 GraphQLに失敗したため、一時的にRESTで更新を試みます
+index-C8aKalwm.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-C8aKalwm.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-C8aKalwm.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/91146a2e-54df-4120-a713-ad89e53519a6
+index-C8aKalwm.js:48 
+ PATCH https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/91146a2e-54df-4120-a713-ad89e53519a6 500 (Internal Server Error)
+index-C8aKalwm.js:154 タスク更新エラー: Error: 500: {"message":"Failed to update task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $8 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:154:101256)
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+index-C8aKalwm.js:154 APIでタスクを更新します: 
+{title: 'aaa', description: 'aaa', dueDate: '2025-05-22', category: '', priority: 'high', …}
+index-C8aKalwm.js:154 GraphQLでタスクを更新します: 
+{id: '91146a2e-54df-4120-a713-ad89e53519a6', title: 'aaa', description: 'aaa', dueDate: '2025-05-22', categoryId: null, …}
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  mutation UpdateTask(
+    $input: UpdateTaskInpu...
+index-C8aKalwm.js:154 Variables: {"input":{"id":"91146a2e-54df-4120-a713-ad89e53519a6","title":"aaa","description":"aaa","dueDate":"2025-05-22","categoryId":null,"priority":"HIGH","completed":false,"userId":"3"}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: null, errors: Array(2)}
+index-C8aKalwm.js:154 GraphQLエラー: 
+(2) [{…}, {…}]
+index-C8aKalwm.js:154 GraphQL API呼び出し中の例外: Error: GraphQLエラー: [{"path":null,"locations":[{"line":4,"column":17,"sourceName":null}],"message":"Validation error of type UnknownType: Unknown type ModelTaskConditionInput"},{"path":null,"locations":[{"line":6,"column":31,"sourceName":null}],"message":"Validation error of type UnknownArgument: Unknown field argument condition @ 'updateTask'"}]
+    at cu (index-C8aKalwm.js:154:988)
+    at async Object.mutationFn (index-C8aKalwm.js:154:100982)
+index-C8aKalwm.js:154 GraphQLエラー: Error: GraphQLエラー: [{"path":null,"locations":[{"line":4,"column":17,"sourceName":null}],"message":"Validation error of type UnknownType: Unknown type ModelTaskConditionInput"},{"path":null,"locations":[{"line":6,"column":31,"sourceName":null}],"message":"Validation error of type UnknownArgument: Unknown field argument condition @ 'updateTask'"}]
+    at cu (index-C8aKalwm.js:154:988)
+    at async Object.mutationFn (index-C8aKalwm.js:154:100982)
+index-C8aKalwm.js:154 GraphQLに失敗したため、一時的にRESTで更新を試みます
+index-C8aKalwm.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-C8aKalwm.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-C8aKalwm.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/91146a2e-54df-4120-a713-ad89e53519a6
+index-C8aKalwm.js:48 
+ PATCH https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks/91146a2e-54df-4120-a713-ad89e53519a6 500 (Internal Server Error)
+index-C8aKalwm.js:154 タスク更新エラー: Error: 500: {"message":"Failed to update task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $8 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:154:101256)
+index-C8aKalwm.js:154 タスク更新に失敗、変更を元に戻します: Error: 500: {"message":"Failed to update task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $8 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:154:101256)
+index-C8aKalwm.js:154 Error in form submission: Error: 500: {"message":"Failed to update task","error":{"length":146,"name":"error","severity":"ERROR","code":"22P02","where":"unnamed portal parameter $8 = '...'","file":"numutils.c","line":"617","routine":"pg_strtoint32_safe"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:154:101256)
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: 
+(2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: 
+{data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+﻿
