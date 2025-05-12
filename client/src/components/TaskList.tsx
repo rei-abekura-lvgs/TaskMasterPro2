@@ -23,15 +23,15 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   // フィルターやカテゴリー変更時にデータを再取得
   useEffect(() => {
     console.log("フィルターまたはカテゴリーが変更されました - データを再取得します");
-    queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-    refetch(); // 明示的に再取得
+    queryClient.invalidateQueries({ queryKey: ['graphql', 'listTasks'] });
+    // 再取得は明示的に行わない（循環参照防止）
   }, [activeCategory, activeFilter, filterType, queryClient]);
   
   // データ更新のためのポーリング設定（最後の手段）
   useEffect(() => {
     // 2秒ごとに自動更新
     const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['graphql', 'listTasks'] });
     }, 2000);
     
     return () => clearInterval(interval);
@@ -73,20 +73,33 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   };
   
   // GraphQLから返されたタスクを標準形式にフォーマット
-  const formatTaskFromGraphQL = (item: any): Task => ({
-    id: item.id,
-    title: item.title,
-    description: item.description || '',
-    dueDate: item.dueDate || '',
-    categoryId: item.category ? item.category.id : undefined,
-    category: item.category ? item.category.name : '',
-    // AppSyncからの応答は大文字の列挙型、フロントエンドでは小文字
-    priority: item.priority ? item.priority.toLowerCase() as 'low' | 'medium' | 'high' : 'medium',
-    completed: item.completed,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-    userId: item.userId || 0,
-  });
+  const formatTaskFromGraphQL = (item: any): Task | null => {
+    // nullチェック
+    if (!item) return null;
+    
+    try {
+      // GraphQLオブジェクトをTaskインターフェースに変換
+      return {
+        id: item.id,
+        title: item.title || 'Untitled Task',
+        description: item.description || '',
+        dueDate: item.dueDate || '',
+        categoryId: item.category ? item.category.id : undefined,
+        category: item.category ? item.category.name : '',
+        // AppSyncからの応答は大文字の列挙型、フロントエンドでは小文字
+        priority: (item.priority 
+          ? item.priority.toLowerCase() 
+          : 'medium') as 'low' | 'medium' | 'high',
+        completed: Boolean(item.completed), // 確実にboolean値に変換
+        userId: item.userId || item.ownerId || 3, // GraphQLではownerIdを使用することもある
+        createdAt: item.createdAt || new Date().toISOString(),
+        updatedAt: item.updatedAt || new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('タスクのフォーマット中にエラーが発生しました:', error, item);
+      return null;
+    }
+  };
   
   // クライアント側でのフィルタリング（RESTフォールバック用）
   const filterTasksClient = (tasks: any[], filter: any) => {
@@ -112,42 +125,57 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
     return filteredTasks;
   };
   
-  // タスクデータを取得 - 統一されたキーでクエリを実行
+  // タスクデータを取得 - GraphQLを使用
   const { data, isLoading, error, refetch } = useQuery({
-    // 重要: 標準化されたキーを使用 - 他のコンポーネントと同じキーを使用することで
-    // キャッシュの無効化が正しく機能する
-    queryKey: ['/api/tasks'],
+    // GraphQLクエリキー
+    queryKey: ['graphql', 'listTasks'],
     // フィルター関連の依存配列を追加して、フィルターが変更されたときにクエリを再実行
     enabled: true,
     // キャッシュデータを取得したら毎回最新データを取得するように
     staleTime: 0,
-    // 関数の定義
+    // GraphQLを使用したクエリ関数
     queryFn: async () => {
       try {
         const filter = buildFilter();
         
-        // REST APIからタスクを取得
-        const userId = 3; // 仮のユーザーID - 実際のアプリでは認証から取得する
-        console.log('タスクリスト: データを取得中...');
+        // 固定ユーザーID（本番環境では認証から取得）
+        const userId = "3"; 
+        console.log('タスクリスト: GraphQLでデータを取得中...');
         
         try {
-          const response = await apiRequest('GET', `/api/tasks?userId=${userId}`);
+          // GraphQLでタスクを取得
+          const result = await executeGraphQL(listTasks, {
+            // フィルターパラメータがある場合は追加
+            filter: filter
+          });
           
-          if (!response.ok) {
-            throw new Error(`タスク取得エラー: ${response.status}`);
+          if (!result || !result.listTasks || !result.listTasks.items) {
+            console.error('GraphQLからのレスポンスが不正な形式です:', result);
+            return [];
           }
           
-          const tasks = await response.json();
-          console.log(`${tasks.length}件のタスクを取得しました`);
+          // GraphQLレスポンスのフォーマット
+          const tasks = result.listTasks.items.map(formatTaskFromGraphQL);
+          console.log(`GraphQLから${tasks.length}件のタスクを取得しました`);
           
-          // クライアント側でのフィルタリング
+          // クライアント側でのフィルタリング（追加の絞り込みが必要な場合）
           const filteredTasks = filterTasksClient(tasks, filter);
           console.log(`フィルタリング後: ${filteredTasks.length}件のタスクを表示`);
           
           return filteredTasks;
         } catch (error) {
-          console.error('タスク取得中にエラー発生:', error);
-          throw error;
+          console.error('GraphQLタスク取得中にエラー発生:', error);
+          
+          // テスト/開発目的でRESTバックアップを使用（緊急時のみ）
+          console.warn('GraphQLに失敗したため、一時的にRESTで取得を試みます');
+          const response = await apiRequest('GET', `/api/tasks?userId=${userId}`);
+          if (!response.ok) {
+            throw new Error(`タスク取得エラー: ${response.status}`);
+          }
+          
+          const tasks = await response.json();
+          const filteredTasks = filterTasksClient(tasks, filter);
+          return filteredTasks;
         }
       } catch (error) {
         console.error('タスク取得エラー:', error);

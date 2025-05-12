@@ -1,18 +1,18 @@
 import { z } from 'zod';
 
-// Task model
+// Task model - REST APIとGraphQLの両方に対応
 export interface Task {
-  id: number;
+  id: number | string;  // REST APIは数値ID、GraphQLは文字列ID
   title: string;
   description?: string;
   dueDate?: string;
-  categoryId?: number;
-  category: string;  // 一時的にカテゴリ名を保持（UIで表示するため）
+  categoryId?: number | string;  // REST APIは数値ID、GraphQLは文字列ID
+  category?: string;  // カテゴリ名 (UI表示用)
   priority: 'low' | 'medium' | 'high';
   completed: boolean;
-  userId: number;
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  userId?: number | string;  // REST APIは数値ID、GraphQLは文字列ID
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 // Validation schemas

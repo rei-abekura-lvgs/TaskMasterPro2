@@ -20,8 +20,15 @@ export function configureAmplify() {
     }
   });
   
-  // GraphQLクライアントを初期化
-  client = generateClient();
+  // 明示的に認証モードを指定してGraphQLクライアントを初期化
+  client = generateClient({
+    authMode: 'apiKey'
+  });
+  
+  console.log('Amplify configured with API endpoint:', 
+    import.meta.env.VITE_APPSYNC_ENDPOINT || 'https://fnu22ygzgbc2zfa6ae5hfi6pvm.appsync-api.ap-northeast-1.amazonaws.com/graphql',
+    'and API Key:', import.meta.env.VITE_APPSYNC_API_KEY ? '[API KEY SET]' : '[USING DEFAULT KEY]'
+  );
 }
 
 // GraphQLクエリを実行する関数
@@ -34,12 +41,20 @@ export async function executeGraphQL(query: string, variables: Record<string, an
     }
     
     // GraphQLクエリを実行
+    console.log('AppSync GraphQLクエリを実行:', { query, variables });
     const response = await client.graphql({
       query,
       variables
     });
     
-    return response.data;
+    console.log('AppSync GraphQL結果:', response);
+    
+    if ('data' in response) {
+      return response.data;
+    } else {
+      console.error('GraphQL response has no data property:', response);
+      return null;
+    }
   } catch (error) {
     console.error('Error executing GraphQL query:', error);
     throw error;
