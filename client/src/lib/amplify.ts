@@ -14,7 +14,7 @@ export function configureAmplify() {
         endpoint: import.meta.env.VITE_APPSYNC_ENDPOINT || 'https://fnu22ygzgbc2zfa6ae5hfi6pvm.appsync-api.ap-northeast-1.amazonaws.com/graphql',
         region: import.meta.env.VITE_AWS_REGION || 'ap-northeast-1',
         defaultAuthMode: 'apiKey',
-        apiKey: import.meta.env.VITE_APPSYNC_API_KEY || 'da2-jw56i75nh5e4rdzkzl47oejvje'
+        apiKey: import.meta.env.VITE_APPSYNC_API_KEY || 'rdu6y63cwbgsnpq2wxuuzt7thq'
       }
     },
     // Auth設定

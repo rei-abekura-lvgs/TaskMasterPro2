@@ -11,8 +11,11 @@
  */
 
 import dotenv from 'dotenv';
-import { Pool, PoolClient } from 'pg';
+import pg from 'pg';
 import fetch from 'node-fetch';
+
+const { Pool } = pg;
+type PoolClient = pg.PoolClient;
 
 dotenv.config();
 
@@ -192,10 +195,8 @@ async function executeGraphQL<T>(query: string, variables: any): Promise<T> {
 
 // PostgreSQLからデータを取得する関数
 async function fetchPostgresData(): Promise<{ users: User[]; categories: Category[]; tasks: Task[] }> {
-  let client: PoolClient | undefined;
+  const client = await pool.connect();
   try {
-    client = await pool.connect();
-    
     // ユーザー取得
     const userResult = await client.query('SELECT * FROM users');
     const users = userResult.rows;
@@ -210,9 +211,7 @@ async function fetchPostgresData(): Promise<{ users: User[]; categories: Categor
     
     return { users, categories, tasks };
   } finally {
-    if (client) {
-      client.release();
-    }
+    client.release();
   }
 }
 
