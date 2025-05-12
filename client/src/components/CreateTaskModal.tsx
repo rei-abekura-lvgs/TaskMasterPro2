@@ -24,19 +24,40 @@ export default function CreateTaskModal() {
   const { toast } = useToast();
   const isEditing = !!editingTask;
   
-  // カテゴリーの取得 - REST APIを直接使用
+  // カテゴリーの取得 - GraphQL APIを使用
   const { data: categories, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ['/api/categories'],
+    queryKey: ['getUserCategories', '3'],
     queryFn: async () => {
-      console.log('Using REST API directly for categories while GraphQL setup is in progress');
       try {
+        // GraphQL APIの準備
+        const { getUserCategories } = await import('@/graphql/queries');
+        const { fetchGraphQL } = await import('@/lib/graphqlFetch');
+        
+        console.log('GraphQLでカテゴリを取得します');
+        const result = await fetchGraphQL(getUserCategories, {
+          userId: "3" // GraphQLではIDは文字列として扱う
+        });
+        
+        if (!result || !result.getUserCategories) {
+          console.error('GraphQLカテゴリ取得に失敗:', result);
+          console.warn('GraphQLに失敗したため、一時的にRESTで取得を試みます（移行期間中）');
+          // フォールバック処理
+          const response = await apiRequest('GET', '/api/categories?userId=3');
+          const data = await response.json();
+          console.log('CreateTaskModal - Categories (REST fallback):', data);
+          return data || [];
+        }
+        
+        console.log('GraphQLからカテゴリを取得しました:', result.getUserCategories);
+        return result.getUserCategories || [];
+      } catch (error) {
+        console.error('カテゴリ取得エラー:', error);
+        console.warn('GraphQLエラーが発生したため、一時的にRESTで取得を試みます（移行期間中）');
+        // フォールバック処理
         const response = await apiRequest('GET', '/api/categories?userId=3');
         const data = await response.json();
-        console.log('CreateTaskModal - Categories:', data);
+        console.log('CreateTaskModal - Categories (REST fallback):', data);
         return data || [];
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        return [];
       }
     }
   });

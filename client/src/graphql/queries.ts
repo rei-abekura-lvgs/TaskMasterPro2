@@ -47,6 +47,16 @@ export const listCategories = /* GraphQL */ `
   }
 `;
 
+export const getUserCategories = /* GraphQL */ `
+  query GetUserCategories($userId: ID!) {
+    getUserCategories(userId: $userId) {
+      id
+      name
+      createdAt
+    }
+  }
+`;
+
 // カテゴリーIDでフィルタリングしたタスクの取得
 export const getTasksByCategory = /* GraphQL */ `
   query GetTasksByCategory($categoryId: ID!) {
