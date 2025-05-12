@@ -167,23 +167,46 @@ const pool = new Pool({
 // GraphQL API呼び出し関数
 async function executeGraphQL<T>(query: string, variables: any): Promise<T> {
   try {
+    console.log('GraphQLリクエスト送信先:', appSyncConfig.aws_appsync_graphqlEndpoint);
+    console.log('APIキー使用:', appSyncConfig.aws_appsync_apiKey ? '設定されています' : '設定されていません');
+    console.log('リクエストの詳細:', { query: query.substring(0, 50) + '...', variables });
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': appSyncConfig.aws_appsync_apiKey as string,
+      'Authorization': `Bearer ${appSyncConfig.aws_appsync_apiKey}`
+    };
+    
+    console.log('リクエストヘッダー:', Object.keys(headers));
+    
     const res = await fetch(appSyncConfig.aws_appsync_graphqlEndpoint as string, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': appSyncConfig.aws_appsync_apiKey as string,
-      },
+      headers,
       body: JSON.stringify({
         query,
         variables,
       }),
     });
 
+    console.log('GraphQLレスポンスステータス:', res.status, res.statusText);
+    
+    if (!res.ok) {
+      console.error(`HTTPエラー: ${res.status} ${res.statusText}`);
+      const errorText = await res.text();
+      console.error('エラーレスポンス:', errorText);
+      throw new Error(`HTTPエラー: ${res.status} ${res.statusText}`);
+    }
+
     const result = await res.json() as { data?: T; errors?: any[] };
     
     if (result.errors) {
       console.error('GraphQL エラー:', JSON.stringify(result.errors, null, 2));
       throw new Error('GraphQL 操作に失敗しました');
+    }
+    
+    if (!result.data) {
+      console.error('GraphQLレスポンスにデータがありません:', result);
+      throw new Error('GraphQLレスポンスにデータがありません');
     }
     
     return result.data as T;
@@ -254,17 +277,25 @@ async function migrateDataToDynamoDB(
   console.log(`カテゴリー移行開始 (${categories.length} 件)...`);
   for (const category of categories) {
     try {
-      const ownerId = userIdMapping[category.userId] || category.userId.toString();
+      // ユーザーIDマッピングがない場合は直接文字列に変換
+      const ownerId = category.userId.toString();
       
       const input: CreateCategoryInput = {
         name: category.name,
         ownerId,
       };
       
+      console.log(`カテゴリー登録試行: ${category.name}, ownerId=${ownerId}`);
+      
       const result = await executeGraphQL<{ createCategory: { id: string } }>(CREATE_CATEGORY, { input });
-      categoryIdMapping[category.id] = result.createCategory.id;
-      migrationLog.categories.migrated++;
-      console.log(`カテゴリー移行成功: ${category.name} (${category.id} -> ${result.createCategory.id})`);
+      
+      if (result && result.createCategory && result.createCategory.id) {
+        categoryIdMapping[category.id] = result.createCategory.id;
+        migrationLog.categories.migrated++;
+        console.log(`カテゴリー移行成功: ${category.name} (${category.id} -> ${result.createCategory.id})`);
+      } else {
+        throw new Error('カテゴリー登録に失敗しました: レスポンスにIDがありません');
+      }
     } catch (error: any) {
       migrationLog.categories.failed++;
       migrationLog.categories.errors.push({ id: category.id, error: error.message });
@@ -276,26 +307,35 @@ async function migrateDataToDynamoDB(
   console.log(`タスク移行開始 (${tasks.length} 件)...`);
   for (const task of tasks) {
     try {
-      const categoryId = task.categoryId ? (categoryIdMapping[task.categoryId] || task.categoryId.toString()) : undefined;
-      
       // プリオリティを大文字に変換（DynamoDBスキーマ要件）
       const priority = task.priority ? task.priority.toUpperCase() as 'LOW' | 'MEDIUM' | 'HIGH' : 'MEDIUM';
       
-      const ownerId = userIdMapping[task.userId] || task.userId.toString();
+      // カテゴリIDとオーナーIDを単純に文字列化
+      const categoryId = task.categoryId ? task.categoryId.toString() : undefined;
+      const ownerId = task.userId.toString();
+      
+      console.log(`タスク登録試行: ${task.title}, ownerId=${ownerId}, categoryId=${categoryId || 'なし'}`);
       
       const input: CreateTaskInput = {
         title: task.title,
         description: task.description,
-        dueDate: task.dueDate ? task.dueDate.toISOString().split('T')[0] : undefined,
+        dueDate: task.dueDate ? (typeof task.dueDate === 'string' ? task.dueDate : task.dueDate.toISOString().split('T')[0]) : undefined,
         priority,
         completed: task.completed,
         categoryId,
         ownerId,
       };
       
+      console.log('タスク入力データ:', JSON.stringify(input, null, 2));
+      
       const result = await executeGraphQL<{ createTask: { id: string } }>(CREATE_TASK, { input });
-      migrationLog.tasks.migrated++;
-      console.log(`タスク移行成功: ${task.title} (${task.id} -> ${result.createTask.id})`);
+      
+      if (result && result.createTask && result.createTask.id) {
+        migrationLog.tasks.migrated++;
+        console.log(`タスク移行成功: ${task.title} (${task.id} -> ${result.createTask.id})`);
+      } else {
+        throw new Error('タスク登録に失敗しました: レスポンスにIDがありません');
+      }
     } catch (error: any) {
       migrationLog.tasks.failed++;
       migrationLog.tasks.errors.push({ id: task.id, error: error.message });
@@ -311,13 +351,34 @@ async function main() {
   try {
     console.log('PostgreSQLからAWS DynamoDBへの移行を開始します...');
     
+    // 環境変数の確認
+    console.log('=== 環境変数の確認 ===');
+    console.log('- DATABASE_URL:', process.env.DATABASE_URL ? '設定されています' : '設定されていません');
+    console.log('- VITE_APPSYNC_ENDPOINT:', process.env.VITE_APPSYNC_ENDPOINT || 'なし');
+    console.log('- VITE_AWS_REGION:', process.env.VITE_AWS_REGION || 'なし');
+    console.log('- VITE_APPSYNC_API_KEY:', process.env.VITE_APPSYNC_API_KEY ? '設定されています' : '設定されていません');
+    
+    // .env.localの読み込み確認
+    console.log('\n.env.localファイルからの読み込みを確認します...');
+    dotenv.config({ path: '.env.local' });
+    console.log('- VITE_APPSYNC_ENDPOINT (.env.local):', process.env.VITE_APPSYNC_ENDPOINT || 'なし');
+    console.log('- VITE_AWS_REGION (.env.local):', process.env.VITE_AWS_REGION || 'なし');
+    console.log('- VITE_APPSYNC_API_KEY (.env.local):', process.env.VITE_APPSYNC_API_KEY ? '設定されています' : '設定されていません');
+    
+    // AppSync設定の確認
+    console.log('\nAppSync設定:');
+    console.log('- エンドポイント:', appSyncConfig.aws_appsync_graphqlEndpoint || 'なし');
+    console.log('- リージョン:', appSyncConfig.aws_appsync_region || 'なし');
+    console.log('- 認証タイプ:', appSyncConfig.aws_appsync_authenticationType || 'なし');
+    console.log('- APIキー:', appSyncConfig.aws_appsync_apiKey ? '設定されています' : '設定されていません');
+    
     // PostgreSQLからデータを取得
-    console.log('PostgreSQLからデータを取得中...');
+    console.log('\nPostgreSQLからデータを取得中...');
     const data = await fetchPostgresData();
     console.log(`取得完了: ユーザー ${data.users.length} 件, カテゴリー ${data.categories.length} 件, タスク ${data.tasks.length} 件`);
     
     // DynamoDBにデータを移行
-    console.log('DynamoDBにデータを移行中...');
+    console.log('\nDynamoDBにデータを移行中...');
     const migrationLog = await migrateDataToDynamoDB(data);
     
     // 移行結果のサマリを表示
