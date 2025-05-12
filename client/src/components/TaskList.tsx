@@ -1,100 +1,81 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import TaskItem from './TaskItem';
 import { useTaskContext } from '@/context/TaskContext';
-import { Task } from '@/types';
 import { listTasks } from '@/graphql/queries';
-import { executeGraphQL } from '@/lib/amplify';
-import { fetchGraphQL } from '@/lib/graphqlFetch'; // 新しい直接フェッチ方法
-import { getApiBaseUrl, apiRequest } from '@/lib/queryClient';
+import { fetchGraphQL } from '@/lib/graphqlFetch';
 
 type SortOption = 'dateNewest' | 'dateOldest' | 'priority' | 'alphabetical';
 type FilterType = 'all' | 'active' | 'completed';
 
 export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: () => void }) {
+  // タスクコンテキストから値を取得
+  const { 
+    activeCategory, 
+    setActiveCategory, 
+    categories,
+    activeFilter, 
+    setActiveFilter, 
+    filters 
+  } = useTaskContext();
+  
+  // 検索と並び替えの状態
+  const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('dateNewest');
-  const [filterType, setFilterType] = useState<FilterType>('all');
-  const [sortMenuOpen, setSortMenuOpen] = useState(false);
-  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showSortMenu, setShowSortMenu] = useState(false);
   
-  const { activeCategory, activeFilter } = useTaskContext();
-  const queryClient = useQueryClient(); // QueryClientを使用するための初期化
-  
-  // フィルターやカテゴリー変更時にデータを再取得
-  useEffect(() => {
-    console.log("フィルターまたはカテゴリーが変更されました - データを再取得します");
-    queryClient.invalidateQueries({ queryKey: ['graphql', 'listTasks'] });
-    // 再取得は明示的に行わない（循環参照防止）
-  }, [activeCategory, activeFilter, filterType, queryClient]);
-  
-  // データ更新のためのポーリング設定（最後の手段）
-  useEffect(() => {
-    // 2秒ごとに自動更新
-    const interval = setInterval(() => {
-      queryClient.invalidateQueries({ queryKey: ['graphql', 'listTasks'] });
-    }, 2000);
-    
-    return () => clearInterval(interval);
-  }, [queryClient]);
-  
-  // Build the filter based on active category and filter
+  // フィルターの構築
   const buildFilter = () => {
-    let filter: any = {};
+    const filter: any = {};
     
-    // Category filter
-    if (activeCategory && activeCategory !== 'all') {
-      filter.category = { eq: activeCategory };
+    // カテゴリーフィルター (GraphQL用)
+    if (activeCategory !== 'all') {
+      filter.categoryId = { eq: activeCategory };
     }
     
-    // 優先度フィルター
-    if (activeFilter) {
-      switch (activeFilter) {
-        case 'high':
-          filter.priority = { eq: 'HIGH' }; // AppSyncでは大文字
-          break;
-        case 'medium':
-          filter.priority = { eq: 'MEDIUM' }; // AppSyncでは大文字
-          break;
-        case 'low':
-          filter.priority = { eq: 'LOW' }; // AppSyncでは大文字
-          break;
-        case 'all_priority':
-          // すべての優先度のタスクを表示するため、フィルターは設定しない
-          break;
-      }
-    }
-    
-    // Additional UI filter
-    if (filterType !== 'all') {
-      filter.completed = { eq: filterType === 'completed' };
+    // タスクステータスフィルター
+    if (activeFilter === 'active') {
+      filter.completed = { eq: false };
+    } else if (activeFilter === 'completed') {
+      filter.completed = { eq: true };
+    } else if (activeFilter === 'high') {
+      filter.priority = { eq: 'HIGH' }; // GraphQLでは大文字
+    } else if (activeFilter === 'medium') {
+      filter.priority = { eq: 'MEDIUM' };
+    } else if (activeFilter === 'low') {
+      filter.priority = { eq: 'LOW' };
     }
     
     return filter;
   };
   
-  // GraphQLから返されたタスクを標準形式にフォーマット
-  const formatTaskFromGraphQL = (item: any): Task | null => {
-    // nullチェック
-    if (!item) return null;
-    
+  // フィルターやソートが変更されたときにデータを再取得
+  useEffect(() => {
+    console.log('フィルターまたはカテゴリーが変更されました - データを再取得します');
+    refetch();
+  }, [activeCategory, activeFilter]);
+  
+  // GraphQLレスポンスのタスクを標準形式に変換
+  const formatTaskFromGraphQL = (item: any) => {
     try {
-      // GraphQLオブジェクトをTaskインターフェースに変換
+      if (!item) return null;
+      
+      // 優先度を小文字に統一（UIコンポーネントが小文字を想定）
+      const priority = item.priority ? item.priority.toLowerCase() : 'medium';
+      
       return {
         id: item.id,
-        title: item.title || 'Untitled Task',
-        description: item.description || '',
-        dueDate: item.dueDate || '',
-        categoryId: item.category ? item.category.id : undefined,
-        category: item.category ? item.category.name : '',
-        // AppSyncからの応答は大文字の列挙型、フロントエンドでは小文字
-        priority: (item.priority 
-          ? item.priority.toLowerCase() 
-          : 'medium') as 'low' | 'medium' | 'high',
-        completed: Boolean(item.completed), // 確実にboolean値に変換
-        userId: item.userId || item.ownerId || 3, // GraphQLではownerIdを使用することもある
-        createdAt: item.createdAt || new Date().toISOString(),
-        updatedAt: item.updatedAt || new Date().toISOString(),
+        title: item.title,
+        description: item.description,
+        dueDate: item.dueDate,
+        categoryId: item.categoryId,
+        priority: priority,
+        completed: item.completed,
+        userId: item.userId,
+        category: item.category,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
       };
     } catch (error) {
       console.error('タスクのフォーマット中にエラーが発生しました:', error, item);
@@ -129,7 +110,7 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   // タスクデータを取得 - GraphQLを使用
   const { data, isLoading, error, refetch } = useQuery({
     // GraphQLクエリキー
-    queryKey: ['graphql', 'listTasks'],
+    queryKey: ['getUserTasks', '3'],
     // フィルター関連の依存配列を追加して、フィルターが変更されたときにクエリを再実行
     enabled: true,
     // キャッシュデータを取得したら毎回最新データを取得するように
@@ -179,16 +160,9 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
         } catch (error) {
           console.error('GraphQLタスク取得中にエラー発生:', error);
           
-          // テスト/開発目的でRESTバックアップを使用（緊急時のみ）
-          console.warn('GraphQLに失敗したため、一時的にRESTで取得を試みます');
-          const response = await apiRequest('GET', `/api/tasks?userId=${userId}`);
-          if (!response.ok) {
-            throw new Error(`タスク取得エラー: ${response.status}`);
-          }
-          
-          const tasks = await response.json();
-          const filteredTasks = filterTasksClient(tasks, filter);
-          return filteredTasks;
+          // RESTフォールバックを無効化
+          console.warn('GraphQLの取得に失敗しました。REST APIは無効化されています。');
+          throw new Error('GraphQL APIが応答しません。アプリケーションの再起動をお試しください。');
         }
       } catch (error) {
         console.error('タスク取得エラー:', error);
@@ -198,205 +172,198 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
   });
   
   // タスクのソート処理
-  const sortTasks = useCallback((tasks: Task[]) => {
-    if (!tasks) return [];
+  const sortedTasks = useMemo(() => {
+    let tasks = data || [];
     
-    const sortedTasks = [...tasks];
-    
-    switch (sortOption) {
-      case 'dateNewest':
-        return sortedTasks.sort((a, b) => 
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      case 'dateOldest':
-        return sortedTasks.sort((a, b) => 
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      case 'priority': {
-        const priorityWeight: Record<string, number> = { high: 3, medium: 2, low: 1 };
-        return sortedTasks.sort((a, b) => 
-          priorityWeight[b.priority] - priorityWeight[a.priority]
-        );
-      }
-      case 'alphabetical':
-        return sortedTasks.sort((a, b) => a.title.localeCompare(b.title));
-      default:
-        return sortedTasks;
-    }
-  }, [sortOption]);
-  
-  // 検索とソート処理
-  const filteredAndSortedTasks = useMemo(() => {
-    if (!data) return [];
-    
-    // 1. 検索フィルタリング
-    let filtered = [...data];
-    if (searchQuery.trim() !== '') {
-      const query = searchQuery.trim().toLowerCase();
-      filtered = filtered.filter(task => 
-        task.title.toLowerCase().includes(query) ||
+    // 検索フィルタリング
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      tasks = tasks.filter(task => 
+        task.title.toLowerCase().includes(query) || 
         (task.description && task.description.toLowerCase().includes(query))
       );
     }
     
-    // 2. ソート処理
-    return sortTasks(filtered);
-  }, [data, searchQuery, sortOption, sortTasks]);
-  
-  const sortedTasks = filteredAndSortedTasks;
-  
-  // 現在のビュータイトルを取得
-  const getViewTitle = () => {
-    if (activeFilter) {
-      switch (activeFilter) {
-        case 'high': return '優先度「高」のタスク';
-        case 'medium': return '優先度「中」のタスク';
-        case 'low': return '優先度「低」のタスク';
-        case 'all_priority': return 'すべての優先度のタスク';
-        default: return 'すべてのタスク';
+    // ソート
+    return [...tasks].sort((a, b) => {
+      switch (sortOption) {
+        case 'dateNewest':
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        case 'dateOldest':
+          return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+        case 'priority': {
+          const priorityValue = { high: 3, medium: 2, low: 1 };
+          const aPriority = priorityValue[a.priority as keyof typeof priorityValue] || 0;
+          const bPriority = priorityValue[b.priority as keyof typeof priorityValue] || 0;
+          return bPriority - aPriority;
+        }
+        case 'alphabetical':
+          return a.title.localeCompare(b.title);
+        default:
+          return 0;
       }
-    }
-    
-    if (activeCategory === 'all') return 'すべてのタスク';
-    
-    const categoryMap: Record<string, string> = {
-      work: '仕事',
-      personal: '個人',
-      shopping: 'ショッピング',
-      health: '健康',
-      finance: '金融'
+    });
+  }, [data, searchQuery, sortOption]);
+  
+  // モバイルメニューの状態
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // デバイスサイズに応じてメニューを自動開閉
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
     };
     
-    return categoryMap[activeCategory] ? `${categoryMap[activeCategory]}のタスク` : 'タスク';
-  };
-
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   return (
-    <main className="flex-1 overflow-hidden flex flex-col bg-gray-50 w-full">
-      {/* Task Toolbar */}
-      <div className="bg-white shadow p-5 flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <h2 className="text-xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500">
-              {getViewTitle()}
-            </h2>
-            <div className="text-sm bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-medium hidden sm:flex items-center">
-              <span className="material-icons text-blue-500 mr-1 text-xs">task</span>
-              {sortedTasks.length} 件
-            </div>
+    <div className="flex flex-col h-full bg-gray-50">
+      {/* Header */}
+      <div className="p-6 pb-0">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">タスク一覧</h1>
+          
+          {/* Desktop New Task Button */}
+          <div className="hidden md:block">
+            <button
+              onClick={onOpenNewTaskModal}
+              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors"
+            >
+              <span className="material-icons mr-2">add</span>
+              新規タスク
+            </button>
           </div>
           
-          <div className="flex items-center space-x-3">
-            {/* Filter dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setFilterMenuOpen(!filterMenuOpen)}
-                className="p-2 rounded-lg hover:bg-blue-50 transition-all text-blue-500 border border-transparent hover:border-blue-200 flex items-center"
-                aria-label="タスクをフィルタリング"
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100"
+          >
+            <span className="material-icons">
+              {isMobileMenuOpen ? 'close' : 'filter_list'}
+            </span>
+          </button>
+        </div>
+        
+        {/* Filter tabs & Sort dropdown */}
+        <div className={`filter-tabs ${isMobileMenuOpen ? 'block' : 'hidden md:block'} space-y-4 mb-6`}>
+          {/* Category Filter */}
+          <div className="flex flex-wrap gap-2">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                onClick={() => setActiveCategory(category.id.toString())}
+                className={`py-1.5 px-3 rounded-full text-sm font-medium transition-colors ${
+                  activeCategory === category.id.toString()
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
-                <span className="material-icons mr-1">filter_list</span>
-                <span className="text-sm font-medium hidden sm:inline">フィルタ</span>
+                {category.name}
+                {category.count > 0 && (
+                  <span className={`ml-1.5 inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${
+                    activeCategory === category.id.toString() 
+                      ? 'bg-blue-200 text-blue-800' 
+                      : 'bg-gray-200 text-gray-700'
+                  }`}>
+                    {category.count}
+                  </span>
+                )}
               </button>
-              {filterMenuOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-10 border border-gray-100 overflow-hidden"
-                >
-                  <div className="px-3 py-2 bg-blue-50 text-sm font-semibold text-gray-600 border-b border-gray-100">
-                    表示するタスク
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setFilterType('all');
-                      setFilterMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
-                  >
-                    <span className="material-icons text-blue-400 mr-2 text-sm">list</span>
-                    すべてのタスク
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setFilterType('active');
-                      setFilterMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
-                  >
-                    <span className="material-icons text-amber-400 mr-2 text-sm">radio_button_unchecked</span>
-                    未完了のタスク
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setFilterType('completed');
-                      setFilterMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
-                  >
-                    <span className="material-icons text-green-400 mr-2 text-sm">check_circle</span>
-                    完了済みのタスク
-                  </button>
-                </div>
-              )}
+            ))}
+          </div>
+          
+          {/* Status Filter */}
+          <div className="flex flex-wrap gap-2">
+            {filters.map(filter => (
+              <button
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
+                className={`flex items-center py-1.5 px-3 rounded-full text-sm font-medium transition-colors ${
+                  activeFilter === filter.id
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <span className="material-icons text-sm mr-1">{filter.icon}</span>
+                {filter.name}
+                {filter.count > 0 && (
+                  <span className={`ml-1.5 inline-flex items-center justify-center w-5 h-5 text-xs rounded-full ${
+                    activeFilter === filter.id 
+                      ? 'bg-blue-200 text-blue-800' 
+                      : 'bg-gray-200 text-gray-700'
+                  }`}>
+                    {filter.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+          
+          {/* Sort dropdown */}
+          <div className="relative inline-block text-left mt-4 md:mt-0">
+            <div>
+              <button 
+                type="button" 
+                onClick={() => setShowSortMenu(!showSortMenu)}
+                className="flex items-center justify-between w-40 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none"
+              >
+                <span>
+                  {sortOption === 'dateNewest' && '新しい順'}
+                  {sortOption === 'dateOldest' && '古い順'}
+                  {sortOption === 'priority' && '優先度順'}
+                  {sortOption === 'alphabetical' && 'アルファベット順'}
+                </span>
+                <span className="material-icons text-gray-400 text-sm">arrow_drop_down</span>
+              </button>
             </div>
             
-            {/* Sort dropdown */}
-            <div className="relative">
-              <button 
-                onClick={() => setSortMenuOpen(!sortMenuOpen)}
-                className="p-2 rounded-lg hover:bg-blue-50 transition-all text-blue-500 border border-transparent hover:border-blue-200 flex items-center"
-                aria-label="タスクを並び替え"
-              >
-                <span className="material-icons mr-1">sort</span>
-                <span className="text-sm font-medium hidden sm:inline">並び替え</span>
-              </button>
-              {sortMenuOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-10 border border-gray-100 overflow-hidden"
-                >
-                  <div className="px-3 py-2 bg-blue-50 text-sm font-semibold text-gray-600 border-b border-gray-100">
-                    並び順の選択
-                  </div>
+            {showSortMenu && (
+              <div className="absolute right-0 z-10 mt-1 w-40 bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5">
+                <div className="py-1" role="menu" aria-orientation="vertical">
                   <button 
-                    onClick={() => {
+                    className={`${sortOption === 'dateNewest' ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
+                    onClick={() => { 
                       setSortOption('dateNewest');
-                      setSortMenuOpen(false);
+                      setShowSortMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    <span className="material-icons text-indigo-400 mr-2 text-sm">arrow_downward</span>
-                    日付（新しい順）
+                    新しい順
                   </button>
                   <button 
-                    onClick={() => {
+                    className={`${sortOption === 'dateOldest' ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
+                    onClick={() => { 
                       setSortOption('dateOldest');
-                      setSortMenuOpen(false);
+                      setShowSortMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    <span className="material-icons text-indigo-400 mr-2 text-sm">arrow_upward</span>
-                    日付（古い順）
+                    古い順
                   </button>
                   <button 
-                    onClick={() => {
+                    className={`${sortOption === 'priority' ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
+                    onClick={() => { 
                       setSortOption('priority');
-                      setSortMenuOpen(false);
+                      setShowSortMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    <span className="material-icons text-red-400 mr-2 text-sm">priority_high</span>
-                    優先度
+                    優先度順
                   </button>
                   <button 
-                    onClick={() => {
+                    className={`${sortOption === 'alphabetical' ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
+                    onClick={() => { 
                       setSortOption('alphabetical');
-                      setSortMenuOpen(false);
+                      setShowSortMenu(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    <span className="material-icons text-blue-400 mr-2 text-sm">sort_by_alpha</span>
-                    名前順
+                    アルファベット順
                   </button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
         
@@ -498,6 +465,6 @@ export default function TaskList({ onOpenNewTaskModal }: { onOpenNewTaskModal: (
           <span className="material-icons">add</span>
         </button>
       </div>
-    </main>
+    </div>
   );
 }

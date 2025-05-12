@@ -88,19 +88,8 @@ export default function TaskItem({ task }: TaskItemProps) {
         }
         
         // GraphQLが失敗した場合はRESTにフォールバック
-        console.warn('GraphQL削除に失敗、RESTにフォールバック');
-        const response = await apiRequest('DELETE', `/api/tasks/${task.id}`);
-        
-        // エラーチェック
-        if (!response.ok) {
-          throw new Error(`削除エラー: ${response.status}`);
-        }
-        
-        return {
-          success: true,
-          taskId: task.id,
-          source: 'rest'
-        };
+        console.warn('GraphQL削除に失敗、RESTにフォールバック - REST APIは無効化済み');
+        throw new Error('削除に失敗しました。GraphQL APIが応答しません。');
       } catch (error) {
         console.error('タスク削除エラー:', error);
         throw error;
@@ -132,7 +121,6 @@ export default function TaskItem({ task }: TaskItemProps) {
       
       // カテゴリカウント更新のために遅延リロード
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
         queryClient.invalidateQueries({ queryKey: ['getUserCategories', '3'] });
       }, 100);
     }
@@ -206,25 +194,9 @@ export default function TaskItem({ task }: TaskItemProps) {
           };
         }
         
-        // GraphQLが失敗した場合はRESTにフォールバック
-        console.warn('GraphQL更新に失敗、RESTにフォールバック');
-        const response = await apiRequest(
-          'PATCH', 
-          `/api/tasks/${task.id}`, 
-          { completed: newCompletedState }
-        );
-        
-        if (!response.ok) {
-          throw new Error(`APIエラー: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return { 
-          ...data, 
-          newCompletedState,
-          successMessage: newCompletedState ? "タスクを完了としてマークしました" : "タスクを未完了に戻しました",
-          source: 'rest'
-        };
+        // GraphQLが失敗した場合はエラーを投げる
+        console.warn('GraphQL更新に失敗 - REST APIは無効化済み');
+        throw new Error('タスク更新に失敗しました。GraphQL APIが応答しません。');
       } catch (error) {
         console.error('タスク状態更新エラー:', error);
         throw error;
@@ -251,7 +223,6 @@ export default function TaskItem({ task }: TaskItemProps) {
       
       // カテゴリカウントを更新するために少し遅延して再取得
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
         queryClient.invalidateQueries({ queryKey: ['getUserCategories', '3'] });
       }, 100);
       
