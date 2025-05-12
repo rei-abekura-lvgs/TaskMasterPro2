@@ -1,0 +1,96 @@
+Access to fetch at 'https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3' from origin 'https://main.do510v6fsmjrf.amplifyapp.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this error
+index-EZqreRr8.js:48 
+            
+            
+           GET https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3 net::ERR_FAILED 502 (Bad Gateway)
+Tn @ index-EZqreRr8.js:48
+queryFn @ index-EZqreRr8.js:78
+s @ index-EZqreRr8.js:48
+v @ index-EZqreRr8.js:48
+start @ index-EZqreRr8.js:48
+fetch @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+refetchQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+invalidateQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:131Understand this error
+index-EZqreRr8.js:78 タスク取得エラー: TypeError: Failed to fetch
+    at Tn (index-EZqreRr8.js:48:43578)
+    at queryFn (index-EZqreRr8.js:78:60010)
+    at Object.s [as fn] (index-EZqreRr8.js:48:14378)
+    at v (index-EZqreRr8.js:48:9979)
+    at Object.start (index-EZqreRr8.js:48:10438)
+    at O0.fetch (index-EZqreRr8.js:48:15712)
+    at index-EZqreRr8.js:48:27818
+    at Array.map (<anonymous>)
+    at index-EZqreRr8.js:48:27802
+    at Object.batch (index-EZqreRr8.js:48:10672)
+queryFn @ index-EZqreRr8.js:78
+await in queryFn
+s @ index-EZqreRr8.js:48
+v @ index-EZqreRr8.js:48
+start @ index-EZqreRr8.js:48
+fetch @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+refetchQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+invalidateQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:131Understand this error
+index-EZqreRr8.js:78 タスクを取得中...
+index-EZqreRr8.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-EZqreRr8.js:48 WARNING: No API endpoint configured. Using development API temporarily.
+index-EZqreRr8.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+main.do510v6fsmjrf.amplifyapp.com/:1 Access to fetch at 'https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3' from origin 'https://main.do510v6fsmjrf.amplifyapp.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Understand this error
+index-EZqreRr8.js:48 
+            
+            
+           GET https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3 net::ERR_FAILED 502 (Bad Gateway)
+Tn @ index-EZqreRr8.js:48
+queryFn @ index-EZqreRr8.js:78
+s @ index-EZqreRr8.js:48
+v @ index-EZqreRr8.js:48
+start @ index-EZqreRr8.js:48
+fetch @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+refetchQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+invalidateQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:131Understand this error
+index-EZqreRr8.js:78 タスク取得エラー: TypeError: Failed to fetch
+    at Tn (index-EZqreRr8.js:48:43578)
+    at queryFn (index-EZqreRr8.js:78:60010)
+    at Object.s [as fn] (index-EZqreRr8.js:48:14378)
+    at v (index-EZqreRr8.js:48:9979)
+    at Object.start (index-EZqreRr8.js:48:10438)
+    at O0.fetch (index-EZqreRr8.js:48:15712)
+    at index-EZqreRr8.js:48:27818
+    at Array.map (<anonymous>)
+    at index-EZqreRr8.js:48:27802
+    at Object.batch (index-EZqreRr8.js:48:10672)
+queryFn @ index-EZqreRr8.js:78
+await in queryFn
+s @ index-EZqreRr8.js:48
+v @ index-EZqreRr8.js:48
+start @ index-EZqreRr8.js:48
+fetch @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+refetchQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:48
+batch @ index-EZqreRr8.js:48
+invalidateQueries @ index-EZqreRr8.js:48
+(anonymous) @ index-EZqreRr8.js:131Understand this error
+index-EZqreRr8.js:78 タスクを取得中...
+index-EZqreRr8.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-EZqreRr8.js:48 WARNING: No API endpoint configured. Using development API temporarily.
+index-EZqreRr8.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev
