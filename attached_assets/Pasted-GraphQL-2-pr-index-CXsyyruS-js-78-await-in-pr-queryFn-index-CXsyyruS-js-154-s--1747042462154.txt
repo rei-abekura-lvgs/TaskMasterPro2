@@ -1,0 +1,264 @@
+GraphQLエラー: (2) [{…}, {…}]
+pr @ index-CXsyyruS.js:78
+await in pr
+queryFn @ index-CXsyyruS.js:154
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this error
+index-CXsyyruS.js:78 GraphQL API呼び出し中の例外: Error: GraphQLエラー: [{"path":["getUserTasks",7,"title"],"locations":null,"message":"Cannot return null for non-nullable type: 'String' within parent 'Task' (/getUserTasks[7]/title)"},{"path":["getUserTasks",7,"completed"],"locations":null,"message":"Cannot return null for non-nullable type: 'Boolean' within parent 'Task' (/getUserTasks[7]/completed)"}]
+    at pr (index-CXsyyruS.js:78:63680)
+    at async queryFn (index-CXsyyruS.js:154:1863)
+pr @ index-CXsyyruS.js:78
+await in pr
+queryFn @ index-CXsyyruS.js:154
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this error
+index-CXsyyruS.js:154 GraphQLタスク取得中にエラー発生: Error: GraphQLエラー: [{"path":["getUserTasks",7,"title"],"locations":null,"message":"Cannot return null for non-nullable type: 'String' within parent 'Task' (/getUserTasks[7]/title)"},{"path":["getUserTasks",7,"completed"],"locations":null,"message":"Cannot return null for non-nullable type: 'Boolean' within parent 'Task' (/getUserTasks[7]/completed)"}]
+    at pr (index-CXsyyruS.js:78:63680)
+    at async queryFn (index-CXsyyruS.js:154:1863)
+queryFn @ index-CXsyyruS.js:154
+await in queryFn
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this error
+index-CXsyyruS.js:154 GraphQLに失敗したため、一時的にRESTで取得を試みます
+queryFn @ index-CXsyyruS.js:154
+await in queryFn
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this warning
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+index-CXsyyruS.js:78 タスクを取得中...
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+index-CXsyyruS.js:78 カテゴリを取得中...
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/categories?userId=3
+index-CXsyyruS.js:78 カテゴリ取得成功: 0 件
+index-CXsyyruS.js:78 タスク取得成功: 0 件
+index-CXsyyruS.js:78 実際のタスク数: 0件
+index-CXsyyruS.js:78 「すべてのタスク」のカウント: 0件
+index-CXsyyruS.js:78 更新されたカテゴリ一覧: [{…}]
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから0件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 0件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}, errors: Array(2)}
+index-CXsyyruS.js:78 GraphQLエラー: (2) [{…}, {…}]
+pr @ index-CXsyyruS.js:78
+await in pr
+queryFn @ index-CXsyyruS.js:154
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this error
+index-CXsyyruS.js:78 GraphQL API呼び出し中の例外: Error: GraphQLエラー: [{"path":["getUserTasks",7,"title"],"locations":null,"message":"Cannot return null for non-nullable type: 'String' within parent 'Task' (/getUserTasks[7]/title)"},{"path":["getUserTasks",7,"completed"],"locations":null,"message":"Cannot return null for non-nullable type: 'Boolean' within parent 'Task' (/getUserTasks[7]/completed)"}]
+    at pr (index-CXsyyruS.js:78:63680)
+    at async queryFn (index-CXsyyruS.js:154:1863)
+pr @ index-CXsyyruS.js:78
+await in pr
+queryFn @ index-CXsyyruS.js:154
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this error
+index-CXsyyruS.js:154 GraphQLタスク取得中にエラー発生: Error: GraphQLエラー: [{"path":["getUserTasks",7,"title"],"locations":null,"message":"Cannot return null for non-nullable type: 'String' within parent 'Task' (/getUserTasks[7]/title)"},{"path":["getUserTasks",7,"completed"],"locations":null,"message":"Cannot return null for non-nullable type: 'Boolean' within parent 'Task' (/getUserTasks[7]/completed)"}]
+    at pr (index-CXsyyruS.js:78:63680)
+    at async queryFn (index-CXsyyruS.js:154:1863)
+queryFn @ index-CXsyyruS.js:154
+await in queryFn
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this error
+index-CXsyyruS.js:154 GraphQLに失敗したため、一時的にRESTで取得を試みます
+queryFn @ index-CXsyyruS.js:154
+await in queryFn
+s @ index-CXsyyruS.js:48
+w @ index-CXsyyruS.js:48
+start @ index-CXsyyruS.js:48
+fetch @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+refetchQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:48
+batch @ index-CXsyyruS.js:48
+invalidateQueries @ index-CXsyyruS.js:48
+(anonymous) @ index-CXsyyruS.js:154
+setInterval
+(anonymous) @ index-CXsyyruS.js:154
+zu @ index-CXsyyruS.js:40
+Ns @ index-CXsyyruS.js:40
+yg @ index-CXsyyruS.js:40
+xi @ index-CXsyyruS.js:38
+c1 @ index-CXsyyruS.js:40
+_i @ index-CXsyyruS.js:40
+Qx @ index-CXsyyruS.js:40
+b @ index-CXsyyruS.js:25
+O @ index-CXsyyruS.js:25Understand this warning
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+index-CXsyyruS.js:154 

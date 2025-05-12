@@ -1,0 +1,346 @@
+PIヘッダー: Array(2)
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから3件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 3件のタスクを表示
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:78 GraphQLカテゴリ作成結果: Object
+2index-CXsyyruS.js:78 GraphQLでカテゴリを取得します
+index-CXsyyruS.js:78 カテゴリを強制更新します
+index-CXsyyruS.js:78 カテゴリを取得中...
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/categories?userId=3
+index-CXsyyruS.js:78 タスクを取得中...
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserCategories($userId: ID!) {
+    get...
+index-CXsyyruS.js:78 Variables: {"userId":3}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserCategories($userId: ID!) {
+    get...
+index-CXsyyruS.js:78 Variables: {"userId":3}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:154 GraphQLでカテゴリを取得します
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserCategories($userId: ID!) {
+    get...
+index-CXsyyruS.js:78 Variables: {"userId":"3"}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLからカテゴリを取得しました: Array(0)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:78 GraphQLからカテゴリを取得しました: Array(0)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:78 GraphQLからカテゴリを取得しました: Array(0)
+index-CXsyyruS.js:78 カテゴリ取得成功: 0 件
+index-CXsyyruS.js:78 タスク取得成功: 0 件
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから4件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 4件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから4件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 4件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから4件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 4件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQLでカテゴリを作成します: 仕事
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  mutation CreateCategory($input: CreateCategoryI...
+index-CXsyyruS.js:78 Variables: {"input":{"name":"仕事","userId":3}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:78 GraphQLカテゴリ作成結果: Object
+2index-CXsyyruS.js:78 GraphQLでカテゴリを取得します
+index-CXsyyruS.js:78 カテゴリを強制更新します
+index-CXsyyruS.js:78 カテゴリを取得中...
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/categories?userId=3
+index-CXsyyruS.js:78 タスクを取得中...
+index-CXsyyruS.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-CXsyyruS.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-CXsyyruS.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserCategories($userId: ID!) {
+    get...
+index-CXsyyruS.js:78 Variables: {"userId":3}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserCategories($userId: ID!) {
+    get...
+index-CXsyyruS.js:78 Variables: {"userId":3}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:154 GraphQLでカテゴリを取得します
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserCategories($userId: ID!) {
+    get...
+index-CXsyyruS.js:78 Variables: {"userId":"3"}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:78 GraphQLからカテゴリを取得しました: Array(0)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:78 GraphQLからカテゴリを取得しました: Array(0)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLからカテゴリを取得しました: Array(0)
+index-CXsyyruS.js:78 タスク取得成功: 0 件
+index-CXsyyruS.js:78 カテゴリ取得成功: 0 件
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: Array(2)
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: Object
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示
+index-CXsyyruS.js:154 タスクリスト: GraphQLでデータを取得中...
+index-CXsyyruS.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-CXsyyruS.js:78 GraphQL API直接呼び出し
+index-CXsyyruS.js:78 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-CXsyyruS.js:78 API KEY: da2-...
+index-CXsyyruS.js:78 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-CXsyyruS.js:78 Variables: {"userId":"3","filter":{}}
+index-CXsyyruS.js:78 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-CXsyyruS.js:78 GraphQL API呼び出し結果: {data: {…}}
+index-CXsyyruS.js:154 GraphQLから5件のタスクを取得しました
+index-CXsyyruS.js:154 フィルタリング後: 5件のタスクを表示

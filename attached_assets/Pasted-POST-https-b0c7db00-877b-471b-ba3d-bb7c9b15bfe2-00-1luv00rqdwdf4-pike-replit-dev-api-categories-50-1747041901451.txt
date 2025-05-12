@@ -1,0 +1,137 @@
+POST https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/categories 500 (Internal Server Error)
+on @ index-C8aKalwm.js:48
+mutationFn @ index-C8aKalwm.js:78
+fn @ index-C8aKalwm.js:48
+v @ index-C8aKalwm.js:48
+start @ index-C8aKalwm.js:48
+execute @ index-C8aKalwm.js:48
+await in execute
+mutate @ index-C8aKalwm.js:48
+(anonymous) @ index-C8aKalwm.js:48
+y @ index-C8aKalwm.js:78
+Ck @ index-C8aKalwm.js:37
+Ak @ index-C8aKalwm.js:37
+Ik @ index-C8aKalwm.js:37
+$y @ index-C8aKalwm.js:37
+Jw @ index-C8aKalwm.js:37
+(anonymous) @ index-C8aKalwm.js:37
+rm @ index-C8aKalwm.js:40
+Ew @ index-C8aKalwm.js:37
+zd @ index-C8aKalwm.js:37
+Op @ index-C8aKalwm.js:37
+Hk @ index-C8aKalwm.js:37Understand this error
+index-C8aKalwm.js:78 Error creating category: Error: 500: {"message":"Failed to create category","error":{"length":276,"name":"error","severity":"ERROR","code":"23503","detail":"Key (user_id)=(3) is not present in table \"users\".","schema":"public","table":"categories","constraint":"categories_user_id_users_id_fk","file":"ri_triggers.c","line":"2608","routine":"ri_ReportViolation"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:78:62411)
+mutationFn @ index-C8aKalwm.js:78
+await in mutationFn
+fn @ index-C8aKalwm.js:48
+v @ index-C8aKalwm.js:48
+start @ index-C8aKalwm.js:48
+execute @ index-C8aKalwm.js:48
+await in execute
+mutate @ index-C8aKalwm.js:48
+(anonymous) @ index-C8aKalwm.js:48
+y @ index-C8aKalwm.js:78
+Ck @ index-C8aKalwm.js:37
+Ak @ index-C8aKalwm.js:37
+Ik @ index-C8aKalwm.js:37
+$y @ index-C8aKalwm.js:37
+Jw @ index-C8aKalwm.js:37
+(anonymous) @ index-C8aKalwm.js:37
+rm @ index-C8aKalwm.js:40
+Ew @ index-C8aKalwm.js:37
+zd @ index-C8aKalwm.js:37
+Op @ index-C8aKalwm.js:37
+Hk @ index-C8aKalwm.js:37Understand this error
+index-C8aKalwm.js:78 Creating category using REST API: 仕事
+index-C8aKalwm.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-C8aKalwm.js:48 AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用
+index-C8aKalwm.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/categories
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:48 
+            
+            
+           POST https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/categories 500 (Internal Server Error)
+on @ index-C8aKalwm.js:48
+mutationFn @ index-C8aKalwm.js:78
+fn @ index-C8aKalwm.js:48
+v @ index-C8aKalwm.js:48
+(anonymous) @ index-C8aKalwm.js:48
+Promise.then
+(anonymous) @ index-C8aKalwm.js:48
+Promise.catch
+v @ index-C8aKalwm.js:48
+start @ index-C8aKalwm.js:48
+execute @ index-C8aKalwm.js:48
+await in execute
+mutate @ index-C8aKalwm.js:48
+(anonymous) @ index-C8aKalwm.js:48
+y @ index-C8aKalwm.js:78
+Ck @ index-C8aKalwm.js:37
+Ak @ index-C8aKalwm.js:37
+Ik @ index-C8aKalwm.js:37
+$y @ index-C8aKalwm.js:37
+Jw @ index-C8aKalwm.js:37
+(anonymous) @ index-C8aKalwm.js:37
+rm @ index-C8aKalwm.js:40
+Ew @ index-C8aKalwm.js:37
+zd @ index-C8aKalwm.js:37
+Op @ index-C8aKalwm.js:37
+Hk @ index-C8aKalwm.js:37Understand this error
+index-C8aKalwm.js:78 Error creating category: Error: 500: {"message":"Failed to create category","error":{"length":276,"name":"error","severity":"ERROR","code":"23503","detail":"Key (user_id)=(3) is not present in table \"users\".","schema":"public","table":"categories","constraint":"categories_user_id_users_id_fk","file":"ri_triggers.c","line":"2608","routine":"ri_ReportViolation"}}
+    at NN (index-C8aKalwm.js:48:43392)
+    at async on (index-C8aKalwm.js:48:43682)
+    at async Object.mutationFn (index-C8aKalwm.js:78:62411)
+mutationFn @ index-C8aKalwm.js:78
+await in mutationFn
+fn @ index-C8aKalwm.js:48
+v @ index-C8aKalwm.js:48
+(anonymous) @ index-C8aKalwm.js:48
+Promise.then
+(anonymous) @ index-C8aKalwm.js:48
+Promise.catch
+v @ index-C8aKalwm.js:48
+start @ index-C8aKalwm.js:48
+execute @ index-C8aKalwm.js:48
+await in execute
+mutate @ index-C8aKalwm.js:48
+(anonymous) @ index-C8aKalwm.js:48
+y @ index-C8aKalwm.js:78
+Ck @ index-C8aKalwm.js:37
+Ak @ index-C8aKalwm.js:37
+Ik @ index-C8aKalwm.js:37
+$y @ index-C8aKalwm.js:37
+Jw @ index-C8aKalwm.js:37
+(anonymous) @ index-C8aKalwm.js:37
+rm @ index-C8aKalwm.js:40
+Ew @ index-C8aKalwm.js:37
+zd @ index-C8aKalwm.js:37
+Op @ index-C8aKalwm.js:37
+Hk @ index-C8aKalwm.js:37Understand this error
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: {data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
+index-C8aKalwm.js:154 タスクリスト: GraphQLでデータを取得中...
+index-C8aKalwm.js:154 直接フェッチによるGraphQL呼び出しを試行
+index-C8aKalwm.js:154 GraphQL API直接呼び出し
+index-C8aKalwm.js:154 API URL: https://qbihcxi6tjd3znpc7etghm4tee.appsync-api.ap-northeast-1.amazonaws.com/graphql
+index-C8aKalwm.js:154 API KEY: da2-...
+index-C8aKalwm.js:154 Query: 
+  query GetUserTasks($userId: ID!) {
+    getUserT...
+index-C8aKalwm.js:154 Variables: {"userId":"3","filter":{}}
+index-C8aKalwm.js:154 APIヘッダー: (2) ['Content-Type', 'x-api-key']
+index-C8aKalwm.js:154 GraphQL API呼び出し結果: {data: {…}}
+index-C8aKalwm.js:154 GraphQLから4件のタスクを取得しました
+index-C8aKalwm.js:154 フィルタリング後: 4件のタスクを表示
