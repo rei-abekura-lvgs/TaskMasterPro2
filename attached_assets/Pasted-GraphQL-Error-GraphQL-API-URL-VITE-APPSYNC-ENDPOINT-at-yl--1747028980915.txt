@@ -1,0 +1,88 @@
+GraphQLタスク取得中にエラー発生: Error: GraphQL API URLが設定されていません。環境変数VITE_APPSYNC_ENDPOINTを確認してください。
+    at yl (index-DAP9MeXf.js:146:35)
+    at queryFn (index-DAP9MeXf.js:146:1964)
+    at Object.i [as fn] (index-DAP9MeXf.js:48:14364)
+    at b (index-DAP9MeXf.js:48:9973)
+    at Object.start (index-DAP9MeXf.js:48:10432)
+    at Tm.fetch (index-DAP9MeXf.js:48:15698)
+    at index-DAP9MeXf.js:48:27789
+    at Array.map (<anonymous>)
+    at index-DAP9MeXf.js:48:27773
+    at Object.batch (index-DAP9MeXf.js:48:10666)
+queryFn @ index-DAP9MeXf.js:146
+await in queryFn
+i @ index-DAP9MeXf.js:48
+b @ index-DAP9MeXf.js:48
+start @ index-DAP9MeXf.js:48
+fetch @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+refetchQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+invalidateQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:146Understand this error
+index-DAP9MeXf.js:146 GraphQLに失敗したため、一時的にRESTで取得を試みます
+queryFn @ index-DAP9MeXf.js:146
+await in queryFn
+i @ index-DAP9MeXf.js:48
+b @ index-DAP9MeXf.js:48
+start @ index-DAP9MeXf.js:48
+fetch @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+refetchQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+invalidateQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:146Understand this warning
+index-DAP9MeXf.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-DAP9MeXf.js:48 WARNING: No API endpoint configured. Using development API temporarily.
+index-DAP9MeXf.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
+index-DAP9MeXf.js:146 タスクリスト: GraphQLでデータを取得中...
+index-DAP9MeXf.js:146 直接フェッチによるGraphQL呼び出しを試行
+index-DAP9MeXf.js:146 GraphQLタスク取得中にエラー発生: Error: GraphQL API URLが設定されていません。環境変数VITE_APPSYNC_ENDPOINTを確認してください。
+    at yl (index-DAP9MeXf.js:146:35)
+    at queryFn (index-DAP9MeXf.js:146:1964)
+    at Object.i [as fn] (index-DAP9MeXf.js:48:14364)
+    at b (index-DAP9MeXf.js:48:9973)
+    at Object.start (index-DAP9MeXf.js:48:10432)
+    at Tm.fetch (index-DAP9MeXf.js:48:15698)
+    at index-DAP9MeXf.js:48:27789
+    at Array.map (<anonymous>)
+    at index-DAP9MeXf.js:48:27773
+    at Object.batch (index-DAP9MeXf.js:48:10666)
+queryFn @ index-DAP9MeXf.js:146
+await in queryFn
+i @ index-DAP9MeXf.js:48
+b @ index-DAP9MeXf.js:48
+start @ index-DAP9MeXf.js:48
+fetch @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+refetchQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+invalidateQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:146Understand this error
+index-DAP9MeXf.js:146 GraphQLに失敗したため、一時的にRESTで取得を試みます
+queryFn @ index-DAP9MeXf.js:146
+await in queryFn
+i @ index-DAP9MeXf.js:48
+b @ index-DAP9MeXf.js:48
+start @ index-DAP9MeXf.js:48
+fetch @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+refetchQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:48
+batch @ index-DAP9MeXf.js:48
+invalidateQueries @ index-DAP9MeXf.js:48
+(anonymous) @ index-DAP9MeXf.js:146Understand this warning
+index-DAP9MeXf.js:48 Getting API base URL. Hostname: main.do510v6fsmjrf.amplifyapp.com
+index-DAP9MeXf.js:48 WARNING: No API endpoint configured. Using development API temporarily.
+index-DAP9MeXf.js:48 API Request to: https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev/api/tasks?userId=3
