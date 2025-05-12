@@ -1,20 +1,15 @@
 // GraphQL Mutations
 export const createTask = /* GraphQL */ `
-  mutation CreateTask(
-    $input: CreateTaskInput!
-    $condition: ModelTaskConditionInput
-  ) {
-    createTask(input: $input, condition: $condition) {
+  mutation CreateTask($input: CreateTaskInput!) {
+    createTask(input: $input) {
       id
       title
       description
       dueDate
+      categoryId
       priority
       completed
-      category {
-        id
-        name
-      }
+      userId
       createdAt
       updatedAt
     }
