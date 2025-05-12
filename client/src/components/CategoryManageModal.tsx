@@ -49,13 +49,10 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
         return result?.getUserCategories || [];
       } catch (error) {
         console.error('カテゴリ取得エラー:', error);
-        
-        // REST APIにフォールバック
-        console.warn('GraphQLに失敗したため、RESTで取得を試みます');
-        const response = await apiRequest('GET', `/api/categories?userId=${userId}`);
-        const data = await response.json();
-        console.log('RESTからカテゴリを取得:', data);
-        return data;
+        // REST APIフォールバックを無効化 - 完全にGraphQLに移行
+        console.warn('GraphQLに失敗しました。REST APIフォールバックは無効化されています。');
+        // エラーを表示して空配列を返す
+        return [];
       }
     },
     enabled: isOpen // モーダルが開いているときだけクエリを実行
@@ -84,23 +81,9 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
           return result.createCategory;
         }
         
-        // GraphQLが失敗した場合、RESTにフォールバック
-        console.warn('GraphQL作成に失敗、RESTにフォールバック');
-        const response = await apiRequest('POST', '/api/categories', { name, userId });
-        
-        // レスポンスからJSONを取得
-        const responseText = await response.text();
-        let responseData;
-        
-        try {
-          responseData = JSON.parse(responseText);
-        } catch (e) {
-          console.error('Invalid JSON response:', responseText);
-          throw new Error(`Invalid response format: ${responseText.substring(0, 100)}`);
-        }
-        
-        console.log('RESTカテゴリ作成成功:', responseData);
-        return responseData;
+        // GraphQLが失敗した場合のエラーハンドリング - フォールバックは無効化
+        console.error('GraphQLカテゴリ作成に失敗しました');
+        throw new Error('カテゴリの作成に失敗しました。もう一度お試しください。');
       } catch (error) {
         console.error('カテゴリ作成エラー:', error);
         throw error;
@@ -150,36 +133,9 @@ export default function CategoryManageModal({ isOpen, onClose, userId }: Categor
           };
         }
         
-        // GraphQLが失敗した場合、RESTにフォールバック
-        console.warn('GraphQL削除に失敗、RESTにフォールバック');
-        const response = await apiRequest('DELETE', `/api/categories/${categoryId}`);
-        
-        // レスポンスの処理
-        const responseText = await response.text();
-        // 空のレスポンスの場合は成功として扱う
-        if (!responseText.trim()) {
-          return {
-            success: true,
-            source: 'rest'
-          };
-        }
-        
-        // JSONレスポンスがある場合は解析
-        try {
-          const responseData = JSON.parse(responseText);
-          console.log('RESTカテゴリ削除成功:', responseData);
-          return {
-            success: true,
-            data: responseData,
-            source: 'rest'
-          };
-        } catch (e) {
-          console.log('RESTでの削除成功（非JSON応答）');
-          return {
-            success: true,
-            source: 'rest'
-          };
-        }
+        // GraphQLが失敗した場合のエラーハンドリング - フォールバック無効化
+        console.error('GraphQLカテゴリ削除に失敗しました');
+        throw new Error('カテゴリの削除に失敗しました。もう一度お試しください。');
       } catch (error) {
         console.error('カテゴリ削除エラー:', error);
         throw error;

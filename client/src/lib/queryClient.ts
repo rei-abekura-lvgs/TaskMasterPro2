@@ -4,32 +4,12 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 export function getApiBaseUrl(): string {
   console.log('Getting API base URL. Hostname:', window.location.hostname);
   
-  // 開発環境またはローカル環境の場合は相対パスを使用
-  if (window.location.hostname === 'localhost' || window.location.hostname.includes('replit.dev')) {
-    console.log('Development environment detected - using relative paths');
-    return '';
-  }
+  // 注意: GraphQLへの完全移行により、REST APIフォールバックは無効化
+  console.log('GraphQL API専用モード - REST APIフォールバック無効化済み');
   
-  // AWS Amplifyにデプロイされた場合
-  if (window.location.hostname.includes('amplifyapp.com')) {
-    // 注意: AppSyncのGraphQLエンドポイントはGraphQL専用で、REST APIに使用すべきではない
-    // REST API用に別のエンドポイントがある場合はそれを使用
-    
-    // 開発中は一時的に開発サーバーURLを使う（プロダクションでは修正が必要）
-    console.log('AWS Amplify環境検出: REST API呼び出しの場合はバックエンドURLを使用');
-    // Replitの開発サーバーURL - 本番環境ではこれを適切なAPIエンドポイントに変更する必要があります
-    return 'https://b0c7db00-877b-471b-ba3d-bb7c9b15bfe2-00-1luv00rqdwdf4.pike.replit.dev';
-  }
-  
-  // カスタムAPIのベースURLが設定されている場合はそれを使用
-  if (import.meta.env.VITE_API_BASE_URL) {
-    console.log('Using custom API base URL:', import.meta.env.VITE_API_BASE_URL);
-    return import.meta.env.VITE_API_BASE_URL;
-  }
-  
-  // デフォルトは空文字（相対パス）- フォールバック
-  console.log('Using default relative path for API calls');
-  return '';
+  // 空のURLを返して、相対パスでのアクセスを防止（REST APIフォールバック無効化）
+  // これにより、RESTでのAPI呼び出しは失敗するようになる
+  return 'https://api-disabled-using-graphql-only.example.com';
 }
 
 async function throwIfResNotOk(res: Response) {

@@ -40,12 +40,9 @@ export default function CreateTaskModal() {
         
         if (!result || !result.getUserCategories) {
           console.error('GraphQLカテゴリ取得に失敗:', result);
-          console.warn('GraphQLに失敗したため、一時的にRESTで取得を試みます（移行期間中）');
-          // フォールバック処理
-          const response = await apiRequest('GET', '/api/categories?userId=3');
-          const data = await response.json();
-          console.log('CreateTaskModal - Categories (REST fallback):', data);
-          return data || [];
+          console.warn('GraphQLに失敗しました。REST APIフォールバックは無効化されています。');
+          // REST APIフォールバックを無効化 - 完全にGraphQLに移行
+          return [];
         }
         
         console.log('GraphQLからカテゴリを取得しました:', result.getUserCategories);
